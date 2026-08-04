@@ -69,6 +69,34 @@ Der bisherige Datenbestand (60 Sätze + 20 Stolpersteine) reicht für den
    Konjugationen (-are/-ere/-ire), Passato Prossimo … je nach Niveau.
    → Teils aus den Stolpersteinen ableitbar; Konjugationen bräuchten eigene Daten.
 
+## Systematische Stoff-Abdeckung & Niveau-Aufstieg (A2 → B1)
+
+- Die App führt im Hintergrund ein **Protokoll**, welche offiziellen Themen
+  eines Niveaus schon **gelernt** sind (Grammatik-Themen + Wortschatz).
+- Ein **Lehrplan** (`curriculum` in `data-lesson.js`) listet die offiziellen
+  A2- und B1-Themen. Jedes Thema ist entweder `ready` (Übungen vorhanden,
+  zählt zum Fortschritt) oder `planned` (offiziell gelistet, Übungen folgen).
+- Der **Fortschritt** wird im Lektion-Tab angezeigt: Balken für Grammatik &
+  Wortschatz + Themenliste mit ✅ / ◻️ / ⏳.
+- Ist A2 systematisch geschafft (alle `ready`-Themen gemeistert + ~90 % des
+  Wortschatzes sitzt), schlägt die App vor: **„Du bist bereit für B1!"** – auf
+  Knopfdruck laufen die Tageslektionen dann auf **B1-Niveau** (eigene
+  B1-Grammatik & B1-Wortschatz). Ein manueller Niveau-Wechsel ist auch möglich.
+
+## Umsetzungsstand (Stand 04.08.2026)
+
+**Fertig & getestet:**
+- Kompletter Lektionsablauf (Schritte 1–6) im neuen Tab **„Lektion"**.
+- Adaptive Vokabel-Wiederholung (Spaced Repetition), 5 neue Vokabeln/Tag,
+  Übersetzungen mit den neuen Vokabeln, **Fehler-Nachdrill bis richtig**.
+- Grammatik-Rotation (ein Thema 4 Tage), Wiederholung des Vortags-Themas.
+- Fortschritts-Protokoll, A2→B1-Vorschlag und Niveau-Wechsel.
+
+**Noch auszubauen (Inhalte, kein Umbau nötig):**
+- Die als `planned` markierten A2- und B1-Grammatikthemen mit Übungen füllen.
+- Wortschatz erweitern (v. a. mehr B1-Vokabeln) für längere Lernstrecken.
+- Diese Inhalte lassen sich Stück für Stück in `data-lesson.js` ergänzen.
+
 ## Offene Fragen an Olivia
 
 - Welches **Niveau** ist deins (A1 / A2 / B1)? Oder soll die App es aus deinen

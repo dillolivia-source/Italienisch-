@@ -125,7 +125,7 @@
 
   /* ---------- App-State ---------- */
   const state = {
-    view: "uebersetzen",
+    view: "lektion",
     transThemes: new Set(),   // aktive Theme-Filter
     transCefr: new Set(),
     transCurrent: null,
@@ -138,6 +138,23 @@
 
   const viewEl = document.getElementById("view");
   const resetBtn = document.getElementById("reset-btn");
+
+  /* ---------- Gemeinsame Helfer für das Lektions-Modul (lesson.js) ---------- */
+  window.Core = {
+    esc: esc,
+    mdInline: mdInline,
+    norm: norm,
+    stripAccents: stripAccents,
+    checkAnswer: checkAnswer,
+    shuffle: shuffle,
+    el: $,
+    record: record,
+    getProgress: function () { return progress; },
+    getEntry: function (id) { return progress[id] || null; },
+    THEME_LABEL: THEME_LABEL,
+    // erlaubt lesson.js, den Reset-Knopf sichtbar zu machen
+    showReset: function () { if (resetBtn.hidden) resetBtn.hidden = false; }
+  };
 
   /* ============ VIEW: ÜBERSETZEN ============ */
   function filteredSentences() {
@@ -454,7 +471,11 @@
 
   /* ---------- Router ---------- */
   function render() {
-    if (state.view === "uebersetzen") renderUebersetzen();
+    if (state.view === "lektion") {
+      if (window.Lektion) window.Lektion.render(viewEl);
+      else viewEl.innerHTML = '<p class="empty">Lektion wird geladen…</p>';
+    }
+    else if (state.view === "uebersetzen") renderUebersetzen();
     else if (state.view === "quiz") renderQuiz();
     else if (state.view === "karten") renderKarten();
     else if (state.view === "fortschritt") renderFortschritt();
@@ -476,12 +497,18 @@
     if (confirm("Deinen ganzen Fortschritt wirklich löschen?")) {
       progress = {};
       saveProgress(progress);
+      if (window.Lektion && window.Lektion.reset) window.Lektion.reset();
       resetBtn.hidden = true;
       render();
     }
   });
 
-  render();
+  // Erst rendern, wenn alle Skripte (inkl. lesson.js) geladen sind
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", render);
+  } else {
+    render();
+  }
 
   /* ---------- Service Worker (Offline) ---------- */
   if ("serviceWorker" in navigator) {

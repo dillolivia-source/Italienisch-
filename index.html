@@ -19,20 +19,25 @@
   <main id="view"><!-- Views werden hier gerendert --></main>
 
   <nav class="tabbar" role="tablist">
-    <button class="tab" data-view="uebersetzen" aria-selected="true">
+    <button class="tab" data-view="lektion" aria-selected="true">
+      <span class="tab-ico">📖</span><span class="tab-lbl">Lektion</span>
+    </button>
+    <button class="tab" data-view="uebersetzen" aria-selected="false">
       <span class="tab-ico">✍️</span><span class="tab-lbl">Übersetzen</span>
     </button>
     <button class="tab" data-view="quiz" aria-selected="false">
-      <span class="tab-ico">🎯</span><span class="tab-lbl">Stolper-Quiz</span>
+      <span class="tab-ico">🎯</span><span class="tab-lbl">Stolper</span>
     </button>
     <button class="tab" data-view="karten" aria-selected="false">
       <span class="tab-ico">📇</span><span class="tab-lbl">Karten</span>
     </button>
     <button class="tab" data-view="fortschritt" aria-selected="false">
-      <span class="tab-ico">📊</span><span class="tab-lbl">Fortschritt</span>
+      <span class="tab-ico">📊</span><span class="tab-lbl">Statistik</span>
     </button>
   </nav>
 </div>
 
 <script src="data.js"></script>
+<script src="data-lesson.js"></script>
 <script src="app.js"></script>
+<script src="lesson.js"></script>

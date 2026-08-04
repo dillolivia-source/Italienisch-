@@ -314,3 +314,51 @@ textarea:focus, input.answer:focus {
   text-align: center;
   margin-top: 10px;
 }
+
+/* ---- Lektion ---- */
+.lesson-head { margin-bottom: 12px; }
+.lesson-step { font-size: 13px; color: var(--muted); margin: 0 0 2px; font-weight: 600; }
+.lesson-title { font-size: 21px; margin: 0; }
+.level-pill {
+  display: inline-block;
+  background: var(--green);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+.rule {
+  font-size: 16px;
+  line-height: 1.6;
+  background: var(--green-soft);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 4px;
+}
+.rule strong { color: var(--green); }
+.rule em { color: var(--red); font-style: normal; font-weight: 600; }
+
+.vocab-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.vocab-row:last-of-type { border-bottom: none; }
+.vocab-it { font-size: 20px; font-weight: 700; color: var(--green); }
+.vocab-de { font-size: 16px; color: var(--muted); text-align: right; }
+
+.curr-item {
+  font-size: 15px;
+  margin: 5px 0;
+  line-height: 1.4;
+}
+.levelup {
+  text-align: center;
+  border: 2px solid var(--green);
+  background: var(--green-soft);
+}
+.lesson-start .hint { margin-bottom: 16px; }

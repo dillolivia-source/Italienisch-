@@ -9,6 +9,13 @@ Startbildschirm gelegt werden.
 
 ## Was die App kann
 
+- **📖 Lektion** – deine strukturierte **Tageslektion**: kurze Grammatik-
+  Wiederholung vom Vortag, adaptive Vokabel-Wiederholung (Schwieriges öfter),
+  5 neue Vokabeln + Abfrage, Übersetzungen mit genau diesen Vokabeln, und ein
+  Grammatik-Thema, das 3–4 Tage gleich bleibt. Fehler werden nach jeder Aufgabe
+  wiederholt, bis sie sitzen. Läuft auf deinem Niveau (A2) und schlägt den
+  Wechsel auf **B1** vor, sobald du den A2-Stoff systematisch durch hast.
+  Details siehe `KONZEPT-LEKTION.md`.
 - **✍️ Übersetzen** – Deutscher Satz → du tippst die italienische Übersetzung.
   Automatische Prüfung (mit Nachsicht bei Akzenten/Tippfehlern), zeigt alle
   akzeptierten Lösungen und den Grammatik-Fokus. 60 persönliche Sätze.
