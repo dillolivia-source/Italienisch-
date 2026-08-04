@@ -15,7 +15,8 @@
     travel: "Reise", family: "Familie", baby: "Kleinkind", beach: "Strand",
     restaurant: "Restaurant", food: "Essen", routine: "Alltag", phone: "Telefon",
     shopping: "Einkauf", home: "Zuhause", emotions: "Gefühle", weather: "Wetter",
-    time: "Zeit"
+    time: "Zeit", health: "Gesundheit", clothing: "Kleidung", city: "Stadt",
+    work: "Arbeit", basics: "Grundlagen"
   };
 
   /* ---------- Fortschritt (localStorage) ---------- */

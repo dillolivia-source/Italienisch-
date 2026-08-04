@@ -117,7 +117,73 @@ window.LESSON_DATA = {
     { id: "v083", it: "permettere", de: "erlauben", cefr: "B1", theme: "family", ex: { de: "Meine Eltern erlauben es nicht.", it: ["I miei genitori non lo permettono."] } },
     { id: "v084", it: "vietato", de: "verboten", cefr: "B1", theme: "routine", ex: { de: "Rauchen ist verboten.", it: ["È vietato fumare."] } },
     { id: "v085", it: "nonostante", de: "trotz", cefr: "B1", theme: "time", ex: { de: "Trotz des Regens gehen wir aus.", it: ["Nonostante la pioggia usciamo."] } },
-    { id: "v086", it: "l'esperienza", de: "die Erfahrung", cefr: "B1", theme: "travel", ex: { de: "Es war eine schöne Erfahrung.", it: ["È stata una bella esperienza."] } }
+    { id: "v086", it: "l'esperienza", de: "die Erfahrung", cefr: "B1", theme: "travel", ex: { de: "Es war eine schöne Erfahrung.", it: ["È stata una bella esperienza."] } },
+
+    // --- Gesundheit ---
+    { id: "v087", it: "il mal di testa", de: "die Kopfschmerzen", cefr: "A2", theme: "health", ex: { de: "Ich habe Kopfschmerzen.", it: ["Ho mal di testa."] } },
+    { id: "v088", it: "la febbre", de: "das Fieber", cefr: "A2", theme: "health", ex: { de: "Das Baby hat Fieber.", it: ["Il bambino ha la febbre."] } },
+    { id: "v089", it: "la medicina", de: "das Medikament", cefr: "A2", theme: "health", ex: { de: "Ich nehme das Medikament.", it: ["Prendo la medicina."] } },
+    { id: "v090", it: "il raffreddore", de: "die Erkältung", cefr: "B1", theme: "health", ex: { de: "Ich habe eine Erkältung.", it: ["Ho il raffreddore."] } },
+    { id: "v091", it: "il dente", de: "der Zahn", cefr: "A2", theme: "health", ex: { de: "Mir tut der Zahn weh.", it: ["Mi fa male il dente."] } },
+
+    // --- Kleidung ---
+    { id: "v092", it: "i vestiti", de: "die Kleidung", cefr: "A2", theme: "clothing", ex: { de: "Ich kaufe neue Kleidung.", it: ["Compro vestiti nuovi."] } },
+    { id: "v093", it: "la maglietta", de: "das T-Shirt", cefr: "A2", theme: "clothing", ex: { de: "Das T-Shirt ist rot.", it: ["La maglietta è rossa."] } },
+    { id: "v094", it: "i pantaloni", de: "die Hose", cefr: "A2", theme: "clothing", ex: { de: "Die Hose ist zu groß.", it: ["I pantaloni sono troppo grandi."] } },
+    { id: "v095", it: "le scarpe", de: "die Schuhe", cefr: "A1", theme: "clothing", ex: { de: "Die Schuhe sind neu.", it: ["Le scarpe sono nuove."] } },
+    { id: "v096", it: "la giacca", de: "die Jacke", cefr: "A2", theme: "clothing", ex: { de: "Nimm die Jacke mit.", it: ["Prendi la giacca."] } },
+    { id: "v097", it: "il cappello", de: "der Hut / die Mütze", cefr: "A2", theme: "clothing", ex: { de: "Das Baby trägt eine Mütze.", it: ["Il bambino porta il cappello."] } },
+
+    // --- Farben ---
+    { id: "v098", it: "rosso", de: "rot", cefr: "A1", theme: "basics", ex: { de: "Das Auto ist rot.", it: ["La macchina è rossa."] } },
+    { id: "v099", it: "bianco", de: "weiß", cefr: "A1", theme: "basics", ex: { de: "Der Weißwein ist gut.", it: ["Il vino bianco è buono."] } },
+    { id: "v100", it: "nero", de: "schwarz", cefr: "A1", theme: "basics", ex: { de: "Der Kaffee ist schwarz.", it: ["Il caffè è nero."] } },
+    { id: "v101", it: "verde", de: "grün", cefr: "A1", theme: "basics", ex: { de: "Der Apfel ist grün.", it: ["La mela è verde."] } },
+    { id: "v102", it: "blu", de: "blau", cefr: "A1", theme: "basics", ex: { de: "Das Meer ist blau.", it: ["Il mare è blu."] } },
+    { id: "v103", it: "giallo", de: "gelb", cefr: "A1", theme: "basics", ex: { de: "Die Sonne ist gelb.", it: ["Il sole è giallo."] } },
+
+    // --- Stadt & Wegbeschreibung ---
+    { id: "v104", it: "la città", de: "die Stadt", cefr: "A1", theme: "city", ex: { de: "Die Stadt ist schön.", it: ["La città è bella."] } },
+    { id: "v105", it: "la strada", de: "die Straße", cefr: "A2", theme: "city", ex: { de: "Die Straße ist lang.", it: ["La strada è lunga."] } },
+    { id: "v106", it: "la piazza", de: "der Platz", cefr: "A2", theme: "city", ex: { de: "Der Platz ist groß.", it: ["La piazza è grande."] } },
+    { id: "v107", it: "la chiesa", de: "die Kirche", cefr: "A2", theme: "city", ex: { de: "Die Kirche ist alt.", it: ["La chiesa è antica."] } },
+    { id: "v108", it: "a destra", de: "rechts", cefr: "A2", theme: "city", ex: { de: "Das Restaurant ist rechts.", it: ["Il ristorante è a destra."] } },
+    { id: "v109", it: "a sinistra", de: "links", cefr: "A2", theme: "city", ex: { de: "Die Apotheke ist links.", it: ["La farmacia è a sinistra."] } },
+    { id: "v110", it: "dritto", de: "geradeaus", cefr: "A2", theme: "city", ex: { de: "Geh geradeaus.", it: ["Vai dritto.", "Vai sempre dritto."] } },
+    { id: "v111", it: "vicino", de: "nah / in der Nähe", cefr: "A2", theme: "city", ex: { de: "Der Bahnhof ist nah.", it: ["La stazione è vicina."] } },
+    { id: "v112", it: "lontano", de: "weit / weit weg", cefr: "A2", theme: "city", ex: { de: "Das Meer ist weit weg.", it: ["Il mare è lontano."] } },
+
+    // --- Arbeit ---
+    { id: "v113", it: "il lavoro", de: "die Arbeit", cefr: "A2", theme: "work", ex: { de: "Die Arbeit ist interessant.", it: ["Il lavoro è interessante."] } },
+    { id: "v114", it: "l'ufficio", de: "das Büro", cefr: "A2", theme: "work", ex: { de: "Ich gehe ins Büro.", it: ["Vado in ufficio."] } },
+    { id: "v115", it: "la riunione", de: "die Besprechung", cefr: "B1", theme: "work", ex: { de: "Die Besprechung ist um zehn.", it: ["La riunione è alle dieci."] } },
+    { id: "v116", it: "il collega", de: "der Kollege", cefr: "B1", theme: "work", ex: { de: "Mein Kollege ist nett.", it: ["Il mio collega è simpatico."] } },
+    { id: "v117", it: "guadagnare", de: "verdienen", cefr: "B1", theme: "work", ex: { de: "Ich verdiene genug.", it: ["Guadagno abbastanza."] } },
+
+    // --- Häufige Verben ---
+    { id: "v118", it: "andare", de: "gehen / fahren", cefr: "A1", theme: "routine", ex: { de: "Wir gehen nach Hause.", it: ["Andiamo a casa."] } },
+    { id: "v119", it: "venire", de: "kommen", cefr: "A1", theme: "routine", ex: { de: "Kommst du mit mir?", it: ["Vieni con me?"] } },
+    { id: "v120", it: "sapere", de: "wissen / können", cefr: "A2", theme: "routine", ex: { de: "Ich weiß es nicht.", it: ["Non lo so."] } },
+    { id: "v121", it: "conoscere", de: "kennen", cefr: "A2", theme: "routine", ex: { de: "Ich kenne Rom gut.", it: ["Conosco bene Roma."] } },
+    { id: "v122", it: "pensare", de: "denken", cefr: "A2", theme: "routine", ex: { de: "Ich denke an dich.", it: ["Penso a te."] } },
+    { id: "v123", it: "trovare", de: "finden", cefr: "A2", theme: "routine", ex: { de: "Ich finde den Schlüssel nicht.", it: ["Non trovo la chiave."] } },
+    { id: "v124", it: "aspettare", de: "warten", cefr: "A2", theme: "routine", ex: { de: "Ich warte auf dich.", it: ["Ti aspetto."] } },
+    { id: "v125", it: "chiedere", de: "fragen / bitten", cefr: "B1", theme: "routine", ex: { de: "Ich frage den Kellner.", it: ["Chiedo al cameriere."] } },
+
+    // --- Häufige Adjektive ---
+    { id: "v126", it: "grande", de: "groß", cefr: "A1", theme: "basics", ex: { de: "Das Haus ist groß.", it: ["La casa è grande."] } },
+    { id: "v127", it: "piccolo", de: "klein", cefr: "A1", theme: "basics", ex: { de: "Das Baby ist klein.", it: ["Il bambino è piccolo."] } },
+    { id: "v128", it: "bello", de: "schön", cefr: "A1", theme: "basics", ex: { de: "Der Tag ist schön.", it: ["La giornata è bella."] } },
+    { id: "v129", it: "brutto", de: "hässlich / schlecht", cefr: "A2", theme: "basics", ex: { de: "Das Wetter ist schlecht.", it: ["Il tempo è brutto."] } },
+    { id: "v130", it: "difficile", de: "schwierig", cefr: "A2", theme: "basics", ex: { de: "Die Übung ist schwierig.", it: ["L'esercizio è difficile."] } },
+    { id: "v131", it: "facile", de: "einfach / leicht", cefr: "A2", theme: "basics", ex: { de: "Die Frage ist einfach.", it: ["La domanda è facile."] } },
+
+    // --- Bindewörter & Adverbien ---
+    { id: "v132", it: "però", de: "aber", cefr: "A2", theme: "basics", ex: { de: "Ich bin müde, aber glücklich.", it: ["Sono stanca, però felice."] } },
+    { id: "v133", it: "sempre", de: "immer", cefr: "A1", theme: "basics", ex: { de: "Ich trinke immer Kaffee.", it: ["Bevo sempre il caffè."] } },
+    { id: "v134", it: "mai", de: "nie", cefr: "A2", theme: "basics", ex: { de: "Ich rauche nie.", it: ["Non fumo mai."] } },
+    { id: "v135", it: "spesso", de: "oft", cefr: "A2", theme: "basics", ex: { de: "Wir gehen oft ans Meer.", it: ["Andiamo spesso al mare."] } },
+    { id: "v136", it: "forse", de: "vielleicht", cefr: "A2", theme: "basics", ex: { de: "Vielleicht regnet es.", it: ["Forse piove."] } }
   ],
 
   /* ---------------- GRAMMATIK-MODULE ----------------
