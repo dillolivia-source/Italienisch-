@@ -214,12 +214,12 @@
       });
       // --- Schritt 4: Übersetzungen mit den neuen Vokabeln ---
       var transQs = fresh.filter(function (v) { return v.ex; }).map(function (v) {
+        // Kein Vokabel-Hinweis in der Auswertung – nur Rot/Grün-Diff.
         return {
           kind: "type",
           id: v.id + "_ex",
           prompt: v.ex.de,
-          accept: v.ex.it,
-          explain: "Vokabel: **" + v.it + "** = " + v.de
+          accept: v.ex.it
         };
       });
       if (transQs.length) {
@@ -252,12 +252,12 @@
   }
 
   function vocabQuestion(v) {
+    // Kein "explain" – die richtige Lösung zeigt schon die grüne Zeile.
     return {
       kind: "type",
       id: v.id,
       prompt: v.de,
-      accept: [v.it],
-      explain: "**" + v.it + "** = " + v.de
+      accept: [v.it]
     };
   }
 
@@ -540,6 +540,7 @@
       card.appendChild(fbSlot);
       var btn = C.el('<button class="btn primary">Prüfen</button>');
       card.appendChild(btn);
+      card.appendChild(C.noteField(q.prompt));
       root.appendChild(card);
 
       var answered = false;
@@ -549,13 +550,21 @@
           var res = C.checkAnswer(ta.value, q.accept);
           ta.setAttribute("readonly", "");
           var cls = res === "ok" ? "ok" : res === "near" ? "near" : "no";
-          var lead = res === "ok" ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz";
           var fb = C.el('<div class="feedback ' + cls + '"></div>');
-          fb.appendChild(C.el('<p class="lead ' + cls + '">' + lead + "</p>"));
-          q.accept.forEach(function (a, i) {
-            fb.appendChild(C.el('<p class="solution' + (i ? " alt" : "") + '">' + (i ? "auch: " : "") + C.esc(a) + "</p>"));
-          });
-          if (q.explain) fb.appendChild(C.el('<p class="explanation" style="margin-top:6px">' + C.mdInline(q.explain) + "</p>"));
+          if (res === "ok") {
+            fb.appendChild(C.el('<p class="lead ok">✓ Richtig!</p>'));
+            fb.appendChild(C.el('<p class="solution">' + C.esc(q.accept[0]) + "</p>"));
+          } else {
+            fb.appendChild(C.el('<p class="lead ' + cls + '">' +
+              (res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>"));
+            var target = C.pickClosest(ta.value, q.accept);
+            var d = C.wordDiff(ta.value, target);
+            if (ta.value.trim()) {
+              fb.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>' + d.userHtml + "</p>"));
+            }
+            fb.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' + d.correctHtml + "</p>"));
+          }
+          if (q.explain) fb.appendChild(C.el('<p class="explanation" style="margin-top:8px">' + C.mdInline(q.explain) + "</p>"));
           fbSlot.appendChild(fb);
           onResult(q, res === "ok"); // "near" (nur Akzente) zählt als Fehler → Nachdrill
           btn.textContent = "Weiter →";
@@ -596,6 +605,7 @@
         card.appendChild(b);
       });
       card.appendChild(fbSlot);
+      card.appendChild(C.noteField(q.prompt));
       root.appendChild(card);
     }
 
@@ -605,6 +615,17 @@
   /* ---------------- Öffentliche API ---------------- */
   window.Lektion = {
     render: render,
+    // Wird vom Notizfeld aufgerufen, wenn ein gemerktes Wort einer Vokabel
+    // entspricht: Level zurücksetzen und sofort wieder fällig machen.
+    markUnknown: function (vocabId) {
+      var e = srsFor(vocabId);
+      e.level = 0;
+      e.wrong = (e.wrong || 0) + 1;
+      e.due = S.lessonNo;
+      e.last = "no";
+      if (S.introduced.indexOf(vocabId) === -1) S.introduced.push(vocabId);
+      save();
+    },
     reset: function () {
       S = freshState();
       try { localStorage.removeItem(LS_KEY); } catch (e) {}

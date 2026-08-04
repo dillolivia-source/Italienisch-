@@ -79,7 +79,45 @@ window.LESSON_DATA = {
     { id: "v049", it: "felice", de: "glücklich", cefr: "A1", theme: "emotions", ex: { de: "Das Baby ist glücklich.", it: ["Il bambino è felice."] } },
     { id: "v050", it: "fa caldo", de: "es ist warm", cefr: "A1", theme: "weather", ex: { de: "Heute ist es warm.", it: ["Oggi fa caldo."] } },
     { id: "v051", it: "fa freddo", de: "es ist kalt", cefr: "A1", theme: "weather", ex: { de: "Am Morgen ist es kalt.", it: ["La mattina fa freddo."] } },
-    { id: "v052", it: "piove", de: "es regnet", cefr: "A2", theme: "weather", ex: { de: "Heute regnet es.", it: ["Oggi piove."] } }
+    { id: "v052", it: "piove", de: "es regnet", cefr: "A2", theme: "weather", ex: { de: "Heute regnet es.", it: ["Oggi piove."] } },
+
+    // --- Weitere A2-Vokabeln ---
+    { id: "v053", it: "la settimana", de: "die Woche", cefr: "A1", theme: "time", ex: { de: "Wir bleiben eine Woche.", it: ["Restiamo una settimana.", "Rimaniamo una settimana."] } },
+    { id: "v054", it: "il mese", de: "der Monat", cefr: "A2", theme: "time", ex: { de: "Der Monat August ist heiß.", it: ["Il mese di agosto è caldo."] } },
+    { id: "v055", it: "la mattina", de: "der Morgen", cefr: "A2", theme: "time", ex: { de: "Am Morgen trinke ich Kaffee.", it: ["La mattina bevo il caffè."] } },
+    { id: "v056", it: "la sera", de: "der Abend", cefr: "A2", theme: "time", ex: { de: "Am Abend sind wir müde.", it: ["La sera siamo stanchi."] } },
+    { id: "v057", it: "presto", de: "früh", cefr: "A2", theme: "time", ex: { de: "Ich stehe früh auf.", it: ["Mi alzo presto."] } },
+    { id: "v058", it: "tardi", de: "spät", cefr: "A2", theme: "time", ex: { de: "Wir kommen spät an.", it: ["Arriviamo tardi."] } },
+    { id: "v059", it: "il letto", de: "das Bett", cefr: "A1", theme: "home", ex: { de: "Das Baby schläft im Bett.", it: ["Il bambino dorme nel letto."] } },
+    { id: "v060", it: "la camera", de: "das Zimmer", cefr: "A2", theme: "home", ex: { de: "Das Zimmer ist groß.", it: ["La camera è grande."] } },
+    { id: "v061", it: "il bagno", de: "das Bad", cefr: "A2", theme: "home", ex: { de: "Das Bad ist dort.", it: ["Il bagno è lì."] } },
+    { id: "v062", it: "la finestra", de: "das Fenster", cefr: "A2", theme: "home", ex: { de: "Ich öffne das Fenster.", it: ["Apro la finestra."] } },
+    { id: "v063", it: "il medico", de: "der Arzt", cefr: "A2", theme: "routine", ex: { de: "Ich gehe zum Arzt.", it: ["Vado dal medico."] } },
+    { id: "v064", it: "la farmacia", de: "die Apotheke", cefr: "A2", theme: "routine", ex: { de: "Die Apotheke ist geschlossen.", it: ["La farmacia è chiusa."] } },
+    { id: "v065", it: "malato", de: "krank", cefr: "A2", theme: "emotions", ex: { de: "Das Baby ist krank.", it: ["Il bambino è malato."] } },
+    { id: "v066", it: "il supermercato", de: "der Supermarkt", cefr: "A2", theme: "shopping", ex: { de: "Ich gehe in den Supermarkt.", it: ["Vado al supermercato."] } },
+    { id: "v067", it: "i soldi", de: "das Geld", cefr: "A2", theme: "shopping", ex: { de: "Ich habe kein Geld.", it: ["Non ho soldi."] } },
+    { id: "v068", it: "caro", de: "teuer", cefr: "A2", theme: "shopping", ex: { de: "Das Auto ist teuer.", it: ["La macchina è cara."] } },
+    { id: "v069", it: "capire", de: "verstehen", cefr: "A2", theme: "routine", ex: { de: "Ich verstehe nicht.", it: ["Non capisco."] } },
+    { id: "v070", it: "imparare", de: "lernen", cefr: "A2", theme: "routine", ex: { de: "Ich lerne Italienisch.", it: ["Imparo l'italiano."] } },
+    { id: "v071", it: "leggere", de: "lesen", cefr: "A1", theme: "routine", ex: { de: "Der Opa liest ein Buch.", it: ["Il nonno legge un libro."] } },
+    { id: "v072", it: "il sole", de: "die Sonne", cefr: "A1", theme: "weather", ex: { de: "Heute scheint die Sonne.", it: ["Oggi c'è il sole."] } },
+
+    // --- B1-Vokabeln ---
+    { id: "v073", it: "il consiglio", de: "der Rat / Tipp", cefr: "B1", theme: "routine", ex: { de: "Ich gebe dir einen Rat.", it: ["Ti do un consiglio."] } },
+    { id: "v074", it: "consigliare", de: "empfehlen / raten", cefr: "B1", theme: "restaurant", ex: { de: "Ich empfehle dieses Restaurant.", it: ["Consiglio questo ristorante."] } },
+    { id: "v075", it: "riuscire", de: "schaffen / gelingen", cefr: "B1", theme: "emotions", ex: { de: "Ich schaffe es nicht.", it: ["Non ci riesco."] } },
+    { id: "v076", it: "la salute", de: "die Gesundheit", cefr: "B1", theme: "emotions", ex: { de: "Die Gesundheit ist wichtig.", it: ["La salute è importante."] } },
+    { id: "v077", it: "l'ambiente", de: "die Umwelt", cefr: "B1", theme: "routine", ex: { de: "Wir müssen die Umwelt schützen.", it: ["Dobbiamo proteggere l'ambiente."] } },
+    { id: "v078", it: "migliorare", de: "verbessern", cefr: "B1", theme: "routine", ex: { de: "Ich will mein Italienisch verbessern.", it: ["Voglio migliorare il mio italiano."] } },
+    { id: "v079", it: "decidere", de: "entscheiden", cefr: "B1", theme: "routine", ex: { de: "Wir müssen jetzt entscheiden.", it: ["Dobbiamo decidere adesso.", "Dobbiamo decidere ora."] } },
+    { id: "v080", it: "la scelta", de: "die Wahl / Entscheidung", cefr: "B1", theme: "routine", ex: { de: "Es ist eine schwierige Wahl.", it: ["È una scelta difficile."] } },
+    { id: "v081", it: "prenotare", de: "reservieren / buchen", cefr: "B1", theme: "restaurant", ex: { de: "Ich reserviere einen Tisch.", it: ["Prenoto un tavolo."] } },
+    { id: "v082", it: "l'appuntamento", de: "der Termin / die Verabredung", cefr: "B1", theme: "routine", ex: { de: "Ich habe morgen einen Termin.", it: ["Ho un appuntamento domani."] } },
+    { id: "v083", it: "permettere", de: "erlauben", cefr: "B1", theme: "family", ex: { de: "Meine Eltern erlauben es nicht.", it: ["I miei genitori non lo permettono."] } },
+    { id: "v084", it: "vietato", de: "verboten", cefr: "B1", theme: "routine", ex: { de: "Rauchen ist verboten.", it: ["È vietato fumare."] } },
+    { id: "v085", it: "nonostante", de: "trotz", cefr: "B1", theme: "time", ex: { de: "Trotz des Regens gehen wir aus.", it: ["Nonostante la pioggia usciamo."] } },
+    { id: "v086", it: "l'esperienza", de: "die Erfahrung", cefr: "B1", theme: "travel", ex: { de: "Es war eine schöne Erfahrung.", it: ["È stata una bella esperienza."] } }
   ],
 
   /* ---------------- GRAMMATIK-MODULE ----------------
@@ -176,8 +214,93 @@ window.LESSON_DATA = {
         { kind: "choice", prompt: "Gioco con ___ amici.", options: ["i miei", "le mie"], answer: "i miei", explain: "maskulin Plural: **i miei amici**." }
       ]
     },
+    {
+      id: "g_prep_articolate",
+      title: "Zusammengesetzte Präpositionen (nel, sul, al, del…)",
+      cefr: "A2",
+      rule: "Präposition + bestimmter Artikel verschmelzen:\n**a**+il=**al**, a+la=**alla**, a+i=**ai** · **in**+il=**nel**, in+la=**nella** · **su**+il=**sul**, su+la=**sulla** · **di**+il=**del** · **da**+il=**dal**, da+i=**dai**.\nVor **unbestimmtem** Artikel NICHT verschmelzen: *in un, a un*.",
+      exercises: [
+        { kind: "fill", prompt: "Il libro è ___ tavolo. (su + il)", accept: ["sul"], explain: "su+il = **sul**." },
+        { kind: "choice", prompt: "Andiamo ___ cinema.", options: ["al", "a il", "nel"], answer: "al", explain: "a+il = **al**." },
+        { kind: "fill", prompt: "La crema è ___ borsa. (in + la)", accept: ["nella"], explain: "in+la = **nella**." },
+        { kind: "choice", prompt: "Abito ___ appartamento.", options: ["in un", "nell'un", "nel un"], answer: "in un", explain: "Vor unbestimmtem Artikel: **in un** (keine Verschmelzung)." },
+        { kind: "fill", prompt: "Torniamo ___ nonni. (da + i)", accept: ["dai"], explain: "da+i = **dai**." },
+        { kind: "choice", prompt: "È la macchina ___ mamma.", options: ["della", "dalla", "di la"], answer: "della", explain: "di+la = **della**." },
+        { kind: "fill", prompt: "Il bambino gioca ___ sabbia. (su + la)", accept: ["sulla"], explain: "su+la = **sulla**." }
+      ]
+    },
+    {
+      id: "g_reflexive",
+      title: "Reflexive Verben (mi alzo, mi occupo…)",
+      cefr: "A2",
+      rule: "Reflexivpronomen vor dem Verb: **mi, ti, si, ci, vi, si**.\nalzarsi: mi alz**o**, ti alz**i**, si alz**a**, ci alz**iamo**, vi alz**ate**, si alz**ano**.\nNach Modalverb/Infinitiv wird das Pronomen **angehängt & angepasst**: *voglio alzarmi, devo occuparmi*.",
+      exercises: [
+        { kind: "fill", prompt: "La mattina io ___ (alzarsi) presto.", accept: ["mi alzo"], explain: "io → **mi alzo**." },
+        { kind: "fill", prompt: "Il bambino ___ (mettersi) in piedi.", accept: ["si mette"], explain: "lui/lei → **si mette**." },
+        { kind: "fill", prompt: "Noi ___ (svegliarsi) alle sette.", accept: ["ci svegliamo"], explain: "noi → **ci svegliamo**." },
+        { kind: "choice", prompt: "Voglio ___ del bucato.", options: ["occuparmi", "occuparsi", "mi occupare"], answer: "occuparmi", explain: "nach Modalverb angehängt & angepasst: **occuparmi**." },
+        { kind: "fill", prompt: "A che ora ___ (tu, alzarsi)?", accept: ["ti alzi"], explain: "tu → **ti alzi**." },
+        { kind: "choice", prompt: "I bambini ___ al mare.", options: ["si riposano", "si riposa", "ci riposano"], answer: "si riposano", explain: "loro → **si riposano**." }
+      ]
+    },
+    {
+      id: "g_modal",
+      title: "Modalverben: potere, volere, dovere",
+      cefr: "A2",
+      rule: "Unregelmäßig im Präsens, danach **+ Infinitiv**:\n**potere** (können): posso, puoi, può, possiamo, potete, possono.\n**volere** (wollen): voglio, vuoi, vuole, vogliamo, volete, vogliono.\n**dovere** (müssen): devo, devi, deve, dobbiamo, dovete, devono.",
+      exercises: [
+        { kind: "fill", prompt: "___ (io, volere) un caffè.", accept: ["voglio"], explain: "io volere → **voglio**." },
+        { kind: "fill", prompt: "Non ___ (noi, potere) venire stasera.", accept: ["possiamo"], explain: "noi potere → **possiamo**." },
+        { kind: "fill", prompt: "Il bambino ___ (dovere) dormire.", accept: ["deve"], explain: "lui dovere → **deve**." },
+        { kind: "choice", prompt: "___ aiutarmi, per favore?", options: ["Puoi", "Poti", "Vuoi"], answer: "Puoi", explain: "tu potere → **puoi**." },
+        { kind: "fill", prompt: "Loro ___ (volere) andare al mare.", accept: ["vogliono"], explain: "loro volere → **vogliono**." },
+        { kind: "choice", prompt: "Che cosa ___ mangiare, ragazzi?", options: ["volete", "vogliete", "volere"], answer: "volete", explain: "voi volere → **volete**." }
+      ]
+    },
+    {
+      id: "g_pronouns",
+      title: "Objektpronomen (direkt & indirekt)",
+      cefr: "A2",
+      rule: "**Direkt** (wen/was): mi, ti, **lo, la**, ci, vi, **li, le**. → *Lo vedo* (ich sehe ihn).\n**Indirekt** (wem): mi, ti, **gli, le**, ci, vi, **gli**. → *Le parlo* (ich spreche mit ihr).\nlo/la werden vor Vokal zu **l'**: *L'amo*.",
+      exercises: [
+        { kind: "choice", prompt: "Vedi Marco? Sì, ___ vedo.", options: ["lo", "gli", "la"], answer: "lo", explain: "Marco = direktes Objekt maskulin → **lo**." },
+        { kind: "choice", prompt: "Scrivo a Maria: ___ scrivo una mail.", options: ["le", "la", "gli"], answer: "le", explain: "'a Maria' = indirekt feminin → **le**." },
+        { kind: "choice", prompt: "Conosci i miei amici? No, non ___ conosco.", options: ["li", "gli", "le"], answer: "li", explain: "'i miei amici' = direkt mask. Plural → **li**." },
+        { kind: "choice", prompt: "Do il regalo a Luca: ___ do il regalo.", options: ["gli", "lo", "le"], answer: "gli", explain: "'a Luca' = indirekt maskulin → **gli**." },
+        { kind: "choice", prompt: "Ami tua sorella? Sì, ___ amo.", options: ["l'", "la", "le"], answer: "l'", explain: "la + amo → **l'amo** (vor Vokal)." },
+        { kind: "choice", prompt: "Chiami la nonna? Sì, ___ chiamo.", options: ["la", "le", "lo"], answer: "la", explain: "'la nonna' = direkt feminin → **la**." }
+      ]
+    },
+    {
+      id: "g_comparativo",
+      title: "Komparativ (più… di / meno… di / come)",
+      cefr: "A2",
+      rule: "**più … di** = mehr als · **meno … di** = weniger als · **(così)… come** = so … wie.\n*di* verschmilzt mit Artikel: più grande **della** casa.\nVor zwei Nomen im Vergleich steht **che**: *più turisti **che** abitanti*.",
+      exercises: [
+        { kind: "fill", prompt: "Roma è più grande ___ Bologna.", accept: ["di"], explain: "Vergleich → **di**." },
+        { kind: "fill", prompt: "Marco è più alto ___ me.", accept: ["di"], explain: "vor Pronomen → **di me**." },
+        { kind: "choice", prompt: "Questo gelato è ___ caro di quello.", options: ["meno", "come", "che"], answer: "meno", explain: "'weniger teuer als' → **meno … di**." },
+        { kind: "fill", prompt: "Lei è alta ___ te. (so groß wie)", accept: ["come"], explain: "'so … wie' → **come**." },
+        { kind: "choice", prompt: "Ci sono più turisti ___ abitanti.", options: ["che", "di", "come"], answer: "che", explain: "Vergleich zweier Nomen → **che**." },
+        { kind: "fill", prompt: "Oggi ho più tempo ___ ieri.", accept: ["di"], explain: "più … di → **di**." }
+      ]
+    },
+    {
+      id: "g_stare",
+      title: "stare + gerundio & stare per (gerade / kurz davor)",
+      cefr: "A2",
+      rule: "**stare + gerundio** = gerade dabei sein: *sto mangiando, stai facendo*.\nGerundio: -are → **-ando**, -ere/-ire → **-endo**.\n**stare per + Infinitiv** = kurz davor: *sto per partire, il treno sta per arrivare*.",
+      exercises: [
+        { kind: "fill", prompt: "Il traghetto ___ per partire. (stare)", accept: ["sta"], explain: "lui/lei stare → **sta** per partire." },
+        { kind: "fill", prompt: "Sto ___ (mangiare) adesso.", accept: ["mangiando"], explain: "-are → **-ando**." },
+        { kind: "fill", prompt: "Che cosa stai ___ (fare)?", accept: ["facendo"], explain: "fare → **facendo**." },
+        { kind: "choice", prompt: "I bambini stanno ___.", options: ["dormendo", "dormando", "dormire"], answer: "dormendo", explain: "-ire → **-endo**: dormendo." },
+        { kind: "choice", prompt: "___ per uscire. (io)", options: ["Sto", "Vado", "Faccio"], answer: "Sto", explain: "kurz davor → **sto per**." },
+        { kind: "fill", prompt: "Stiamo ___ (preparare) la cena.", accept: ["preparando"], explain: "-are → **-ando**." }
+      ]
+    },
 
-    /* ===================== B1-MODULE (Start) ===================== */
+    /* ===================== B1-MODULE ===================== */
     {
       id: "b1_imperfetto",
       title: "Imperfetto (Vergangenheit: Zustände & Gewohnheiten)",
@@ -214,6 +337,103 @@ window.LESSON_DATA = {
         { kind: "choice", prompt: "___ aiutarmi, per favore?", options: ["Potresti", "Puoi"], answer: "Potresti", explain: "Höflicher Konditional: **Potresti**." },
         { kind: "fill", prompt: "___ (volere, noi) prenotare un tavolo.", accept: ["vorremmo"], explain: "noi: **vorremmo**." }
       ]
+    },
+    {
+      id: "b1_impf_vs_pp",
+      title: "Imperfetto vs. Passato Prossimo",
+      cefr: "B1",
+      rule: "**Imperfetto** = Hintergrund, Zustände, Gewohnheiten, gleichzeitige Handlungen ('war', 'immer').\n**Passato Prossimo** = eine abgeschlossene, einmalige Handlung.\nOft zusammen: *Mentre cucinavo (Imperf.), è arrivato Marco (P.P.)*.",
+      exercises: [
+        { kind: "choice", prompt: "Mentre ___ (io, cucinare), è arrivato Marco.", options: ["cucinavo", "ho cucinato"], answer: "cucinavo", explain: "gleichzeitiger Hintergrund → **Imperfetto**." },
+        { kind: "choice", prompt: "Ieri ___ (noi) al mare.", options: ["siamo andati", "andavamo"], answer: "siamo andati", explain: "einmalig, abgeschlossen → **Passato Prossimo**." },
+        { kind: "choice", prompt: "Da bambino ___ sempre a calcio.", options: ["giocavo", "ho giocato"], answer: "giocavo", explain: "Gewohnheit ('immer') → **Imperfetto**." },
+        { kind: "fill", prompt: "Quando ___ (io, essere) piccola, abitavo a Roma.", accept: ["ero"], explain: "Zustand → Imperfetto: **ero**." },
+        { kind: "choice", prompt: "Improvvisamente il telefono ___.", options: ["ha suonato", "suonava"], answer: "ha suonato", explain: "plötzliche Einzelhandlung → **Passato Prossimo**." },
+        { kind: "choice", prompt: "___ bel tempo, così siamo usciti.", options: ["Faceva", "Ha fatto"], answer: "Faceva", explain: "Hintergrund/Beschreibung → **Imperfetto**." }
+      ]
+    },
+    {
+      id: "b1_congiuntivo",
+      title: "Congiuntivo presente",
+      cefr: "B1",
+      rule: "Nach *penso che, credo che, voglio che, è importante che, benché, spero che* steht der **Congiuntivo**.\n-are → **-i** (che io parli), -ere/-ire → **-a** (che io prenda, dorma).\nUnregelmäßig: **sia** (essere), **abbia** (avere), **faccia** (fare), **vada** (andare).",
+      exercises: [
+        { kind: "fill", prompt: "Penso che Marco ___ (essere) stanco.", accept: ["sia"], explain: "essere → **sia**." },
+        { kind: "fill", prompt: "Voglio che tu ___ (venire) con me.", accept: ["venga"], explain: "venire → **venga**." },
+        { kind: "choice", prompt: "È importante che il bambino ___ presto.", options: ["dorma", "dorme"], answer: "dorma", explain: "Congiuntivo: **dorma**." },
+        { kind: "fill", prompt: "Spero che domani ___ (fare) bel tempo.", accept: ["faccia"], explain: "fare → **faccia**." },
+        { kind: "choice", prompt: "Credo che loro ___ ragione.", options: ["abbiano", "hanno"], answer: "abbiano", explain: "avere Congiuntivo loro → **abbiano**." },
+        { kind: "choice", prompt: "Benché ___ stanca, esco.", options: ["sia", "sono"], answer: "sia", explain: "nach *benché* → Congiuntivo **sia**." }
+      ]
+    },
+    {
+      id: "b1_ci_ne",
+      title: "Ci & Ne",
+      cefr: "B1",
+      rule: "**ci** ersetzt einen Ort oder 'daran/darüber': *Ci vado* (da gehe ich hin), *Ci penso* (ich denke daran).\n**ne** = 'davon/darüber': *Ne voglio due* (davon will ich zwei), *Ne parliamo* (wir reden darüber).",
+      exercises: [
+        { kind: "fill", prompt: "Vai a Roma? Sì, ___ vado domani.", accept: ["ci"], explain: "Ort → **ci**." },
+        { kind: "fill", prompt: "Quante mele vuoi? ___ voglio due.", accept: ["ne"], explain: "'davon' → **ne**." },
+        { kind: "choice", prompt: "Pensi al lavoro? Sì, ___ penso spesso.", options: ["ci", "ne"], answer: "ci", explain: "pensare a → **ci**." },
+        { kind: "choice", prompt: "Parli del problema? Sì, ___ parlo.", options: ["ne", "ci"], answer: "ne", explain: "parlare di → **ne**." },
+        { kind: "fill", prompt: "Sei mai stato in Italia? Sì, ___ sono stato.", accept: ["ci"], explain: "Ort → **ci sono stato**." },
+        { kind: "fill", prompt: "Hai del pane? Sì, ___ ho un po'.", accept: ["ne"], explain: "Menge 'davon' → **ne**." }
+      ]
+    },
+    {
+      id: "b1_pronomi_combinati",
+      title: "Pronomi combinati (glielo, me lo…)",
+      cefr: "B1",
+      rule: "Indirekt **vor** direkt, und **i → e**: mi+lo = **me lo**, ti+la = **te la**, ci+lo = **ce lo**, vi+le = **ve le**.\ngli/le + lo/la/li/le verschmelzen zu **glielo, gliela, glieli, gliele** (für ihm UND ihr).",
+      exercises: [
+        { kind: "choice", prompt: "Mi dai il libro? Sì, ___ do.", options: ["me lo", "mi lo", "te lo"], answer: "me lo", explain: "mi+lo → **me lo**." },
+        { kind: "choice", prompt: "Do il regalo a Luca: ___ do.", options: ["glielo", "gli lo", "lo gli"], answer: "glielo", explain: "gli+lo → **glielo**." },
+        { kind: "choice", prompt: "Ci portano il conto: ___ portano.", options: ["ce lo", "ci lo", "ce li"], answer: "ce lo", explain: "ci+lo → **ce lo**." },
+        { kind: "choice", prompt: "Ti mando la foto: ___ mando.", options: ["te la", "ti la", "me la"], answer: "te la", explain: "ti+la → **te la**." },
+        { kind: "choice", prompt: "Le spiego la regola: ___ spiego.", options: ["gliela", "glielo", "le la"], answer: "gliela", explain: "le+la → **gliela**." },
+        { kind: "choice", prompt: "Vi do le chiavi: ___ do.", options: ["ve le", "vi le", "ce le"], answer: "ve le", explain: "vi+le → **ve le**." }
+      ]
+    },
+    {
+      id: "b1_relative",
+      title: "Relativsätze (che, cui)",
+      cefr: "B1",
+      rule: "**che** = der/die/das/den (Subjekt oder Objekt, ohne Präposition): *Il libro **che** leggo*.\n**cui** = nach einer **Präposition**: *la città in **cui** abito, l'amica con **cui** esco, il motivo per **cui**…*",
+      exercises: [
+        { kind: "fill", prompt: "Ho un fratello ___ vive a Roma.", accept: ["che"], explain: "Subjekt, keine Präposition → **che**." },
+        { kind: "choice", prompt: "La città in ___ abito è Bologna.", options: ["cui", "che"], answer: "cui", explain: "nach Präposition → **cui**." },
+        { kind: "fill", prompt: "Il libro ___ leggo è interessante.", accept: ["che"], explain: "direktes Objekt → **che**." },
+        { kind: "choice", prompt: "L'amica con ___ esco è simpatica.", options: ["cui", "che"], answer: "cui", explain: "con + **cui**." },
+        { kind: "fill", prompt: "La ragazza ___ ho visto è mia sorella.", accept: ["che"], explain: "Objekt → **che**." },
+        { kind: "choice", prompt: "Il motivo per ___ sono qui è semplice.", options: ["cui", "che"], answer: "cui", explain: "per + **cui**." }
+      ]
+    },
+    {
+      id: "b1_trapassato",
+      title: "Trapassato Prossimo (Vorvergangenheit)",
+      cefr: "B1",
+      rule: "Das **Trapassato** beschreibt etwas, das **vor** einer anderen Vergangenheit passiert war ('hatte gemacht').\nGebildet mit **Imperfetto von avere/essere + Partizip**: *avevo mangiato, ero andato/a*.",
+      exercises: [
+        { kind: "fill", prompt: "Quando sono arrivato, lui aveva già ___ (mangiare).", accept: ["mangiato"], explain: "aveva + **mangiato**." },
+        { kind: "choice", prompt: "Non sono venuto perché ___ troppo.", options: ["avevo lavorato", "ho lavorato"], answer: "avevo lavorato", explain: "vorher passiert → **Trapassato**." },
+        { kind: "fill", prompt: "Lei ___ (essere) già partita quando ho chiamato.", accept: ["era"], explain: "essere Imperfetto: **era** partita." },
+        { kind: "fill", prompt: "Avevo ___ (finire) prima di uscire.", accept: ["finito"], explain: "avevo + **finito**." },
+        { kind: "choice", prompt: "Ho mangiato la torta che tu ___.", options: ["avevi fatto", "hai fatto"], answer: "avevi fatto", explain: "vorher gebacken → **Trapassato**." }
+      ]
+    },
+    {
+      id: "b1_imperativo",
+      title: "Imperativ (Befehl/Aufforderung)",
+      cefr: "B1",
+      rule: "**Informell (tu):** -are → **-a** (parla!), -ere/-ire → **-i** (prendi!, dormi!).\n**Verneint (tu):** non + Infinitiv → *non parlare!*\n**Höflich (Lei):** parli!, prenda!, dorma!\nUnregelmäßig (tu): **va', fa', da', di', sta'**.",
+      exercises: [
+        { kind: "fill", prompt: "___ (tu, parlare) più piano!", accept: ["parla"], explain: "-are tu → **parla!**" },
+        { kind: "choice", prompt: "___ così forte! (tu, verneint)", options: ["Non parlare", "Non parli", "Non parla"], answer: "Non parlare", explain: "verneint tu → non + Infinitiv." },
+        { kind: "fill", prompt: "___ (tu, prendere) il libro!", accept: ["prendi"], explain: "-ere tu → **prendi!**" },
+        { kind: "choice", prompt: "Signora, ___! (entrare, höflich)", options: ["entri", "entra", "entrare"], answer: "entri", explain: "höflich Lei → **entri!**" },
+        { kind: "fill", prompt: "___ (tu, dormire) bene!", accept: ["dormi"], explain: "-ire tu → **dormi!**" },
+        { kind: "choice", prompt: "___ attenzione! (tu, fare)", options: ["Fa'", "Fai", "Fa"], answer: "Fa'", explain: "unregelmäßig tu: **fa'** (auch 'fai')." }
+      ]
     }
   ],
 
@@ -232,28 +452,28 @@ window.LESSON_DATA = {
         { topic: "Präsens regelmäßig (-ere/-ire, -isc-)", moduleId: "g_conj_ere_ire", status: "ready" },
         { topic: "Präpositionen a/in (Orte, Verkehrsmittel)", moduleId: "g_prep_a_in", status: "ready" },
         { topic: "Präpositionen da/di", moduleId: "g_prep_da_di", status: "ready" },
+        { topic: "Zusammengesetzte Präpositionen (nel, sul, al…)", moduleId: "g_prep_articolate", status: "ready" },
         { topic: "Passato Prossimo (avere/essere)", moduleId: "g_passato_prossimo", status: "ready" },
         { topic: "Possessivpronomen & Familie", moduleId: "g_possessive", status: "ready" },
-        { topic: "Artikel & Präpositionen kombiniert (nel, sul, al…)", moduleId: null, status: "planned" },
-        { topic: "Reflexive Verben (mi alzo, mi occupo…)", moduleId: null, status: "planned" },
-        { topic: "Modalverben (potere, volere, dovere)", moduleId: null, status: "planned" },
-        { topic: "Direkte & indirekte Objektpronomen", moduleId: null, status: "planned" },
-        { topic: "Komparativ (più… di / meno… di)", moduleId: null, status: "planned" },
-        { topic: "Futuro mit stare per / Gegenwartsbezug", moduleId: null, status: "planned" }
+        { topic: "Reflexive Verben (mi alzo, mi occupo…)", moduleId: "g_reflexive", status: "ready" },
+        { topic: "Modalverben (potere, volere, dovere)", moduleId: "g_modal", status: "ready" },
+        { topic: "Direkte & indirekte Objektpronomen", moduleId: "g_pronouns", status: "ready" },
+        { topic: "Komparativ (più… di / meno… di / come)", moduleId: "g_comparativo", status: "ready" },
+        { topic: "stare + gerundio & stare per", moduleId: "g_stare", status: "ready" }
       ]
     },
     B1: {
       grammar: [
         { topic: "Imperfetto", moduleId: "b1_imperfetto", status: "ready" },
+        { topic: "Imperfetto vs. Passato Prossimo", moduleId: "b1_impf_vs_pp", status: "ready" },
+        { topic: "Trapassato Prossimo", moduleId: "b1_trapassato", status: "ready" },
         { topic: "Futuro semplice", moduleId: "b1_futuro", status: "ready" },
         { topic: "Condizionale presente", moduleId: "b1_condizionale", status: "ready" },
-        { topic: "Imperfetto vs. Passato Prossimo", moduleId: null, status: "planned" },
-        { topic: "Congiuntivo presente", moduleId: null, status: "planned" },
-        { topic: "Pronomi combinati (glielo, me lo…)", moduleId: null, status: "planned" },
-        { topic: "Ci & Ne", moduleId: null, status: "planned" },
-        { topic: "Relativsätze (che, cui, il quale)", moduleId: null, status: "planned" },
-        { topic: "Passato Prossimo vs. Trapassato", moduleId: null, status: "planned" },
-        { topic: "Imperativ (formell & informell)", moduleId: null, status: "planned" }
+        { topic: "Congiuntivo presente", moduleId: "b1_congiuntivo", status: "ready" },
+        { topic: "Ci & Ne", moduleId: "b1_ci_ne", status: "ready" },
+        { topic: "Pronomi combinati (glielo, me lo…)", moduleId: "b1_pronomi_combinati", status: "ready" },
+        { topic: "Relativsätze (che, cui)", moduleId: "b1_relative", status: "ready" },
+        { topic: "Imperativ (informell & höflich)", moduleId: "b1_imperativo", status: "ready" }
       ]
     }
   }

@@ -92,10 +92,21 @@ Der bisherige Datenbestand (60 Sätze + 20 Stolpersteine) reicht für den
 - Grammatik-Rotation (ein Thema 4 Tage), Wiederholung des Vortags-Themas.
 - Fortschritts-Protokoll, A2→B1-Vorschlag und Niveau-Wechsel.
 
-**Noch auszubauen (Inhalte, kein Umbau nötig):**
-- Die als `planned` markierten A2- und B1-Grammatikthemen mit Übungen füllen.
-- Wortschatz erweitern (v. a. mehr B1-Vokabeln) für längere Lernstrecken.
-- Diese Inhalte lassen sich Stück für Stück in `data-lesson.js` ergänzen.
+**Auswertung bei Fehlern:**
+- Bei falscher Eingabe zeigt die App **nur die falsche Stelle**: rot die eigene
+  Eingabe, grün die richtige Lösung (Wort-Diff). Das gelernte Wort steht nicht
+  mehr in der Auswertung.
+
+**Unbekannte Wörter merken (offline, ohne API):**
+- Bei jeder Übung gibt es das Feld „🤔 Wort, das du nicht kennst?". Dort das
+  **deutsche Grundwort** eintippen (z. B. *packen*). Das Wort landet auf der
+  **Lernliste** (Statistik-Tab). Ist es schon eine App-Vokabel, kommt es ab
+  dann öfter dran; sonst wird es gemerkt und kann später mit Übersetzung
+  ergänzt werden.
+
+**Inhalts-Stand:** A2 vollständig (12 Grammatik-Module), B1 mit 10 Modulen,
+86 Vokabeln inkl. B1. Weiterer Ausbau (mehr Wortschatz, B2) jederzeit in
+`data-lesson.js` möglich.
 
 ## Offene Fragen an Olivia
 

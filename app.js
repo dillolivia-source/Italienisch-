@@ -86,6 +86,110 @@
     return { wrongHtml, correctHtml };
   }
 
+  // Wort-Diff, der Groß/Klein & Satzzeichen beim Vergleich ignoriert –
+  // hebt nur die tatsächlich falsche Stelle hervor (rot = Eingabe, grün = richtig).
+  function tokKey(t) { return norm(t); }
+  function wordDiffSmart(userStr, correctStr) {
+    const u = String(userStr).trim().split(/\s+/).filter(Boolean);
+    const c = String(correctStr).trim().split(/\s+/).filter(Boolean);
+    let pre = 0;
+    while (pre < u.length && pre < c.length && tokKey(u[pre]) === tokKey(c[pre])) pre++;
+    let su = u.length - 1, sc = c.length - 1;
+    while (su >= pre && sc >= pre && tokKey(u[su]) === tokKey(c[sc])) { su--; sc--; }
+    function line(tokens, from, to, cls) {
+      const before = tokens.slice(0, from).map(esc).join(" ");
+      const mid = tokens.slice(from, to + 1).map(esc).join(" ");
+      const after = tokens.slice(to + 1).map(esc).join(" ");
+      const parts = [];
+      if (before) parts.push(before);
+      if (mid) parts.push('<span class="' + cls + '">' + mid + "</span>");
+      if (after) parts.push(after);
+      return parts.join(" ") || "—";
+    }
+    return {
+      userHtml: line(u, pre, su, "diff-del"),
+      correctHtml: line(c, pre, sc, "diff-add"),
+      hasDiff: su >= pre || sc >= pre
+    };
+  }
+  function levDist(a, b) {
+    const m = a.length, n = b.length;
+    if (!m) return n; if (!n) return m;
+    const d = Array.from({ length: n + 1 }, (_, i) => i);
+    for (let i = 1; i <= m; i++) {
+      let prev = d[0]; d[0] = i;
+      for (let j = 1; j <= n; j++) {
+        const tmp = d[j];
+        d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+        prev = tmp;
+      }
+    }
+    return d[n];
+  }
+  // wählt die akzeptierte Lösung, die der Eingabe am ähnlichsten ist
+  function pickClosest(input, accepted) {
+    const ni = norm(input);
+    let best = accepted[0], bestD = Infinity;
+    accepted.forEach(a => { const dd = levDist(ni, norm(a)); if (dd < bestD) { bestD = dd; best = a; } });
+    return best;
+  }
+
+  /* ---------- Merkliste: Wörter, die Olivia nicht kennt ---------- */
+  const WISH_KEY = "olivia-it-wishlist-v1";
+  function loadWish() { try { return JSON.parse(localStorage.getItem(WISH_KEY)) || []; } catch (e) { return []; } }
+  function saveWish(w) { try { localStorage.setItem(WISH_KEY, JSON.stringify(w)); } catch (e) {} }
+  function stripArticle(de) { return de.replace(/^\s*(der|die|das|l'|il|la|lo|i|le|gli)\s+/i, ""); }
+  function matchVocab(word) {
+    if (!window.LESSON_DATA) return null;
+    const w = norm(word);
+    if (!w) return null;
+    return window.LESSON_DATA.vocab.filter(v => {
+      const de = norm(stripArticle(v.de));
+      const parts = de.split(/[\s/]+/);
+      return de === w || parts.indexOf(w) !== -1;
+    })[0] || null;
+  }
+  function addWishword(word, context) {
+    word = (word || "").trim();
+    if (!word) return { added: false };
+    const w = loadWish();
+    const matched = matchVocab(word);
+    if (!w.some(x => norm(x.word) === norm(word))) {
+      w.push({ word: word, context: context || "", matchedId: matched ? matched.id : null });
+      saveWish(w);
+      return { added: true, matched: matched };
+    }
+    return { added: false, duplicate: true, matched: matched };
+  }
+
+  // kleines Notizfeld "Wort, das du nicht kennst?" für jede Übung
+  function noteField(context) {
+    const wrap = $('<div class="notebox"></div>');
+    const toggle = $('<button type="button" class="note-toggle">🤔 Wort, das du nicht kennst?</button>');
+    const inner = $('<div class="note-inner" hidden></div>');
+    const inp = $('<input type="text" class="note-input" autocapitalize="none" autocorrect="off" placeholder="deutsches Grundwort, z. B. packen">');
+    const btn = $('<button type="button" class="note-save">merken</button>');
+    const msg = $('<p class="note-msg"></p>');
+    toggle.onclick = () => { inner.hidden = !inner.hidden; if (!inner.hidden) setTimeout(() => inp.focus(), 30); };
+    function save() {
+      const word = inp.value.trim();
+      if (!word) return;
+      const res = addWishword(word, context);
+      if (res.matched && window.Lektion && window.Lektion.markUnknown) {
+        window.Lektion.markUnknown(res.matched.id);
+      }
+      msg.textContent = res.matched
+        ? "✓ „" + word + "“ kommt jetzt öfter dran."
+        : "✓ „" + word + "“ ist auf deiner Lernliste gemerkt.";
+      inp.value = "";
+    }
+    btn.onclick = save;
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); save(); } });
+    inner.appendChild(inp); inner.appendChild(btn); inner.appendChild(msg);
+    wrap.appendChild(toggle); wrap.appendChild(inner);
+    return wrap;
+  }
+
   /* ---------- Helpers ---------- */
   function esc(s) {
     return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -152,6 +256,14 @@
     getProgress: function () { return progress; },
     getEntry: function (id) { return progress[id] || null; },
     THEME_LABEL: THEME_LABEL,
+    wordDiff: wordDiffSmart,
+    pickClosest: pickClosest,
+    noteField: noteField,
+    addWishword: addWishword,
+    getWishlist: loadWish,
+    removeWishword: function (word) {
+      saveWish(loadWish().filter(x => norm(x.word) !== norm(word)));
+    },
     // erlaubt lesson.js, den Reset-Knopf sichtbar zu machen
     showReset: function () { if (resetBtn.hidden) resetBtn.hidden = false; }
   };
@@ -234,14 +346,20 @@
       answered = true;
       ta.setAttribute("readonly", "");
       let cls = result === "ok" ? "ok" : result === "near" ? "near" : "no";
-      const lead = result === "ok" ? "✓ Richtig!"
-        : result === "near" ? "≈ Fast! Nur die Akzente stimmen nicht"
-          : "✗ Nicht ganz";
       const fb = $(`<div class="feedback ${cls}"></div>`);
-      fb.appendChild($(`<p class="lead ${cls}">${lead}</p>`));
-      s.it.forEach((sol, i) => {
-        fb.appendChild($(`<p class="solution${i ? " alt" : ""}">${i ? "auch: " : ""}${esc(sol)}</p>`));
-      });
+      if (result === "ok") {
+        fb.appendChild($('<p class="lead ok">✓ Richtig!</p>'));
+        fb.appendChild($(`<p class="solution">${esc(s.it[0])}</p>`));
+        s.it.slice(1).forEach(sol => fb.appendChild($(`<p class="solution alt">auch: ${esc(sol)}</p>`)));
+      } else {
+        fb.appendChild($(`<p class="lead ${cls}">${result === "near" ? "≈ Fast! Nur die Akzente stimmen nicht" : "✗ Nicht ganz"}</p>`));
+        const target = pickClosest(ta.value, s.it);
+        const d = wordDiffSmart(ta.value, target);
+        if (ta.value.trim()) {
+          fb.appendChild($(`<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>${d.userHtml}</p>`));
+        }
+        fb.appendChild($(`<p class="diff-line"><span class="diff-lbl">richtig</span>${d.correctHtml}</p>`));
+      }
       if (s.grammar_focus && s.grammar_focus.length) {
         fb.appendChild($(`<p class="hint" style="margin:8px 0 0">🔎 Fokus: ${esc(s.grammar_focus.map(prettyFocus).join(", "))}</p>`));
       }
@@ -260,6 +378,7 @@
       if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!answered) checkBtn.click(); }
     });
 
+    card.appendChild(noteField(s.de));
     viewEl.appendChild(card);
     viewEl.appendChild($('<p class="offline-note">💡 Enter = Prüfen · funktioniert offline</p>'));
     setTimeout(() => ta.focus(), 50);
@@ -455,6 +574,24 @@
       viewEl.appendChild(list);
     } else {
       viewEl.appendChild($('<p class="empty">Noch keine Fehler erfasst.<br>Leg im Übersetzen- oder Quiz-Modus los! 🇮🇹</p>'));
+    }
+
+    // Merkliste: Wörter, die Olivia nicht kannte
+    const wish = loadWish();
+    if (wish.length) {
+      viewEl.appendChild($('<p class="section-title">📝 Deine Wörter zum Lernen</p>'));
+      const wcard = $('<div class="card"></div>');
+      wish.slice().reverse().forEach(w => {
+        const known = w.matchedId ? " · in App vorhanden" : "";
+        const rowEl = $('<div class="wish-row"></div>');
+        rowEl.appendChild($(`<span class="wish-word">${esc(w.word)}${known ? '<span class="wish-note">' + known + '</span>' : ''}</span>`));
+        const del = $('<button class="wish-del" title="entfernen">✕</button>');
+        del.onclick = () => { saveWish(loadWish().filter(x => norm(x.word) !== norm(w.word))); renderFortschritt(); };
+        rowEl.appendChild(del);
+        wcard.appendChild(rowEl);
+      });
+      viewEl.appendChild(wcard);
+      viewEl.appendChild($('<p class="offline-note">Diese Wörter kommen (falls in der App vorhanden) öfter dran. Neue Wörter kann Claude dir später mit Übersetzung einbauen.</p>'));
     }
   }
 
