@@ -47,6 +47,7 @@
       grammarHits: {},         // moduleId -> Anzahl richtiger Antworten
       plan: null,              // aktuell laufender Lektionsplan
       seg: 0,                  // aktueller Segment-Index im Plan
+      segSolved: {},           // im aktuellen Segment schon richtig gelöste Fragen (für Resume)
       b1Offered: false
     };
   }
@@ -263,6 +264,7 @@
 
     S.plan = { segments: segments, moduleId: currentModule.id, lessonNo: S.lessonNo };
     S.seg = 0;
+    S.segSolved = {};
     S.lastGrammarModuleId = currentModule.id;
     save();
   }
@@ -354,7 +356,11 @@
     var card = C.el('<div class="card lesson-start"></div>');
     card.appendChild(C.el('<div class="level-pill">Niveau ' + S.level + '</div>'));
     card.appendChild(C.el('<h2 style="margin:6px 0 2px">Bereit für deine Lektion?</h2>'));
-    var introducedCount = S.introduced.length;
+    if (S.lessonNo > 0) {
+      card.appendChild(C.el('<p class="hint" style="margin:2px 0 8px">✅ Gespeichert: ' +
+        S.lessonNo + ' Lektion' + (S.lessonNo === 1 ? "" : "en") + ' · ' +
+        S.introduced.length + ' Vokabeln gelernt. Weiter geht’s mit Lektion ' + (S.lessonNo + 1) + '.</p>'));
+    }
     card.appendChild(C.el('<p class="hint">Heute: kurze Wiederholung, ' +
       NEW_PER_DAY + ' neue Vokabeln und dein Grammatik-Thema.</p>'));
 
@@ -482,6 +488,7 @@
 
   function nextSegment() {
     S.seg += 1;
+    S.segSolved = {}; // neues Segment startet mit leerem Lösungsstand
     if (S.seg >= S.plan.segments.length) {
       finishLesson();
     } else {
@@ -510,10 +517,12 @@
 
   /* ============ QUIZ-RUNNER mit Fehler-Nachdrill ============ */
   function runQuiz(seg) {
-    // Warteschlange: falsche Fragen kommen ans Ende, bis alle richtig sind
-    var queue = seg.questions.slice();
-    var total = queue.length;
-    var solvedIds = {};
+    // Bereits richtig gelöste Fragen (persistiert) überspringen → Resume nach Reload
+    if (!S.segSolved) S.segSolved = {};
+    var solvedIds = S.segSolved;
+    // Warteschlange: nur noch offene Fragen; falsche kommen ans Ende, bis richtig
+    var queue = seg.questions.filter(function (q) { return !solvedIds[q.id]; });
+    var total = seg.questions.length;
     var redrillActive = false;
 
     function step() {
@@ -549,6 +558,7 @@
       queue.shift();
       if (ok) {
         solvedIds[q.id] = true;
+        save(); // Fortschritt sofort sichern → Reload macht hier weiter
       } else {
         // ans Ende, erneut abfragen
         queue.push(q);
