@@ -47,6 +47,8 @@
   input,textarea,select{width:100%;padding:.7em .85em;border:1px solid var(--line);border-radius:10px;font-size:.95rem;font-family:inherit;background:#fff;color:var(--ink)}
   input:focus,textarea:focus,select:focus{outline:2px solid color-mix(in srgb,var(--red) 40%,#fff);border-color:var(--red)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sublabel{font-size:.78rem;font-weight:600;color:var(--soft);margin-bottom:5px;display:block}
+  .euro{position:relative}.euro input{padding-right:2em}.euro span{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--soft);font-weight:700}
   .chips{display:flex;gap:8px;flex-wrap:wrap}
   .chip{padding:.5em 1em;border-radius:999px;border:1.5px solid var(--line);font-size:.86rem;font-weight:700;cursor:pointer;color:var(--soft)}
   .chip.on{border-color:var(--red);background:var(--red-tint);color:var(--red-deep)}
@@ -111,8 +113,11 @@
           <div class="field"><label>Ankommen ab <span style="color:var(--soft);font-weight:500">(optional)</span></label><input type="text" value="17:50" style="max-width:160px"></div>
           <div class="field"><label>Maximale Teilnehmerzahl <span style="color:var(--soft);font-weight:500">(optional)</span></label><input type="number" value="25" style="max-width:160px"></div>
           <div class="field"><label>Beitrag</label>
-            <div class="chips" style="margin-bottom:8px"><span class="chip on">Mit Beitrag</span><span class="chip">Kostenlos</span></div>
-            <input type="text" value="20 / 25 € nach Selbsteinschätzung">
+            <div class="chips" style="margin-bottom:10px"><span class="chip on">Mit Beitrag</span><span class="chip">Kostenlos</span></div>
+            <div class="row">
+              <div><span class="sublabel">Preis</span><div class="euro"><input type="text" value="20 / 25"><span>€</span></div></div>
+              <div><span class="sublabel">Zusatz (optional)</span><input type="text" value="nach Selbsteinschätzung"></div>
+            </div>
           </div>
         </div>
 
