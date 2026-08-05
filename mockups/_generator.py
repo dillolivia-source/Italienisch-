@@ -75,23 +75,29 @@ TEMPLATE = r"""<!DOCTYPE html>
   .nav .btn{padding:.55em 1.2em}
   @media(max-width:880px){.menu{display:none}}
 
-  /* --- Foto-Hero im Strand-Stil, echtes Weiss, Aquarell-Schleier --- */
-  .hero{position:relative;background:var(--paper);overflow:hidden;isolation:isolate}
-  .wash{position:absolute;left:-6%;right:-6%;top:66px;height:290px;z-index:0;pointer-events:none;
+  /* --- Split-Hero: links Headline, rechts Foto (eingeblendet) --- */
+  .hero{position:relative;background:var(--paper);overflow:hidden}
+  .wash{position:absolute;right:-4%;top:36px;width:62%;height:380px;z-index:0;pointer-events:none;
     background:
-      radial-gradient(40% 60% at 24% 50%,var(--wash),transparent 68%),
-      radial-gradient(46% 70% at 55% 42%,var(--wash),transparent 70%),
-      radial-gradient(34% 58% at 80% 56%,var(--wash),transparent 66%);
-    filter:blur(48px);opacity:var(--wash-op)}
-  .hero-photo{position:relative;z-index:1;width:100%;height:clamp(230px,32vw,430px)}
-  .hero-photo svg{width:100%;height:100%;display:block}
-  .hero-copy{position:relative;z-index:2;text-align:center;max-width:760px;margin:0 auto;padding:6px 26px 96px}
+      radial-gradient(45% 60% at 58% 38%,var(--wash),transparent 68%),
+      radial-gradient(40% 70% at 82% 62%,var(--wash),transparent 70%);
+    filter:blur(54px);opacity:var(--wash-op)}
+  .hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1.02fr .98fr;gap:50px;align-items:center;padding:58px 0 86px}
+  .hero-copy{text-align:left}
   .hero-copy .eyebrow{color:var(--accent)}
-  .hero-copy h1{font-size:clamp(2.7rem,7vw,4.8rem);margin:16px 0 0}
+  .hero-copy h1{font-size:clamp(2.6rem,5.8vw,4.6rem);margin:16px 0 0}
   .hero-copy h1 .u{color:var(--primary);font-style:italic}
-  .hero-copy p.lead{font-size:1.18rem;color:var(--ink-soft);max-width:40ch;margin:20px auto 28px}
-  .hero-copy .cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-  .photo-note{text-align:center;font-size:.7rem;letter-spacing:.06em;color:var(--ink-soft);opacity:.55;margin-top:-2px}
+  .hero-copy p.lead{font-size:1.18rem;color:var(--ink-soft);max-width:40ch;margin:20px 0 28px}
+  .hero-copy .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero-photo{position:relative}
+  .frame{position:relative;aspect-ratio:4/5;border-radius:28px;overflow:hidden;border:7px solid var(--white);
+    box-shadow:0 34px 70px -30px rgba(30,25,20,.42);
+    background:linear-gradient(160deg,color-mix(in srgb,var(--primary) 14%,#fff),color-mix(in srgb,var(--accent) 10%,#fff))}
+  .frame .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .frame .ph svg{width:42%;height:auto;color:var(--primary);opacity:.5}
+  .frame .ph span{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);opacity:.65}
+  .frame-tag{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.85);backdrop-filter:blur(4px);border-radius:999px;padding:.32em .8em;font-size:.66rem;letter-spacing:.08em;color:var(--ink-soft)}
+  @media(max-width:860px){.hero-in{grid-template-columns:1fr;gap:30px;padding:44px 0 74px}.hero-copy{text-align:center}.hero-copy p.lead{margin-inline:auto}.hero-copy .cta{justify-content:center}.hero-photo{max-width:360px;margin:0 auto;width:100%}}
 
   /* --- Teaser kommende Termine ganz oben --- */
   .upcoming{position:relative;z-index:5;margin-top:-58px}
@@ -192,13 +198,29 @@ TEMPLATE = r"""<!DOCTYPE html>
 
 <section class="hero">
   <div class="wash"></div>
-  <div class="hero-photo">%%SCENE%%</div>
-  <div class="hero-copy reveal">
-    <p class="eyebrow">Singen · Kundalini Yoga · Breathwalking</p>
-    <h1>%%H1_HTML%%</h1>
-    <p class="lead">Ich bin Monia und ich liebe Singen und Yoga. Aus dieser Fülle möchte ich dir gern geben, dich heranführen und mit dir teilen.</p>
-    <div class="cta"><a href="#termine" class="btn btn-primary">Kommende Termine</a><a href="#angebote" class="btn btn-ghost">Meine Angebote</a></div>
-    <p class="photo-note">Platzhalter-Illustration — hier kommt Monias echtes Strandfoto hin</p>
+  <div class="wrap hero-in">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Singen · Kundalini Yoga · Breathwalking</p>
+      <h1>%%H1_HTML%%</h1>
+      <p class="lead">Ich bin Monia und ich liebe Singen und Yoga. Aus dieser Fülle möchte ich dir gern geben, dich heranführen und mit dir teilen.</p>
+      <div class="cta"><a href="#termine" class="btn btn-primary">Kommende Termine</a><a href="#angebote" class="btn btn-ghost">Meine Angebote</a></div>
+    </div>
+    <div class="hero-photo reveal">
+      <div class="frame">
+        <span class="frame-tag">Platzhalter · Foto folgt</span>
+        <div class="ph">
+          <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="96" cy="26" r="11" opacity=".65"/>
+            <circle cx="60" cy="26" r="7"/>
+            <path d="M60 34 v33"/>
+            <path d="M60 42 L45 22 M60 42 L75 22"/>
+            <path d="M60 67 L49 93 M60 67 L71 93"/>
+            <path d="M14 106 q13 -8 26 0 t26 0 t26 0 t14 0"/>
+          </svg>
+          <span>Monias Foto</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
