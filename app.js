@@ -375,9 +375,7 @@
 
     checkBtn.onclick = () => reveal(checkAnswer(ta.value, s.it));
     showBtn.onclick = () => reveal(ta.value.trim() ? checkAnswer(ta.value, s.it) : "no");
-    ta.addEventListener("keydown", e => {
-      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!answered) checkBtn.click(); }
-    });
+    // Enter wird zentral behandelt (löst den Haupt-Button "Prüfen"/"Weiter" aus).
 
     card.appendChild(noteField(s.de));
     viewEl.appendChild(card);
@@ -628,6 +626,21 @@
         t.setAttribute("aria-selected", t === tab ? "true" : "false"));
       render();
     });
+  });
+
+  // Enter bestätigt immer den Haupt-Button (Weiter / Prüfen / Starten …).
+  // Ausnahme: das Notizfeld "Wort, das du nicht kennst?" hat eigenes Enter.
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Enter" || e.shiftKey || e.isComposing) return;
+    const t = e.target;
+    if (t && t.classList && t.classList.contains("note-input")) return;
+    const ctas = Array.prototype.slice
+      .call(viewEl.querySelectorAll("button.btn.primary"))
+      .filter(btn => !btn.disabled && btn.offsetParent !== null &&
+        !(btn.closest && btn.closest(".levelup")));
+    if (!ctas.length) return;
+    e.preventDefault();
+    ctas[ctas.length - 1].click();
   });
 
   resetBtn.hidden = Object.keys(progress).length === 0;

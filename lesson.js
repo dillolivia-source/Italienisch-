@@ -572,9 +572,7 @@
           step();
         }
       };
-      ta.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); btn.click(); }
-      });
+      // Enter wird zentral in app.js behandelt (Haupt-Button auslösen).
       setTimeout(function () { ta.focus(); }, 40);
     }
 
