@@ -17,12 +17,12 @@
   --brand: #e0402e;
   --brand-soft: #fdeae6;
   /* Flächen */
-  --bg: #fdf5ec;
+  --bg: #ffffff;
   --card: #ffffff;
   --text: #33231b;
-  --muted: #97806f;
-  --line: #f0e3d5;
-  --shadow: 0 2px 14px rgba(150, 70, 30, 0.08);
+  --muted: #8c7b6d;
+  --line: #ece4da;
+  --shadow: 0 2px 14px rgba(150, 70, 30, 0.09);
   --radius: 18px;
   --tabbar-h: 64px;
 }
@@ -162,7 +162,7 @@ textarea, input.answer {
   width: 100%;
   border: 2px solid var(--line);
   border-radius: 12px;
-  background: var(--bg);
+  background: #f7f5f2;
   color: var(--text);
   font-size: 18px;
   padding: 12px 14px;
