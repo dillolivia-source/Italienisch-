@@ -79,7 +79,8 @@
     return VOCAB.filter(function (v) { return levelLE(v.cefr, S.level); });
   }
   function modulesForLevel() {
-    return MODULES.filter(function (m) { return m.cefr === S.level; });
+    // aktuelles Niveau UND darunter (A1-Themen werden bei A2 mitgeübt)
+    return MODULES.filter(function (m) { return levelLE(m.cefr, S.level); });
   }
 
   /* ---------------- SRS-Helfer ---------------- */

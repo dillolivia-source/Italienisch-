@@ -429,6 +429,106 @@ window.LESSON_DATA = {
       ]
     },
 
+    /* ===================== A1-MODULE (Pons L1–L5) ===================== */
+    {
+      id: "a1_essere_avere",
+      title: "essere & avere (Präsens)",
+      cefr: "A1",
+      rule: "**essere** (sein): sono, sei, è, siamo, siete, sono.\n**avere** (haben): ho, hai, ha, abbiamo, avete, hanno.\n*essere* für Zustand/Herkunft (*Sono di Roma*), *avere* für Besitz/Alter (*Ho 30 anni*).",
+      exercises: [
+        { kind: "fill", prompt: "Io ___ (essere) di Bologna.", accept: ["sono"], explain: "io → **sono**." },
+        { kind: "choice", prompt: "Tu ___ fame?", options: ["hai", "sei", "ha"], answer: "hai", explain: "avere: tu → **hai**." },
+        { kind: "fill", prompt: "Noi ___ (avere) due figli.", accept: ["abbiamo"], explain: "noi → **abbiamo**." },
+        { kind: "fill", prompt: "Lei ___ (essere) stanca.", accept: ["è"], explain: "lui/lei → **è**." },
+        { kind: "choice", prompt: "Loro ___ a casa.", options: ["sono", "hanno", "siete"], answer: "sono", explain: "essere: loro → **sono**." },
+        { kind: "fill", prompt: "Voi ___ (avere) tempo?", accept: ["avete"], explain: "voi → **avete**." }
+      ]
+    },
+    {
+      id: "a1_sostantivi",
+      title: "Substantive: Geschlecht, Plural & Artikel",
+      cefr: "A1",
+      rule: "Plural: **-o → -i** (libro→libri), **-a → -e** (casa→case), **-e → -i** (fiore→fiori).\nBestimmter Artikel: **il/lo/l'/la** (Sg), **i/gli/le** (Pl). Unbestimmt: **un/uno/una/un'**.\n*lo/uno* vor s+Konsonant, z, ps (lo zaino, uno studente). Teilungsartikel **del/della/dei** = 'etwas/einige'.",
+      exercises: [
+        { kind: "choice", prompt: "Plural von 'il libro':", options: ["i libri", "i libro", "le libri"], answer: "i libri", explain: "-o → -i, il → **i**." },
+        { kind: "choice", prompt: "Plural von 'la casa':", options: ["le case", "le casa", "i case"], answer: "le case", explain: "-a → -e, la → **le**." },
+        { kind: "choice", prompt: "___ studente (unbestimmt)", options: ["uno", "un", "lo"], answer: "uno", explain: "vor s+Konsonant → **uno**." },
+        { kind: "choice", prompt: "___ amica (unbestimmt)", options: ["un'", "una", "un"], answer: "un'", explain: "feminin vor Vokal → **un'**." },
+        { kind: "choice", prompt: "___ zaino (bestimmt)", options: ["lo", "il", "l'"], answer: "lo", explain: "vor z → **lo**." },
+        { kind: "choice", prompt: "Vorrei ___ pane. (etwas Brot)", options: ["del", "il", "un"], answer: "del", explain: "Teilungsartikel di+il → **del**." }
+      ]
+    },
+    {
+      id: "a1_fragen",
+      title: "Fragen & Fragewörter",
+      cefr: "A1",
+      rule: "**Entscheidungsfrage**: gleicher Satz wie die Aussage, nur mit Frage-Intonation (*Parli italiano?*).\n**Fragewörter**: chi (wer), che cosa/cosa (was), dove (wo), quando (wann), come (wie), perché (warum), quanto (wie viel), quale (welcher).",
+      exercises: [
+        { kind: "choice", prompt: "___ sei? – Sono Anna.", options: ["Chi", "Come", "Dove"], answer: "Chi", explain: "Person → **chi**." },
+        { kind: "choice", prompt: "___ abiti? – A Roma.", options: ["Dove", "Quando", "Chi"], answer: "Dove", explain: "Ort → **dove**." },
+        { kind: "choice", prompt: "___ costa? – Dieci euro.", options: ["Quanto", "Come", "Chi"], answer: "Quanto", explain: "Menge/Preis → **quanto**." },
+        { kind: "fill", prompt: "___ stai? – Bene. (wie)", accept: ["come"], explain: "wie → **come**." },
+        { kind: "choice", prompt: "___ vieni? – Domani.", options: ["Quando", "Dove", "Perché"], answer: "Quando", explain: "Zeit → **quando**." },
+        { kind: "choice", prompt: "___ piangi? – Perché sono stanco.", options: ["Perché", "Come", "Chi"], answer: "Perché", explain: "Grund → **perché**." }
+      ]
+    },
+    {
+      id: "a1_verbi_irregolari",
+      title: "Unregelmäßige Verben: fare, andare, stare, venire",
+      cefr: "A1",
+      rule: "**fare**: faccio, fai, fa, facciamo, fate, fanno.\n**andare**: vado, vai, va, andiamo, andate, vanno.\n**stare**: sto, stai, sta, stiamo, state, stanno.\n**venire**: vengo, vieni, viene, veniamo, venite, vengono.",
+      exercises: [
+        { kind: "fill", prompt: "Io ___ (andare) al mare.", accept: ["vado"], explain: "andare: io → **vado**." },
+        { kind: "fill", prompt: "Che cosa ___ (fare, tu)?", accept: ["fai"], explain: "fare: tu → **fai**." },
+        { kind: "choice", prompt: "Noi ___ a casa. (andare)", options: ["andiamo", "andate", "vanno"], answer: "andiamo", explain: "noi → **andiamo**." },
+        { kind: "fill", prompt: "Loro ___ (fare) colazione.", accept: ["fanno"], explain: "fare: loro → **fanno**." },
+        { kind: "fill", prompt: "___ (venire, io) con te.", accept: ["vengo"], explain: "venire: io → **vengo**." },
+        { kind: "choice", prompt: "Come ___? – Bene. (stare, tu)", options: ["stai", "sei", "fai"], answer: "stai", explain: "stare: tu → **stai**." }
+      ]
+    },
+    {
+      id: "a2_negazione",
+      title: "Verneinung (non, doppelte Verneinung)",
+      cefr: "A2",
+      rule: "**non** steht vor dem Verb: *Non parlo*.\nDoppelte Verneinung: **non … niente/nessuno/mai/più**: *Non ho niente, Non vado mai*.\nZustimmen/widersprechen: *anch'io* (ich auch), **neanch'io** (ich auch nicht), *io sì / io no*.",
+      exercises: [
+        { kind: "fill", prompt: "___ parlo italiano. (nicht)", accept: ["non"], explain: "vor dem Verb → **non**." },
+        { kind: "choice", prompt: "Non ho ___. (nichts)", options: ["niente", "qualcosa", "sempre"], answer: "niente", explain: "non … **niente**." },
+        { kind: "choice", prompt: "Non vado ___ al cinema. (nie)", options: ["mai", "sempre", "spesso"], answer: "mai", explain: "non … **mai**." },
+        { kind: "choice", prompt: "Non c'è ___. (niemand)", options: ["nessuno", "qualcuno", "tutti"], answer: "nessuno", explain: "non … **nessuno**." },
+        { kind: "choice", prompt: "Non mangio carne. – ___ (ich auch nicht)", options: ["Neanch'io", "Anch'io", "Io sì"], answer: "Neanch'io", explain: "Zustimmung zur Verneinung → **neanch'io**." },
+        { kind: "choice", prompt: "Non ho ___ fame. (keinen … mehr)", options: ["più", "mai", "niente"], answer: "più", explain: "non … **più**." }
+      ]
+    },
+    {
+      id: "a2_questo_quello",
+      title: "Demonstrativa: questo / quello & quale",
+      cefr: "A2",
+      rule: "**questo/questa/questi/queste** = dieser (nah), vor Vokal **quest'**.\n**quello** wie der bestimmte Artikel: quel, quello, quell', quella, **quei, quegli, quelle** = jener.\nFragewort **quale/quali** = welcher.",
+      exercises: [
+        { kind: "choice", prompt: "___ libro è mio. (dieses)", options: ["Questo", "Questa", "Questi"], answer: "Questo", explain: "maskulin Singular → **questo**." },
+        { kind: "choice", prompt: "___ amica è simpatica. (diese)", options: ["Quest'", "Questa", "Questo"], answer: "Quest'", explain: "vor Vokal → **quest'**." },
+        { kind: "choice", prompt: "___ ragazzi sono simpatici. (jene)", options: ["quei", "quegli", "quelli"], answer: "quei", explain: "wie 'i' → **quei**." },
+        { kind: "choice", prompt: "___ studenti (jene)", options: ["quegli", "quei", "quelli"], answer: "quegli", explain: "wie 'gli' → **quegli**." },
+        { kind: "choice", prompt: "___ vestito preferisci? (welches)", options: ["Quale", "Quali", "Che"], answer: "Quale", explain: "Singular → **quale**." },
+        { kind: "choice", prompt: "___ scarpe compri? (welche, Pl)", options: ["Quali", "Quale", "Che"], answer: "Quali", explain: "Plural → **quali**." }
+      ]
+    },
+    {
+      id: "a2_aggettivi",
+      title: "Adjektive & Adverbien",
+      cefr: "A2",
+      rule: "Adjektive auf **-o**: 4 Formen (-o/-a/-i/-e). Auf **-e**: 2 Formen (-e/-i). Sie passen sich dem Nomen an und stehen meist **danach**.\nAdverbien auf **-mente**: von der femininen Form (lento → lenta → **lentamente**); auf -le/-re fällt das e weg (gentile → **gentilmente**).",
+      exercises: [
+        { kind: "choice", prompt: "La casa è ___. (bello)", options: ["bella", "bello", "belle"], answer: "bella", explain: "feminin Singular → **bella**." },
+        { kind: "choice", prompt: "I bambini sono ___. (piccolo)", options: ["piccoli", "piccole", "piccola"], answer: "piccoli", explain: "maskulin Plural → **piccoli**." },
+        { kind: "choice", prompt: "Le scarpe sono ___. (verde)", options: ["verdi", "verde", "verda"], answer: "verdi", explain: "-e Adjektiv Plural → **verdi**." },
+        { kind: "fill", prompt: "Adverb von 'lento': ___", accept: ["lentamente"], explain: "lenta + mente → **lentamente**." },
+        { kind: "fill", prompt: "Adverb von 'gentile': ___", accept: ["gentilmente"], explain: "gentile → **gentilmente** (e fällt weg)." },
+        { kind: "choice", prompt: "Una ragazza ___. (simpatico)", options: ["simpatica", "simpatico", "simpatiche"], answer: "simpatica", explain: "feminin Singular → **simpatica**." }
+      ]
+    },
+
     /* ===================== B1-MODULE ===================== */
     {
       id: "b1_imperfetto",
@@ -575,6 +675,14 @@ window.LESSON_DATA = {
    * So siehst du transparent, was schon systematisch geübt werden kann.
    */
   curriculum: {
+    A1: {
+      grammar: [
+        { topic: "essere & avere", moduleId: "a1_essere_avere", status: "ready" },
+        { topic: "Substantive: Geschlecht, Plural & Artikel", moduleId: "a1_sostantivi", status: "ready" },
+        { topic: "Fragen & Fragewörter", moduleId: "a1_fragen", status: "ready" },
+        { topic: "Unregelmäßige Verben (fare/andare/stare/venire)", moduleId: "a1_verbi_irregolari", status: "ready" }
+      ]
+    },
     A2: {
       grammar: [
         { topic: "Präsens regelmäßig (-are)", moduleId: "g_conj_are", status: "ready" },
@@ -588,7 +696,10 @@ window.LESSON_DATA = {
         { topic: "Modalverben (potere, volere, dovere)", moduleId: "g_modal", status: "ready" },
         { topic: "Direkte & indirekte Objektpronomen", moduleId: "g_pronouns", status: "ready" },
         { topic: "Komparativ (più… di / meno… di / come)", moduleId: "g_comparativo", status: "ready" },
-        { topic: "stare + gerundio & stare per", moduleId: "g_stare", status: "ready" }
+        { topic: "stare + gerundio & stare per", moduleId: "g_stare", status: "ready" },
+        { topic: "Verneinung (non, doppelte Verneinung)", moduleId: "a2_negazione", status: "ready" },
+        { topic: "Demonstrativa questo/quello & quale", moduleId: "a2_questo_quello", status: "ready" },
+        { topic: "Adjektive & Adverbien (-mente)", moduleId: "a2_aggettivi", status: "ready" }
       ]
     },
     B1: {
