@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kraft des Singens — Yoga des Singens</title>
+<style>
+  :root{
+    --paper:#fff;--white:#fff;--ink:#26221d;--ink-soft:#63665a;--line:#e7ece1;
+    --primary:#2f6b47;--primary-deep:#234f35;--accent:#c42e38;--accent-deep:#98202c;--gold:#cf9a3f;
+    --maxw:1140px;
+    --serif:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:"Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+  a{color:inherit}
+  .eyebrow{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:.85em 1.7em;border-radius:999px;text-decoration:none;font-weight:700;font-size:.95rem;cursor:pointer;border:1.5px solid transparent;transition:transform .2s,background .2s,color .2s}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-deep);transform:translateY(-2px)}
+  .btn-ghost{border-color:var(--primary);color:var(--primary)}
+  .btn-ghost:hover{background:var(--primary);color:#fff}
+
+  header.nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+  .nav-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:15px 26px}
+  .brand{font-family:var(--serif);font-size:1.5rem;color:var(--primary);font-weight:600}
+  .brand small{color:var(--accent);font-style:italic;font-weight:500}
+  .menu{display:flex;gap:26px;font-size:.9rem}
+  .menu a{text-decoration:none;color:#3f463b;font-weight:600}.menu a:hover{color:var(--accent)}
+  @media(max-width:880px){.menu{display:none}}
+
+  .crumb{padding:22px 0 0;font-size:.86rem;color:var(--ink-soft)}
+  .crumb a{text-decoration:none;color:var(--primary);font-weight:600}
+  .head{padding:12px 0 6px;max-width:60ch}
+  .head h1{font-size:clamp(2.2rem,5vw,3.6rem);margin-top:10px}
+  .head p{color:var(--ink-soft);font-size:1.12rem;margin:16px 0 0}
+
+  section{padding:40px 0}
+
+  /* --- Karussell --- */
+  .carousel{position:relative;margin-top:8px}
+  .track{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:24px;-ms-overflow-style:none;scrollbar-width:none}
+  .track::-webkit-scrollbar{display:none}
+  .slide{scroll-snap-align:center;display:grid;grid-template-columns:1.1fr 1fr;min-height:390px}
+  .slide .txt{padding:44px 46px;display:flex;flex-direction:column;justify-content:center;background:#fff}
+  .slide .txt .eyebrow{margin-bottom:12px}
+  .slide .txt h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+  .slide .txt p{color:#3f3a34;margin:12px 0 0}
+  .slide .pic{position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--primary) 16%,#fff),color-mix(in srgb,var(--accent) 10%,#fff));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+  .slide .pic svg{width:64px;color:var(--primary);opacity:.5}
+  .slide .pic span{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);opacity:.65}
+  .slide .pic .tag{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.85);border-radius:999px;padding:.3em .8em;font-size:.64rem;letter-spacing:.08em;color:var(--ink-soft)}
+  .carousel{border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 60px -40px rgba(30,25,20,.4);overflow:hidden}
+  @media(max-width:820px){.slide{grid-template-columns:1fr}.slide .pic{min-height:220px;order:-1}.slide .txt{padding:30px 26px}}
+  .cbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--line);background:#fff}
+  .dots{display:flex;gap:8px}
+  .dot{width:9px;height:9px;border-radius:50%;border:0;background:color-mix(in srgb,var(--primary) 25%,#fff);cursor:pointer;padding:0}
+  .dot[aria-current="true"]{background:var(--primary);width:22px;border-radius:999px}
+  .arrows{display:flex;gap:8px}
+  .arrow{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--primary);cursor:pointer;font-size:1.1rem;display:grid;place-items:center}
+  .arrow:hover{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,#fff)}
+
+  .prose{max-width:64ch;padding:20px 0 0}
+  .prose p{color:#3f3a34;margin:0 0 14px}
+  .prose .quote{font-family:var(--serif);font-size:1.3rem;color:var(--primary);border-left:3px solid var(--gold);padding-left:18px;margin:20px 0}
+
+  .audio{background:color-mix(in srgb,var(--primary) 6%,#fff);border:1px solid var(--line);border-radius:22px;padding:30px 32px}
+  .audio h2{font-size:1.5rem}
+  .audio .row{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+  .audio .row:first-of-type{border-top:0}
+  .play{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;border:0;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+  .audio .meta{flex:1}.audio .meta b{font-weight:700}.audio .meta small{color:var(--ink-soft)}
+  .audio .bar{height:5px;border-radius:3px;background:var(--line);position:relative;margin-top:6px}
+  .audio .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:22%;background:var(--primary);border-radius:3px}
+
+  .cta{text-align:center;background:linear-gradient(150deg,var(--primary),var(--primary-deep));color:#fff;border-radius:24px;padding:52px 40px;margin:20px 0}
+  .cta h2{font-size:clamp(1.7rem,3.6vw,2.4rem)}
+  .cta p{opacity:.92;margin:12px auto 22px;max-width:44ch}
+  .cta .btn-primary{background:var(--gold);color:#3a2405}
+  .cta .btn-primary:hover{background:#fff;color:var(--primary-deep)}
+
+  footer{background:#fff;border-top:1px solid var(--line);padding:44px 0;color:var(--ink-soft);font-size:.85rem}
+  .fbot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .fbot a{color:var(--ink-soft);text-decoration:none}.fbot a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-in">
+    <div class="brand">Yoga <small>des Singens</small></div>
+    <nav class="menu"><a href="#">Über mich</a><a href="#">Angebote</a><a href="#">Termine</a><a href="#">Stimmen</a><a href="#">Kontakt</a></nav>
+    <a href="#" class="btn btn-ghost" style="padding:.55em 1.2em">Newsletter</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="crumb"><a href="#">Angebote</a> › Kraft des Singens</p>
+  <div class="head">
+    <span class="eyebrow">Angebot</span>
+    <h1>Kraft des Singens</h1>
+    <p>Du singst gern oder möchtest es? Hast vielleicht lange nicht gesungen oder meinst, nicht singen zu können? Ich lade dich ein, deine Singkraft zu wecken und zu erfahren.</p>
+  </div>
+
+  <section>
+    <div class="carousel">
+      <div class="track" id="track">
+        <div class="slide">
+          <div class="txt"><span class="eyebrow">01 · Singkreise</span><h2>Regelmäßige Singkreise</h2><p>In Berlin und in der Uckermark (Nähe Gerswalde) treffen wir uns, um gemeinsam zu singen – Lieder in deutscher Sprache, indische Mantren und Lieder aus den verschiedensten Kulturen der Welt. (Platzhaltertext – hier kommt Monias eigener Text hin.)</p></div>
+          <div class="pic"><span class="tag">Platzhalter · Foto folgt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Foto Singkreis</span></div>
+        </div>
+        <div class="slide">
+          <div class="txt"><span class="eyebrow">02 · Einzelbegleitung</span><h2>Wandersingen &amp; Begleitung</h2><p>Im Norden Berlins und in Einzelbegleitung in den verschiedensten Formen: gesangstherapeutische Begleitung, Heilsames Singen, Besingen. Ein geschützter Raum für deine Stimme. (Platzhaltertext.)</p></div>
+          <div class="pic"><span class="tag">Platzhalter · Foto folgt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18c3 0 3-3 6-3s3 3 6 3 3-3 4-3"/><path d="M4 13c3 0 3-3 6-3s3 3 6 3 3-3 4-3"/></svg><span>Foto Wandersingen</span></div>
+        </div>
+        <div class="slide">
+          <div class="txt"><span class="eyebrow">03 · Für Zwei</span><h2>Singen für dich &amp; dein Baby</h2><p>Ab der 16. Schwangerschaftswoche hört dein Baby deine Stimme. Ein zartes, verbindendes Angebot für dich und dein Kind. (Platzhaltertext.)</p></div>
+          <div class="pic"><span class="tag">Platzhalter · Foto folgt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="3.2"/><path d="M6 21c0-4 2.7-6 6-6s6 2 6 6"/></svg><span>Foto Babysingen</span></div>
+        </div>
+        <div class="slide">
+          <div class="txt"><span class="eyebrow">04 · Rituale</span><h2>Singende Rituale</h2><p>Gestaltung singender Rituale bei privaten Anlässen – Jubiläen, Hochzeiten, Willkommen und Abschiede, Initiationen. Klang, der besondere Momente trägt. (Platzhaltertext.)</p></div>
+          <div class="pic"><span class="tag">Platzhalter · Foto folgt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5-5-2.6-5 2.6 1-5.5-4-3.9 5.5-.8z"/></svg><span>Foto Ritual</span></div>
+        </div>
+      </div>
+      <div class="cbar">
+        <div class="dots" id="dots"></div>
+        <div class="arrows"><button class="arrow" id="prev" aria-label="Zurück">‹</button><button class="arrow" id="next" aria-label="Weiter">›</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="prose">
+      <p>Ich singe mit Euch alles, was uns in Freude, Kraft, Fülle und (Selbst)Liebe bringt. Auch mal Tönen, Summen, Freisingen stimmt uns ein. Du brauchst keine Vorkenntnisse, keine „schöne" Stimme, nur deine Freude am Singen. Es geht allen genauso wie Dir.</p>
+      <p class="quote">„Wir wollen singen und sind aber kein Chor. Du sollst erfahren, welche Lebenskraft in deiner Stimme liegt. Und jeder, der singt, ist ein Gewinn für die Erde. Gerade jetzt."</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="audio">
+      <span class="eyebrow">Hörproben</span>
+      <h2 style="margin:8px 0 18px">Klang zum Reinhören</h2>
+      <div class="row"><button class="play" aria-label="Abspielen">▶</button><div class="meta"><b>Gayatri – Singkreis</b> <small>· 6:35</small><div class="bar"></div></div></div>
+      <div class="row"><button class="play" aria-label="Abspielen">▶</button><div class="meta"><b>In dir ist Feuer</b> <small>· 3:03</small><div class="bar"></div></div></div>
+      <div class="row"><button class="play" aria-label="Abspielen">▶</button><div class="meta"><b>Sat Siri</b> <small>· 7:53</small><div class="bar"></div></div></div>
+      <p style="font-size:.78rem;color:var(--ink-soft);margin:16px 0 0;opacity:.8">Platzhalter – echte Audio-Aufnahmen werden eingebunden.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="cta">
+      <span class="eyebrow" style="color:#fff">Mitmachen</span>
+      <h2>Kommende Singkreise</h2>
+      <p>Die nächsten Termine findest du im Kalender – oder lass dich per Newsletter informieren, wenn ein neuer Singkreis ansteht.</p>
+      <a href="#" class="btn btn-primary">Zu den Terminen</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap fbot">
+    <span>© Yoga des Singens · Monia Dill · Uckermark &amp; Berlin</span>
+    <span><a href="#">Impressum</a> · <a href="#">Datenschutz</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const track=document.getElementById('track'), dots=document.getElementById('dots');
+  const slides=[...track.children];
+  slides.forEach((_,i)=>{const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label','Folie '+(i+1));if(i===0)b.setAttribute('aria-current','true');b.onclick=()=>track.scrollTo({left:track.clientWidth*i});dots.appendChild(b);});
+  function upd(){const i=Math.round(track.scrollLeft/track.clientWidth);[...dots.children].forEach((d,j)=>d.setAttribute('aria-current',j===i?'true':'false'));}
+  track.addEventListener('scroll',()=>window.requestAnimationFrame(upd),{passive:true});
+  document.getElementById('next').onclick=()=>{const i=Math.round(track.scrollLeft/track.clientWidth);track.scrollTo({left:track.clientWidth*Math.min(i+1,slides.length-1)});};
+  document.getElementById('prev').onclick=()=>{const i=Math.round(track.scrollLeft/track.clientWidth);track.scrollTo({left:track.clientWidth*Math.max(i-1,0)});};
+})();
+</script>
+</body>
+</html>

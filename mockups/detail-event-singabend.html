@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offener Singabend — Yoga des Singens</title>
+<style>
+  :root{
+    --paper:#fff;--white:#fff;--ink:#26221d;--ink-soft:#63665a;--line:#e7ece1;
+    --primary:#2f6b47;--primary-deep:#234f35;--accent:#c42e38;--accent-deep:#98202c;--gold:#cf9a3f;
+    --maxw:1140px;
+    --serif:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:"Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+  a{color:inherit}
+  .eyebrow{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:.85em 1.7em;border-radius:999px;text-decoration:none;font-weight:700;font-size:.95rem;cursor:pointer;border:1.5px solid transparent;transition:transform .2s,background .2s,color .2s}
+  .btn-primary{background:var(--primary);color:#fff;width:100%}
+  .btn-primary:hover{background:var(--primary-deep);transform:translateY(-2px)}
+  .btn-ghost{border-color:var(--primary);color:var(--primary)}
+  .btn-ghost:hover{background:var(--primary);color:#fff}
+
+  header.nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+  .nav-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:15px 26px}
+  .brand{font-family:var(--serif);font-size:1.5rem;color:var(--primary);font-weight:600}
+  .brand small{color:var(--accent);font-style:italic;font-weight:500}
+  .menu{display:flex;gap:26px;font-size:.9rem}
+  .menu a{text-decoration:none;color:#3f463b;font-weight:600}
+  .menu a:hover{color:var(--accent)}
+  @media(max-width:880px){.menu{display:none}}
+
+  .crumb{padding:22px 0 0;font-size:.86rem;color:var(--ink-soft)}
+  .crumb a{text-decoration:none;color:var(--primary);font-weight:600}
+  .head{padding:14px 0 8px}
+  .badge{display:inline-block;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:.32em .8em;border-radius:8px;background:color-mix(in srgb,var(--accent) 14%,#fff);color:var(--accent-deep);margin-bottom:14px}
+  .head h1{font-size:clamp(2.2rem,5vw,3.4rem)}
+  .head .sub{margin-top:12px;color:var(--ink-soft);font-size:1.05rem}
+
+  .grid{display:grid;grid-template-columns:1.5fr .9fr;gap:44px;align-items:start;padding:34px 0 80px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr;gap:28px}}
+
+  .photoph{aspect-ratio:16/10;border-radius:22px;border:6px solid #fff;box-shadow:0 30px 60px -34px rgba(30,25,20,.4);position:relative;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--primary) 14%,#fff),color-mix(in srgb,var(--accent) 9%,#fff));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:30px}
+  .photoph svg{width:64px;color:var(--primary);opacity:.5}
+  .photoph span{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);opacity:.65}
+  .photoph .tag{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.85);border-radius:999px;padding:.3em .8em;font-size:.64rem;letter-spacing:.08em;color:var(--ink-soft)}
+
+  .prose h2{font-size:1.5rem;margin:30px 0 10px}
+  .prose p{color:#3f3a34;margin:0 0 14px}
+  .prose .quote{font-family:var(--serif);font-size:1.25rem;color:var(--primary);border-left:3px solid var(--gold);padding-left:18px;margin:20px 0}
+  .prose ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+  .prose li{position:relative;padding-left:26px;color:#3f3a34}
+  .prose li::before{content:"";position:absolute;left:0;top:9px;width:10px;height:10px;border-radius:50%;background:var(--primary)}
+
+  aside{position:sticky;top:96px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 50px -34px rgba(30,25,20,.4);padding:26px}
+  .facts{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:12px}
+  .facts li{display:grid;grid-template-columns:22px 1fr;gap:12px;font-size:.95rem}
+  .facts .k{color:var(--ink-soft);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase}
+  .facts b{font-weight:700}
+  .facts svg{width:18px;color:var(--primary);margin-top:2px}
+  .form-h{font-size:1.15rem;font-weight:700;margin:6px 0 4px;font-family:var(--serif)}
+  form{display:grid;gap:10px;margin-top:8px}
+  label{font-size:.8rem;font-weight:600;color:var(--ink-soft)}
+  input,textarea,select{width:100%;padding:.7em .85em;border:1px solid var(--line);border-radius:12px;font-size:.95rem;font-family:inherit;background:#fff;color:var(--ink)}
+  input:focus,textarea:focus,select:focus{outline:2px solid color-mix(in srgb,var(--primary) 45%,#fff);border-color:var(--primary)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .paynote{margin-top:12px;font-size:.8rem;color:var(--ink-soft);background:color-mix(in srgb,var(--primary) 7%,#fff);border-radius:12px;padding:10px 12px}
+
+  footer{background:#fff;border-top:1px solid var(--line);padding:44px 0;color:var(--ink-soft);font-size:.85rem}
+  .fbot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .fbot a{color:var(--ink-soft);text-decoration:none}.fbot a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-in">
+    <div class="brand">Yoga <small>des Singens</small></div>
+    <nav class="menu"><a href="#">Über mich</a><a href="#">Angebote</a><a href="#">Termine</a><a href="#">Stimmen</a><a href="#">Kontakt</a></nav>
+    <a href="#anmelden" class="btn btn-ghost" style="padding:.55em 1.2em">Newsletter</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="crumb"><a href="#">Termine</a> › Offener Singabend</p>
+  <div class="head">
+    <span class="badge">Einzeltermin</span>
+    <h1>Offener Singabend in Berlin-Pankow</h1>
+    <p class="sub">Sonntag, 18. Januar 2026 · 18:00 Uhr · Berlin-Pankow</p>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="photoph">
+        <span class="tag">Platzhalter · Foto folgt</span>
+        <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="96" cy="26" r="11" opacity=".65"/><circle cx="60" cy="26" r="7"/><path d="M60 34v33"/><path d="M60 42 45 22M60 42 75 22"/><path d="M60 67 49 93M60 67 71 93"/><path d="M14 106q13-8 26 0t26 0 26 0 14 0"/></svg>
+        <span>Foto vom Singabend</span>
+      </div>
+      <div class="prose">
+        <p>Herzlich willkommen zum offenen Singabend! Wenn du gerne singst oder einfach einmal singen möchtest, lade ich dich ein, mit uns eine besondere Zeit zu verbringen. Wir singen frei und ohne Noten – viele spirituelle Lieder mit einfachen Texten, die dazu beitragen, den Geist zu befreien und das Herz zu öffnen.</p>
+        <p class="quote">„Die Dynamik des Singens ist die Kraft dieser Lieder – ich wähle die Stücke passend zur Jahreszeit aus verschiedenen Kulturen der Welt."</p>
+        <p>An diesem Abend möchte ich eine Gefühlsdynamik schaffen, die von Leichtigkeit, Freude und Tiefe geprägt ist und uns schließlich zu Kraft und innerer Ruhe führt. Komm einfach vorbei und lass dich von der Atmosphäre mitreißen – so kannst du herausfinden, ob dieser Abend das Richtige für dich ist.</p>
+        <h2>Gut zu wissen</h2>
+        <ul>
+          <li>Keine Vorkenntnisse und keine „schöne" Stimme nötig – nur deine Freude am Singen.</li>
+          <li>Über eine Anmeldung ca. 10 Tage vorher freue ich mich sehr – sie ist aber keine Bedingung, du kannst dich auch kurzfristig melden.</li>
+          <li>Komm gern schon ab 17:50 Uhr zum Ankommen.</li>
+        </ul>
+      </div>
+    </div>
+
+    <aside id="anmelden">
+      <div class="card">
+        <ul class="facts">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span><span class="k">Datum</span><br><b>So, 18. Januar 2026</b></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span><span class="k">Uhrzeit</span><br><b>18:00 Uhr</b> · Ankommen ab 17:50</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span><span class="k">Ort</span><br><b>Berlin-Pankow</b></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span><span class="k">Beitrag</span><br><b>20 / 25 €</b> nach Selbsteinschätzung</span></li>
+        </ul>
+
+        <p class="form-h">Zum Singabend anmelden</p>
+        <form onsubmit="return false">
+          <div><label for="n">Name</label><input id="n" type="text" placeholder="Dein Name"></div>
+          <div class="row2">
+            <div><label for="e">E-Mail</label><input id="e" type="email" placeholder="dein@email.de"></div>
+            <div><label for="t">Telefon</label><input id="t" type="tel" placeholder="optional"></div>
+          </div>
+          <div><label for="p">Anzahl Personen</label><select id="p"><option>1 Person</option><option>2 Personen</option><option>3 Personen</option><option>4+ Personen</option></select></div>
+          <div><label for="m">Nachricht (optional)</label><textarea id="m" rows="3" placeholder="Möchtest du mir noch etwas mitteilen?"></textarea></div>
+          <button class="btn btn-primary" type="submit">Anmelden</button>
+        </form>
+        <p class="paynote">Deine Anmeldung geht direkt an Monia – du bekommst eine Bestätigung per E-Mail. Der Beitrag wird vor Ort bezahlt, nicht über die Website.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap fbot">
+    <span>© Yoga des Singens · Monia Dill · Uckermark &amp; Berlin</span>
+    <span><a href="#">Impressum</a> · <a href="#">Datenschutz</a></span>
+  </div>
+</footer>
+</body>
+</html>
