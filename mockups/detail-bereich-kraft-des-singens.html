@@ -33,8 +33,11 @@
   .menu a{text-decoration:none;color:#3f463b;font-weight:600}.menu a:hover{color:var(--accent)}
   @media(max-width:880px){.menu{display:none}}
 
-  .crumb{padding:22px 0 0;font-size:.86rem;color:var(--ink-soft)}
+  .crumbrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:22px 0 0;flex-wrap:wrap}
+  .crumb{margin:0;font-size:.86rem;color:var(--ink-soft)}
   .crumb a{text-decoration:none;color:var(--primary);font-weight:600}
+  .back{display:inline-flex;align-items:center;gap:.4em;border:1.5px solid var(--line);border-radius:999px;padding:.5em 1.1em;font-size:.85rem;font-weight:700;color:var(--primary);text-decoration:none;background:#fff;transition:border-color .2s,background .2s}
+  .back:hover{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,#fff)}
   .head{padding:12px 0 6px;max-width:60ch}
   .head h1{font-size:clamp(2.2rem,5vw,3.6rem);margin-top:10px}
   .head p{color:var(--ink-soft);font-size:1.12rem;margin:16px 0 0}
@@ -99,7 +102,10 @@
 </header>
 
 <div class="wrap">
-  <p class="crumb"><a href="#">Angebote</a> › Kraft des Singens</p>
+  <div class="crumbrow">
+    <p class="crumb"><a href="#">Angebote</a> › Kraft des Singens</p>
+    <a href="#" class="back">‹ Zurück zu den Angeboten</a>
+  </div>
   <div class="head">
     <span class="eyebrow">Angebot</span>
     <h1>Kraft des Singens</h1>
