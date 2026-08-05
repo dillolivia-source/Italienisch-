@@ -1,62 +1,26 @@
-#!/usr/bin/env python3
-# Generator Runde 4: echtes Weiss + Aquarell-Schleier + Foto-Hero (Strand-Stil)
-import os
-OUT = "/home/user/Italienisch-/mockups"
-
-# --- Strand-Szene als Platzhalter fuer das echte Hero-Foto (gleiche Komposition) ---
-BEACH = r"""<svg class="scene" viewBox="0 0 1440 440" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Platzhalter: Monia am Strand der Ostsee, Arme zum Himmel geoeffnet (echtes Foto folgt)">
-  <defs>
-    <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef4f5"/><stop offset="1" stop-color="#c4d3d6"/></linearGradient>
-    <radialGradient id="soft" cx="50%" cy="45%" r="63%"><stop offset="0" stop-color="#fff"/><stop offset="60%" stop-color="#fff"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <mask id="softMask"><rect width="1440" height="440" fill="url(#soft)"/></mask>
-  </defs>
-  <g mask="url(#softMask)">
-    <rect x="0" y="196" width="1200" height="150" fill="url(#seaG)"/>
-    <rect x="0" y="190" width="1200" height="8" fill="#dde7e8"/>
-    <rect x="20" y="196" width="330" height="4" fill="#9fb2ab" opacity="0.6"/>
-    <path d="M0 250 Q380 236 760 250 T1440 250 V440 H0 Z" fill="#e9dabf"/>
-    <path d="M0 302 Q400 282 820 302 T1440 302 V440 H0 Z" fill="#efe3cb"/>
-    <path d="M1040 250 L1082 150 L1162 120 L1262 150 L1360 130 L1440 160 L1440 440 L1040 440 Z" fill="#ccb179"/>
-    <path d="M1082 150 L1162 120 L1262 150 L1360 130 L1440 160 L1440 214 L1040 252 Z" fill="#d9c390"/>
-    <g stroke="#b89757" stroke-width="3" opacity="0.45"><path d="M1122 202 L1132 382"/><path d="M1202 192 L1216 382"/><path d="M1302 202 L1316 382"/><path d="M1392 212 L1402 382"/></g>
-    <ellipse cx="1122" cy="150" rx="30" ry="17" fill="#7d9857"/><ellipse cx="1214" cy="140" rx="34" ry="19" fill="#6f8a4a"/><ellipse cx="1300" cy="144" rx="30" ry="17" fill="#7d9857"/><ellipse cx="1390" cy="150" rx="30" ry="16" fill="#6f8a4a"/>
-    <g transform="translate(704,196)">
-      <path d="M13 96 q-8 34 -6 62 q6 6 12 0 q4 -30 8 -52 q4 22 8 52 q6 6 12 0 q2 -30 -4 -62 Z" fill="#7f8a58"/>
-      <path d="M8 44 q18 -10 34 0 q4 30 -2 54 q-16 8 -30 0 q-6 -26 -2 -54 Z" fill="#efeaec"/>
-      <path d="M31 46 q9 20 3 44" stroke="#a7c6d6" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <circle cx="25" cy="33" r="10" fill="#e7c6ac"/>
-      <path d="M15 30 q7 -15 21 -6 q-4 8 -11 8 q-6 -2 -10 -2 Z" fill="#7a4a3a"/>
-      <path d="M13 48 q-14 -26 -6 -50" stroke="#efeaec" stroke-width="8" fill="none" stroke-linecap="round"/>
-      <path d="M41 48 q16 -26 8 -50" stroke="#efeaec" stroke-width="8" fill="none" stroke-linecap="round"/>
-      <circle cx="6" cy="-4" r="4" fill="#e7c6ac"/><circle cx="50" cy="-4" r="4" fill="#e7c6ac"/>
-    </g>
-  </g>
-  <path d="M0 374 Q360 342 720 368 T1440 362 V440 H0 Z" fill="#ffffff"/>
-</svg>"""
-
-TEMPLATE = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yoga des Singens — %%TITLE%%</title>
+<title>Yoga des Singens — Weiß · Rot (Serif)</title>
 <style>
   :root{
     --paper:#ffffff; --alt:#ffffff; --white:#ffffff;
-    --ink:%%INK%%; --ink-soft:%%INK_SOFT%%; --line:%%LINE%%;
-    --primary:%%PRIMARY%%; --primary-deep:%%PRIMARY_DEEP%%;
-    --accent:%%ACCENT%%; --accent-deep:%%ACCENT_DEEP%%; --gold:%%GOLD%%;
-    --wash:%%WASH%%; --wash-op:%%WASH_OP%%;
+    --ink:#2a221e; --ink-soft:#6d5f57; --line:#efe4e2;
+    --primary:#c42e38; --primary-deep:#98202c;
+    --accent:#c42e38; --accent-deep:#98202c; --gold:#cf9a3f;
+    --wash:#c42e38; --wash-op:.13;
     --maxw:1140px;
-    --serif:%%SERIF%%;
-    --sans:%%SANS%%;
-    --head:%%HEAD%%;
+    --serif:"Iowan Old Style","Palatino Linotype","Hoefler Text",Constantia,Georgia,serif;
+    --sans:"Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+    --head:"Iowan Old Style","Palatino Linotype","Hoefler Text",Constantia,Georgia,serif;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px;position:relative;z-index:1}
-  h1,h2,h3{font-family:var(--head);font-weight:%%HEAD_WEIGHT%%;line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
+  h1,h2,h3{font-family:var(--head);font-weight:500;line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
   a{color:inherit}
   .eyebrow{font-family:var(--sans);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:700}
   .btn{display:inline-flex;align-items:center;gap:.5em;padding:.82em 1.7em;border-radius:999px;text-decoration:none;font-weight:700;font-size:.95rem;cursor:pointer;border:1.5px solid transparent;transition:transform .2s,background .2s,color .2s,border-color .2s}
@@ -67,10 +31,10 @@ TEMPLATE = r"""<!DOCTYPE html>
 
   header.nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
   .nav-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:15px 26px}
-  .brand{font-family:var(--serif);font-size:1.5rem;color:%%BRAND_MAIN%%;font-weight:600}
-  .brand small{color:%%BRAND_SMALL%%;font-style:italic;font-weight:500}
-  .menu{display:flex;gap:26px;font-size:%%NAV_SIZE%%;letter-spacing:%%NAV_SPACING%%;text-transform:%%NAV_TRANSFORM%%}
-  .menu a{text-decoration:none;color:%%NAV_LINK%%;font-weight:600;transition:color .2s}
+  .brand{font-family:var(--serif);font-size:1.5rem;color:#c42e38;font-weight:600}
+  .brand small{color:#98202c;font-style:italic;font-weight:500}
+  .menu{display:flex;gap:26px;font-size:.9rem;letter-spacing:.02em;text-transform:none}
+  .menu a{text-decoration:none;color:#4a3f39;font-weight:600;transition:color .2s}
   .menu a:hover{color:var(--accent)}
   .nav .btn{padding:.55em 1.2em}
   @media(max-width:880px){.menu{display:none}}
@@ -143,11 +107,11 @@ TEMPLATE = r"""<!DOCTYPE html>
   .ev h3{font-size:1.3rem;margin:12px 24px 6px}
   .ev .meta{color:var(--ink-soft);font-size:.9rem;margin:0 24px}
   .ev .foot{margin-top:auto;padding:20px 24px}
-  .laufend{background:%%LAUFEND_BG%%;color:#fff;border-radius:22px;padding:34px 36px}
-  .laufend .eyebrow{color:%%LAUFEND_EYEBROW%%}
+  .laufend{background:linear-gradient(150deg,#c42e38,#98202c);color:#fff;border-radius:22px;padding:34px 36px}
+  .laufend .eyebrow{color:#f2d7a6}
   .laufend .hint{color:rgba(255,255,255,.85);font-size:.92rem;margin:6px 0 20px}
   .course{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid rgba(255,255,255,.2);flex-wrap:wrap}
-  .course .when{color:%%LAUFEND_WHEN%%;font-variant-numeric:tabular-nums;font-weight:700}
+  .course .when{color:#f2d7a6;font-variant-numeric:tabular-nums;font-weight:700}
   @media(max-width:820px){.evwrap{grid-template-columns:1fr}}
 
   .voices{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
@@ -157,12 +121,12 @@ TEMPLATE = r"""<!DOCTYPE html>
   .note{margin-top:18px;font-size:.74rem;color:var(--ink-soft);opacity:.75}
   @media(max-width:720px){.voices{grid-template-columns:1fr}}
 
-  .news{border-radius:26px;padding:56px 44px;text-align:center;background:%%NEWS_BG%%;color:#fff}
+  .news{border-radius:26px;padding:56px 44px;text-align:center;background:linear-gradient(150deg,#c42e38,#98202c);color:#fff}
   .news h2{font-size:clamp(1.8rem,4vw,2.6rem)}
   .news p{max-width:46ch;margin:14px auto 26px;opacity:.95}
   .news form{display:flex;gap:10px;max-width:460px;margin:0 auto;flex-wrap:wrap}
   .news input{flex:1;min-width:200px;padding:.9em 1.1em;border-radius:999px;border:0;font-size:1rem}
-  .news .btn-primary{background:%%NEWS_BTN_BG%%;color:%%NEWS_BTN_COLOR%%}
+  .news .btn-primary{background:#cf9a3f;color:#3a2405}
   .news .btn-primary:hover{background:#fff;color:var(--primary-deep)}
   .news .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;font-size:.8rem}
   .news .chip{border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:.3em .9em}
@@ -192,10 +156,38 @@ TEMPLATE = r"""<!DOCTYPE html>
 
 <section class="hero">
   <div class="wash"></div>
-  <div class="hero-photo">%%SCENE%%</div>
+  <div class="hero-photo"><svg class="scene" viewBox="0 0 1440 440" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Platzhalter: Monia am Strand der Ostsee, Arme zum Himmel geoeffnet (echtes Foto folgt)">
+  <defs>
+    <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef4f5"/><stop offset="1" stop-color="#c4d3d6"/></linearGradient>
+    <radialGradient id="soft" cx="50%" cy="45%" r="63%"><stop offset="0" stop-color="#fff"/><stop offset="60%" stop-color="#fff"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <mask id="softMask"><rect width="1440" height="440" fill="url(#soft)"/></mask>
+  </defs>
+  <g mask="url(#softMask)">
+    <rect x="0" y="196" width="1200" height="150" fill="url(#seaG)"/>
+    <rect x="0" y="190" width="1200" height="8" fill="#dde7e8"/>
+    <rect x="20" y="196" width="330" height="4" fill="#9fb2ab" opacity="0.6"/>
+    <path d="M0 250 Q380 236 760 250 T1440 250 V440 H0 Z" fill="#e9dabf"/>
+    <path d="M0 302 Q400 282 820 302 T1440 302 V440 H0 Z" fill="#efe3cb"/>
+    <path d="M1040 250 L1082 150 L1162 120 L1262 150 L1360 130 L1440 160 L1440 440 L1040 440 Z" fill="#ccb179"/>
+    <path d="M1082 150 L1162 120 L1262 150 L1360 130 L1440 160 L1440 214 L1040 252 Z" fill="#d9c390"/>
+    <g stroke="#b89757" stroke-width="3" opacity="0.45"><path d="M1122 202 L1132 382"/><path d="M1202 192 L1216 382"/><path d="M1302 202 L1316 382"/><path d="M1392 212 L1402 382"/></g>
+    <ellipse cx="1122" cy="150" rx="30" ry="17" fill="#7d9857"/><ellipse cx="1214" cy="140" rx="34" ry="19" fill="#6f8a4a"/><ellipse cx="1300" cy="144" rx="30" ry="17" fill="#7d9857"/><ellipse cx="1390" cy="150" rx="30" ry="16" fill="#6f8a4a"/>
+    <g transform="translate(704,196)">
+      <path d="M13 96 q-8 34 -6 62 q6 6 12 0 q4 -30 8 -52 q4 22 8 52 q6 6 12 0 q2 -30 -4 -62 Z" fill="#7f8a58"/>
+      <path d="M8 44 q18 -10 34 0 q4 30 -2 54 q-16 8 -30 0 q-6 -26 -2 -54 Z" fill="#efeaec"/>
+      <path d="M31 46 q9 20 3 44" stroke="#a7c6d6" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="25" cy="33" r="10" fill="#e7c6ac"/>
+      <path d="M15 30 q7 -15 21 -6 q-4 8 -11 8 q-6 -2 -10 -2 Z" fill="#7a4a3a"/>
+      <path d="M13 48 q-14 -26 -6 -50" stroke="#efeaec" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M41 48 q16 -26 8 -50" stroke="#efeaec" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="6" cy="-4" r="4" fill="#e7c6ac"/><circle cx="50" cy="-4" r="4" fill="#e7c6ac"/>
+    </g>
+  </g>
+  <path d="M0 374 Q360 342 720 368 T1440 362 V440 H0 Z" fill="#ffffff"/>
+</svg></div>
   <div class="hero-copy reveal">
     <p class="eyebrow">Singen · Kundalini Yoga · Breathwalking</p>
-    <h1>%%H1_HTML%%</h1>
+    <h1>Finde die <span class="u">Kraft</span> in deiner Stimme.</h1>
     <p class="lead">Ich bin Monia und ich liebe Singen und Yoga. Aus dieser Fülle möchte ich dir gern geben, dich heranführen und mit dir teilen.</p>
     <div class="cta"><a href="#termine" class="btn btn-primary">Kommende Termine</a><a href="#angebote" class="btn btn-ghost">Meine Angebote</a></div>
     <p class="photo-note">Platzhalter-Illustration — hier kommt Monias echtes Strandfoto hin</p>
@@ -302,73 +294,3 @@ TEMPLATE = r"""<!DOCTYPE html>
 </script>
 </body>
 </html>
-"""
-
-SERIF_PALATINO='"Palatino Linotype",Palatino,"Book Antiqua","URW Palladio L",Georgia,serif'
-SERIF_IOWAN='"Iowan Old Style","Palatino Linotype","Hoefler Text",Constantia,Georgia,serif'
-SANS_AVENIR='"Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif'
-SANS_OPTIMA='"Optima","Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif'
-
-GRUEN, GRUEN_D = "#2f6b47", "#234f35"
-# Lebendigeres, weniger orangiges Rot (kraeftig, warm, nicht pink)
-ROT, ROT_D = "#c42e38", "#98202c"
-GOLD = "#cf9a3f"
-
-ROT_GRAD = f"linear-gradient(150deg,{ROT},{ROT_D})"
-GRUEN_GRAD = f"linear-gradient(150deg,{GRUEN},{GRUEN_D})"
-
-configs = [
-  # Favorit 1: Weiß · Rot (lebendig) — klassische Serifenschrift
-  dict(file="design-12-weiss-rot-serif.html", TITLE="Weiß · Rot (Serif)",
-    INK="#2a221e", INK_SOFT="#6d5f57", LINE="#efe4e2",
-    PRIMARY=ROT, PRIMARY_DEEP=ROT_D, ACCENT=ROT, ACCENT_DEEP=ROT_D, GOLD=GOLD,
-    SERIF=SERIF_IOWAN, SANS=SANS_AVENIR, HEAD=SERIF_IOWAN, HEAD_WEIGHT="500",
-    NAV_LINK="#4a3f39", NAV_SIZE=".9rem", NAV_SPACING=".02em", NAV_TRANSFORM="none",
-    BRAND_MAIN=ROT, BRAND_SMALL=ROT_D, WASH=ROT, WASH_OP=".13",
-    LAUFEND_BG=ROT_GRAD, LAUFEND_EYEBROW="#f2d7a6", LAUFEND_WHEN="#f2d7a6",
-    NEWS_BG=ROT_GRAD, NEWS_BTN_BG=GOLD, NEWS_BTN_COLOR="#3a2405",
-    H1_HTML='Finde die <span class="u">Kraft</span> in deiner Stimme.'),
-
-  # Favorit 1b: Weiß · Rot — moderne, serifenlose Überschriften
-  dict(file="design-13-weiss-rot-modern.html", TITLE="Weiß · Rot (modern-sans)",
-    INK="#2a221e", INK_SOFT="#6d5f57", LINE="#efe4e2",
-    PRIMARY=ROT, PRIMARY_DEEP=ROT_D, ACCENT=ROT, ACCENT_DEEP=ROT_D, GOLD=GOLD,
-    SERIF=SERIF_PALATINO, SANS=SANS_AVENIR, HEAD=SANS_OPTIMA, HEAD_WEIGHT="600",
-    NAV_LINK="#4a3f39", NAV_SIZE=".86rem", NAV_SPACING=".08em", NAV_TRANSFORM="uppercase",
-    BRAND_MAIN=ROT, BRAND_SMALL=ROT_D, WASH=ROT, WASH_OP=".12",
-    LAUFEND_BG=ROT_GRAD, LAUFEND_EYEBROW="#f2d7a6", LAUFEND_WHEN="#f2d7a6",
-    NEWS_BG=ROT_GRAD, NEWS_BTN_BG=GOLD, NEWS_BTN_COLOR="#3a2405",
-    H1_HTML='Deine Stimme, <span class="u">deine Kraft.</span>'),
-
-  # Favorit 2: Weiß · Grün + Rot (Duo) — klassische Serifenschrift
-  dict(file="design-14-weiss-gruen-rot-serif.html", TITLE="Weiß · Grün + Rot (Serif)",
-    INK="#26221d", INK_SOFT="#63665a", LINE="#e7ece1",
-    PRIMARY=GRUEN, PRIMARY_DEEP=GRUEN_D, ACCENT=ROT, ACCENT_DEEP=ROT_D, GOLD=GOLD,
-    SERIF=SERIF_PALATINO, SANS=SANS_AVENIR, HEAD=SERIF_PALATINO, HEAD_WEIGHT="500",
-    NAV_LINK="#3f463b", NAV_SIZE=".9rem", NAV_SPACING=".02em", NAV_TRANSFORM="none",
-    BRAND_MAIN=GRUEN, BRAND_SMALL=ROT, WASH=GRUEN, WASH_OP=".12",
-    LAUFEND_BG=GRUEN_GRAD, LAUFEND_EYEBROW="#f0cf9a", LAUFEND_WHEN="#f0cf9a",
-    NEWS_BG=ROT_GRAD, NEWS_BTN_BG=GOLD, NEWS_BTN_COLOR="#3a2405",
-    H1_HTML='Wurzeln und <span class="u">Stimme.</span>'),
-
-  # Favorit 2b: Weiß · Grün + Rot — moderne, serifenlose Überschriften
-  dict(file="design-15-weiss-gruen-rot-modern.html", TITLE="Weiß · Grün + Rot (modern-sans)",
-    INK="#26221d", INK_SOFT="#63665a", LINE="#e7ece1",
-    PRIMARY=GRUEN, PRIMARY_DEEP=GRUEN_D, ACCENT=ROT, ACCENT_DEEP=ROT_D, GOLD=GOLD,
-    SERIF=SERIF_PALATINO, SANS=SANS_AVENIR, HEAD=SANS_OPTIMA, HEAD_WEIGHT="600",
-    NAV_LINK="#3f463b", NAV_SIZE=".86rem", NAV_SPACING=".08em", NAV_TRANSFORM="uppercase",
-    BRAND_MAIN=GRUEN, BRAND_SMALL=ROT, WASH=GRUEN, WASH_OP=".11",
-    LAUFEND_BG=GRUEN_GRAD, LAUFEND_EYEBROW="#f0cf9a", LAUFEND_WHEN="#f0cf9a",
-    NEWS_BG=ROT_GRAD, NEWS_BTN_BG=GOLD, NEWS_BTN_COLOR="#3a2405",
-    H1_HTML='Atme. Singe. <span class="u">Komm zu dir.</span>'),
-]
-
-for cfg in configs:
-    html = TEMPLATE.replace("%%SCENE%%", BEACH)
-    for k, v in cfg.items():
-        if k == "file": continue
-        html = html.replace("%%"+k+"%%", v)
-    with open(os.path.join(OUT, cfg["file"]), "w", encoding="utf-8") as f:
-        f.write(html)
-    print(f"{cfg['file']:34s} offene Platzhalter: {html.count('%%')}")
-print("fertig")
