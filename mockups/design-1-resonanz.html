@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yoga des Singens — Entwurf „Resonanz"</title>
+<style>
+  :root{
+    --ground:#190a15;
+    --ground-2:#220f1e;
+    --surface:#2c1428;
+    --line:#4a2740;
+    --ivory:#f4ebe6;
+    --dim:#b493a8;
+    --berry:#e8558a;
+    --coral:#f0805f;
+    --gold:#dcab54;
+    --shadow:0 30px 80px -30px rgba(0,0,0,.7);
+    --maxw:1120px;
+    --serif:"Didot","Bodoni MT","Hoefler Text",Georgia,"Times New Roman",serif;
+    --sans:"Optima","Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ground);color:var(--ivory);
+    font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.05;margin:0;text-wrap:balance}
+  a{color:inherit}
+  .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);
+    font-family:var(--sans);font-weight:600}
+  .btn{display:inline-block;padding:.85em 1.7em;border-radius:999px;font-weight:600;
+    font-size:.95rem;text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s;cursor:pointer;border:0}
+  .btn-primary{background:linear-gradient(120deg,var(--coral),var(--berry));color:#fff;
+    box-shadow:0 14px 34px -14px var(--berry)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-ghost{border:1px solid var(--line);color:var(--ivory);background:transparent}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+  /* ---------- top nav ---------- */
+  header.nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
+    background:rgba(25,10,21,.72);border-bottom:1px solid rgba(74,39,64,.5)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;max-width:var(--maxw);margin:0 auto}
+  .brand{font-family:var(--serif);font-size:1.5rem;letter-spacing:.01em}
+  .brand b{color:var(--berry);font-weight:400;font-style:italic}
+  .menu{display:flex;gap:26px;font-size:.86rem;letter-spacing:.04em}
+  .menu a{text-decoration:none;color:var(--dim);transition:color .2s}
+  .menu a:hover{color:var(--ivory)}
+  .nav .btn{padding:.6em 1.3em}
+  @media(max-width:820px){.menu{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;min-height:92vh;display:flex;align-items:center;
+    background:radial-gradient(120% 90% at 80% -10%,var(--ground-2),var(--ground) 60%)}
+  #wave{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
+  .hero-in{position:relative;z-index:2;padding:80px 0}
+  .hero h1{font-size:clamp(3rem,9vw,6.6rem);letter-spacing:-.01em}
+  .hero h1 em{font-style:italic;color:var(--berry)}
+  .hero p.lead{max-width:33ch;font-size:1.22rem;color:var(--ivory);margin:26px 0 34px;opacity:.9}
+  .hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .scrollcue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+    font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);z-index:2}
+
+  /* ---------- section frame ---------- */
+  section{padding:96px 0;position:relative}
+  .sec-head{max-width:60ch;margin-bottom:52px}
+  .sec-head h2{font-size:clamp(2rem,4.6vw,3.2rem);margin:14px 0 0}
+
+  /* ---------- über mich ---------- */
+  .about{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center}
+  .portrait{aspect-ratio:4/5;border-radius:8px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(80% 60% at 30% 20%,rgba(240,128,95,.6),transparent 60%),
+      radial-gradient(90% 90% at 80% 90%,rgba(232,85,138,.55),transparent 55%),
+      linear-gradient(160deg,#3a1a30,#20101c);
+    border:1px solid var(--line)}
+  .portrait span{position:absolute;bottom:14px;left:16px;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:rgba(244,235,230,.6)}
+  .about p{color:#e7d7d0;font-size:1.08rem}
+  .about .btn{margin-top:14px}
+  @media(max-width:820px){.about{grid-template-columns:1fr;gap:32px}}
+
+  /* ---------- angebote ---------- */
+  .offer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .offer{background:var(--ground);padding:34px 30px;min-height:230px;display:flex;flex-direction:column;
+    transition:background .3s}
+  .offer:hover{background:var(--surface)}
+  .offer .num{font-family:var(--serif);font-size:1rem;color:var(--gold);opacity:.8}
+  .offer h3{font-size:1.55rem;margin:16px 0 10px}
+  .offer p{color:var(--dim);font-size:.97rem;margin:0}
+  .offer .go{margin-top:auto;padding-top:18px;color:var(--berry);font-weight:600;font-size:.9rem}
+  @media(max-width:820px){.offer-grid{grid-template-columns:1fr}}
+
+  /* ---------- termine ---------- */
+  .termine{background:linear-gradient(180deg,var(--ground),var(--ground-2))}
+  .tabs{display:flex;gap:10px;margin-bottom:34px;flex-wrap:wrap}
+  .tab{padding:.5em 1.1em;border-radius:999px;border:1px solid var(--line);font-size:.85rem;color:var(--dim)}
+  .tab.on{background:var(--berry);border-color:var(--berry);color:#fff;font-weight:600}
+  .event{display:grid;grid-template-columns:130px 1fr auto;gap:26px;align-items:center;
+    padding:26px 0;border-top:1px solid var(--line)}
+  .event:last-child{border-bottom:1px solid var(--line)}
+  .event .date{font-family:var(--serif)}
+  .event .date .d{font-size:2.4rem;line-height:1;color:var(--coral)}
+  .event .date .m{font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .event h3{font-size:1.4rem;margin:0 0 6px}
+  .event .meta{color:var(--dim);font-size:.92rem}
+  .event .tagline{display:inline-block;margin-top:8px;font-size:.72rem;letter-spacing:.12em;
+    text-transform:uppercase;padding:.25em .7em;border-radius:6px;background:rgba(220,171,84,.14);color:var(--gold)}
+  .event .act{white-space:nowrap}
+  @media(max-width:720px){.event{grid-template-columns:88px 1fr;gap:16px}.event .act{grid-column:2}}
+
+  .laufend{margin-top:44px;border:1px solid var(--line);border-radius:16px;padding:34px;
+    background:rgba(44,20,40,.5)}
+  .laufend h3{font-size:1.5rem;margin-bottom:6px}
+  .laufend .hint{color:var(--dim);font-size:.9rem;margin-bottom:22px}
+  .course{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-top:1px dashed var(--line);
+    font-size:.98rem;flex-wrap:wrap}
+  .course b{font-weight:600}
+  .course .when{color:var(--gold);font-variant-numeric:tabular-nums}
+
+  /* ---------- stimme ---------- */
+  .voice{text-align:center}
+  .voice blockquote{font-family:var(--serif);font-size:clamp(1.6rem,4vw,2.7rem);line-height:1.25;
+    max-width:20ch;margin:0 auto;color:var(--ivory)}
+  .voice blockquote::before{content:"„";color:var(--berry)}
+  .voice cite{display:block;margin-top:24px;font-style:normal;color:var(--gold);letter-spacing:.1em;
+    font-size:.85rem;text-transform:uppercase}
+  .voice .note{margin-top:10px;font-size:.72rem;color:var(--dim);opacity:.7}
+
+  /* ---------- newsletter ---------- */
+  .news{background:linear-gradient(120deg,#3a1730,#24101f);border-radius:22px;padding:60px 48px;
+    display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;border:1px solid var(--line)}
+  .news h2{font-size:clamp(1.8rem,3.8vw,2.6rem)}
+  .news p{color:var(--dim);margin:14px 0 0}
+  .news form{display:flex;gap:10px;flex-wrap:wrap}
+  .news input{flex:1;min-width:200px;padding:.95em 1.1em;border-radius:999px;border:1px solid var(--line);
+    background:rgba(0,0,0,.25);color:var(--ivory);font-size:1rem}
+  .news input::placeholder{color:var(--dim)}
+  @media(max-width:820px){.news{grid-template-columns:1fr;padding:40px 28px}}
+
+  /* ---------- footer ---------- */
+  footer{padding:64px 0 40px;border-top:1px solid var(--line);color:var(--dim)}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:36px;margin-bottom:40px}
+  .foot-grid h4{font-family:var(--sans);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--gold);margin:0 0 14px}
+  .foot-grid a{display:block;color:var(--dim);text-decoration:none;padding:4px 0;font-size:.92rem}
+  .foot-grid a:hover{color:var(--ivory)}
+  .foot-bottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.82rem;
+    padding-top:22px;border-top:1px solid var(--line)}
+  @media(max-width:720px){.foot-grid{grid-template-columns:1fr}}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-in">
+    <div class="brand">Yoga <b>des Singens</b></div>
+    <nav class="menu">
+      <a href="#about">Über mich</a>
+      <a href="#angebote">Angebote</a>
+      <a href="#termine">Termine</a>
+      <a href="#stimme">Stimmen</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <a href="#news" class="btn btn-primary">Newsletter</a>
+  </div>
+</header>
+
+<section class="hero">
+  <canvas id="wave"></canvas>
+  <div class="wrap hero-in">
+    <p class="eyebrow reveal">Singkreise · Kundalini Yoga · Breathwalking</p>
+    <h1 class="reveal">Deine Stimme<br>ist <em>Lebenskraft.</em></h1>
+    <p class="lead reveal">Ich bin Monia und ich liebe Singen und Yoga. Aus dieser Fülle möchte ich dir gern geben, dich heranführen und mit dir teilen.</p>
+    <div class="cta reveal">
+      <a href="#termine" class="btn btn-primary">Kommende Termine</a>
+      <a href="#angebote" class="btn btn-ghost">Was ich anbiete</a>
+    </div>
+  </div>
+  <div class="scrollcue">nach unten</div>
+</section>
+
+<section id="about">
+  <div class="wrap about">
+    <div class="portrait reveal"><span>Foto folgt — Monia am See</span></div>
+    <div class="reveal">
+      <p class="eyebrow">Über mich</p>
+      <h2 style="font-size:clamp(2rem,4vw,2.9rem);margin:12px 0 22px">Aus Freude, Kraft und Fülle.</h2>
+      <p>Singen und Yoga begleiten mich seit vielen Jahren – als Weg zu innerer Ruhe und als Kraftquelle, die ich weitergeben möchte. In meinen Kreisen brauchst du keine Vorkenntnisse und keine „schöne" Stimme. Nur deine Freude.</p>
+      <p style="color:var(--dim);font-size:.98rem">„Und jeder, der singt, ist ein Gewinn für die Erde. Gerade jetzt."</p>
+      <a href="#" class="btn btn-ghost">Meine Geschichte</a>
+    </div>
+  </div>
+</section>
+
+<section id="angebote">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Angebote</p>
+      <h2>Fünf Wege, deine Kraft zu erfahren.</h2>
+    </div>
+    <div class="offer-grid reveal">
+      <div class="offer"><div class="num">01</div><h3>Kraft des Singens</h3><p>Singkreise, Wandersingen, Einzelbegleitung, Singen fürs Baby und singende Rituale.</p><div class="go">Mehr erfahren →</div></div>
+      <div class="offer"><div class="num">02</div><h3>Kundalini Yoga</h3><p>Dynamisches Yoga für jedes Alter – wöchentliche Kurse in der Uckermark.</p><div class="go">Mehr erfahren →</div></div>
+      <div class="offer"><div class="num">03</div><h3>Breathwalking</h3><p>Bewusstes Atmen, Gehen und Achtsamkeit – deine Energietankstelle.</p><div class="go">Mehr erfahren →</div></div>
+      <div class="offer"><div class="num">04</div><h3>Bildungswochen</h3><p>Mehrtägige Bildungsurlaube in der Natur der Uckermark.</p><div class="go">Mehr erfahren →</div></div>
+      <div class="offer"><div class="num">05</div><h3>Yoga- &amp; Singreisen</h3><p>Gemeinsam unterwegs – am See, auf dem Berg, im Yogaraum.</p><div class="go">Mehr erfahren →</div></div>
+      <div class="offer" style="justify-content:center"><h3 style="color:var(--gold)">Für dich das Passende dabei?</h3><a href="#kontakt" class="go" style="color:var(--berry)">Schreib mir →</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="termine" class="termine">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Termine</p>
+      <h2>Was als Nächstes ansteht.</h2>
+    </div>
+    <div class="tabs reveal">
+      <span class="tab on">Kommend</span>
+      <span class="tab">Laufende Kurse</span>
+      <span class="tab">Rückblick</span>
+    </div>
+
+    <div class="reveal">
+      <div class="event">
+        <div class="date"><div class="d">18</div><div class="m">Jan 2026</div></div>
+        <div>
+          <h3>Offener Singabend</h3>
+          <div class="meta">Berlin-Pankow · 18:00 Uhr (Ankommen ab 17:50) · 20/25 € nach Selbsteinschätzung</div>
+          <span class="tagline">Einzeltermin</span>
+        </div>
+        <div class="act"><a href="#" class="btn btn-primary">Anmelden</a></div>
+      </div>
+      <div class="event">
+        <div class="date"><div class="d">06</div><div class="m">Juli 2026</div></div>
+        <div>
+          <h3>Bildungsurlaub: Stress im Berufsalltag bewältigen</h3>
+          <div class="meta">Gerswalde, Uckermark · 06.–10. Juli · Yoga, Atemtechniken &amp; Meditation</div>
+          <span class="tagline">Bildungswoche</span>
+        </div>
+        <div class="act"><a href="#" class="btn btn-ghost">Zur Anmeldung ↗</a></div>
+      </div>
+      <div class="event">
+        <div class="date"><div class="d">13</div><div class="m">Juli 2026</div></div>
+        <div>
+          <h3>Bildungsurlaub: Körper – Stimme – Klang</h3>
+          <div class="meta">Raum Gerswalde/Uckermark · 13.–17. Juli · begrenzte Teilnehmerzahl</div>
+          <span class="tagline">Bildungswoche</span>
+        </div>
+        <div class="act"><a href="#" class="btn btn-ghost">Zur Anmeldung ↗</a></div>
+      </div>
+    </div>
+
+    <div class="laufend reveal">
+      <h3>Laufende Kurse</h3>
+      <p class="hint">Wöchentlich – diese Kurse stehen dauerhaft, sie verschwinden nie aus dem Kalender.</p>
+      <div class="course"><b>Kundalini Yoga am Morgen · Aufbaukurs</b> <span>Di · Prenzlau · 09:30–11:00</span></div>
+      <div class="course"><b>Kundalini Yoga für Anfänger &amp; Übergewichtige</b> <span>Di · Prenzlau · 11:15–12:45</span></div>
+      <div class="course"><b>Kundalini Yoga am frühen Abend</b> <span>Di · Prenzlau · 17:45–19:15</span></div>
+      <div class="course"><b>Kundalini Yoga am Abend</b> <span>Di · Prenzlau · 19:20–20:50</span></div>
+      <div class="course"><b>Kundalini Yoga auf dem Lande</b> <span>Mi · Gerswalde · 18:30–20:00</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="stimme" class="voice">
+  <div class="wrap reveal">
+    <p class="eyebrow">Stimmen</p>
+    <blockquote>Ich kam ohne Erwartung und ging mit offenem Herzen. Diese Abende tragen mich durch die Woche.“</blockquote>
+    <cite>— Teilnehmerin, Singkreis Uckermark</cite>
+    <div class="note">Beispiel-Stimme (echte Teilnehmerstimmen folgen)</div>
+  </div>
+</section>
+
+<section id="news">
+  <div class="wrap">
+    <div class="news reveal">
+      <div>
+        <p class="eyebrow">Newsletter</p>
+        <h2>Kein Termin verpassen.</h2>
+        <p>Neue Singkreise, Bildungswochen und Reisen – ich schreibe dir, wenn etwas Schönes ansteht.</p>
+      </div>
+      <form onsubmit="return false">
+        <input type="email" placeholder="deine@email.de" aria-label="E-Mail">
+        <button class="btn btn-primary" type="submit">Eintragen</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer id="kontakt">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="font-size:1.8rem;margin-bottom:14px">Yoga <b>des Singens</b></div>
+        <p style="max-width:40ch;color:var(--dim)">Du kannst mich per Mail erreichen. Ich freue mich auf deine Nachricht!</p>
+        <a href="mailto:moni.goettlich@posteo.de" class="btn btn-ghost" style="margin-top:10px">moni.goettlich@posteo.de</a>
+      </div>
+      <div>
+        <h4>Seiten</h4>
+        <a href="#about">Über mich</a><a href="#angebote">Angebote</a><a href="#termine">Termine</a><a href="#stimme">Stimmen</a>
+      </div>
+      <div>
+        <h4>Rechtliches</h4>
+        <a href="#">Impressum</a><a href="#">Datenschutz</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© Yoga des Singens · Monia Dill</span>
+      <span>Uckermark · Berlin</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Klangwellen-Hintergrund
+(function(){
+  const c=document.getElementById('wave'); if(!c) return;
+  const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const ctx=c.getContext('2d'); let w,h,t=0;
+  function size(){w=c.width=c.offsetWidth*devicePixelRatio;h=c.height=c.offsetHeight*devicePixelRatio;}
+  size(); addEventListener('resize',size);
+  const cols=['rgba(232,85,138,.55)','rgba(240,128,95,.4)','rgba(220,171,84,.32)'];
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let l=0;l<3;l++){
+      ctx.beginPath();
+      const amp=(h/7)*(1+l*.35), yb=h*0.5+l*22*devicePixelRatio, k=0.004+l*0.0012, sp=t*(0.6+l*0.25);
+      for(let x=0;x<=w;x+=6){
+        const y=yb+Math.sin(x*k+sp)*amp*Math.sin(x*0.0009+sp*0.5);
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle=cols[l];ctx.lineWidth=1.4*devicePixelRatio;ctx.stroke();
+    }
+    t+=0.02; requestAnimationFrame(draw);
+  }
+  if(reduce){ // statischer Wellenzug
+    ctx.clearRect(0,0,w,h);
+    ctx.beginPath();for(let x=0;x<=w;x+=6){const y=h*0.5+Math.sin(x*0.005)*h/7;x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.strokeStyle=cols[0];ctx.lineWidth=1.4*devicePixelRatio;ctx.stroke();
+  } else draw();
+})();
+// Reveal on scroll
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  const io=new IntersectionObserver((e)=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.15});
+  els.forEach(e=>io.observe(e));
+})();
+</script>
+</body>
+</html>
