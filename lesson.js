@@ -22,6 +22,9 @@
 
   var NEW_PER_DAY = 5;
   var REVIEW_MAX = 8;         // max. Vokabeln in der Wiederholung
+  var BASE_SENT = 5;          // Alltagssätze aus dem Satz-Pool pro Lektion
+  var GRAMMAR_PRACTICE = 6;   // Übungen im Grammatik-Teil
+  var GRAMMAR_REVIEW = 3;     // Übungen in der Grammatik-Wiederholung
   var GRAMMAR_DAYS = 4;       // ein Grammatik-Thema bleibt so viele Tage
   var SRS_INTERVAL = [1, 1, 2, 3, 5, 8]; // Tage bis Wiederfälligkeit je Level
   var MASTER_VOCAB_LEVEL = 4; // ab hier gilt eine Vokabel als "gelernt"
@@ -169,7 +172,7 @@
       segments.push({
         type: "quiz",
         title: "🔁 Grammatik-Wiederholung",
-        questions: pickGrammarQuestions(prevModule, 3)
+        questions: pickGrammarQuestions(prevModule, GRAMMAR_REVIEW)
       });
     }
 
@@ -231,6 +234,18 @@
       }
     }
 
+    // --- Alltagssätze (macht die Lektion voller, ~10 Min) ---
+    var baseQs = pickBaseSentences(BASE_SENT).map(function (s) {
+      return { kind: "type", id: s.id, prompt: s.de, accept: s.it };
+    });
+    if (baseQs.length) {
+      segments.push({
+        type: "quiz",
+        title: "✍️ Sätze aus deinem Alltag",
+        questions: baseQs
+      });
+    }
+
     // --- Schritt 5: Grammatik-Teil (aktuelles Thema) ---
     segments.push({
       type: "info",
@@ -241,7 +256,7 @@
     segments.push({
       type: "quiz",
       title: "🧩 Grammatik üben",
-      questions: pickGrammarQuestions(currentModule, 5),
+      questions: pickGrammarQuestions(currentModule, GRAMMAR_PRACTICE),
       grammarModuleId: currentModule.id
     });
 
@@ -259,6 +274,21 @@
       prompt: v.de,
       accept: [v.it]
     };
+  }
+
+  // Alltagssätze aus dem Satz-Pool (data.js) – nach Niveau, Fokus auf Wackliges.
+  function pickBaseSentences(n) {
+    var pool = (window.APP_DATA && window.APP_DATA.sentences || [])
+      .filter(function (s) { return levelLE(s.cefr, S.level); });
+    var scored = pool.map(function (s) {
+      var e = C.getEntry(s.id) || { correct: 0, wrong: 0, last: null };
+      var w = 1 + (e.wrong || 0) * 2;
+      if (e.correct === 0 && e.wrong === 0) w += 1; // noch nie geübt
+      if (e.last === "no") w += 2;
+      return { s: s, w: w + Math.random() };
+    });
+    scored.sort(function (a, b) { return b.w - a.w; });
+    return scored.slice(0, n).map(function (x) { return x.s; });
   }
 
   function pickGrammarQuestions(module, n) {
