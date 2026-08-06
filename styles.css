@@ -35,8 +35,8 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 17px;
-  line-height: 1.45;
+  font-size: 16px;
+  line-height: 1.4;
   overscroll-behavior-y: none;
 }
 
@@ -87,7 +87,7 @@ html, body {
 /* Main view */
 #view {
   flex: 1;
-  padding: 16px 16px calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 20px);
+  padding: 10px 14px calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 16px);
   max-width: 640px;
   width: 100%;
   margin: 0 auto;
@@ -127,14 +127,14 @@ html, body {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: 15px;
+  margin-bottom: 12px;
 }
 .meta-row {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 .badge {
   font-size: 12px;
@@ -148,14 +148,15 @@ html, body {
 .badge.gray { background: var(--line); color: var(--muted); }
 
 .prompt-de {
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 600;
-  margin: 4px 0 18px;
+  line-height: 1.3;
+  margin: 2px 0 10px;
 }
 .hint {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
-  margin: 0 0 14px;
+  margin: 0 0 8px;
 }
 
 textarea, input.answer {
@@ -164,8 +165,8 @@ textarea, input.answer {
   border-radius: 12px;
   background: #f7f5f2;
   color: var(--text);
-  font-size: 18px;
-  padding: 12px 14px;
+  font-size: 16px;
+  padding: 10px 12px;
   font-family: inherit;
   resize: none;
 }
@@ -180,16 +181,16 @@ textarea:focus, input.answer:focus {
   width: 100%;
   border: none;
   border-radius: 12px;
-  padding: 14px;
-  font-size: 17px;
-  font-weight: 600;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 .btn.primary { background: var(--action); color: var(--action-ink); }
 .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
 .btn-row { display: flex; gap: 10px; }
-.btn-row .btn { margin-top: 12px; }
+.btn-row .btn { margin-top: 10px; }
 
 /* Choice buttons (quiz) */
 .choice {
@@ -198,10 +199,10 @@ textarea:focus, input.answer:focus {
   border: 2px solid var(--line);
   background: var(--card);
   color: var(--text);
-  border-radius: 14px;
-  padding: 15px 16px;
-  font-size: 18px;
-  margin-top: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  margin-top: 9px;
   cursor: pointer;
   transition: border-color .15s, background .15s;
 }
@@ -211,10 +212,10 @@ textarea:focus, input.answer:focus {
 
 /* Feedback box */
 .feedback {
-  border-radius: 14px;
-  padding: 15px 16px;
-  margin-top: 16px;
-  font-size: 16px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 15px;
 }
 .feedback.ok { background: var(--green-soft); }
 .feedback.no { background: var(--red-soft); }
@@ -223,8 +224,8 @@ textarea:focus, input.answer:focus {
 .feedback .lead.ok { color: var(--green); }
 .feedback .lead.no { color: var(--red); }
 .feedback .lead.near { color: var(--amber); }
-.solution { font-size: 18px; font-weight: 600; margin: 4px 0; }
-.solution.alt { font-weight: 500; color: var(--muted); font-size: 16px; }
+.solution { font-size: 16px; font-weight: 600; margin: 3px 0; }
+.solution.alt { font-weight: 500; color: var(--muted); font-size: 15px; }
 
 .explanation { font-size: 15px; line-height: 1.5; }
 .explanation strong { color: var(--brand); }
@@ -271,7 +272,7 @@ textarea:focus, input.answer:focus {
   color: var(--muted);
   padding: 40px 16px;
 }
-.progress-line { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+.progress-line { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
 
 /* Tabbar */
 .tabbar {
@@ -311,9 +312,9 @@ textarea:focus, input.answer:focus {
 }
 
 /* ---- Lektion ---- */
-.lesson-head { margin-bottom: 12px; }
-.lesson-step { font-size: 13px; color: var(--muted); margin: 0 0 2px; font-weight: 600; }
-.lesson-title { font-size: 21px; margin: 0; }
+.lesson-head { margin-bottom: 8px; }
+.lesson-step { font-size: 12px; color: var(--muted); margin: 0 0 2px; font-weight: 600; }
+.lesson-title { font-size: 18px; margin: 0; line-height: 1.25; }
 .level-pill {
   display: inline-block;
   background: var(--brand);
@@ -324,27 +325,32 @@ textarea:focus, input.answer:focus {
   border-radius: 999px;
 }
 .rule {
-  font-size: 16px;
-  line-height: 1.6;
-  background: var(--green-soft);
+  font-size: 15px;
+  line-height: 1.45;
+  background: var(--brand-soft);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 11px 14px;
   margin-bottom: 4px;
 }
 .rule strong { color: var(--brand); }
 .rule em { color: var(--red); font-style: normal; font-weight: 600; }
+
+/* Grammatik-Fortschritt (bleibt über mehrere Tage) */
+.gram-prog { margin: 12px 0 2px; }
+.gram-prog .gp-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; margin-bottom: 4px; }
+.gram-prog .gp-pct { font-weight: 700; color: var(--brand); }
 
 .vocab-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 12px;
-  padding: 12px 4px;
+  padding: 9px 4px;
   border-bottom: 1px solid var(--line);
 }
 .vocab-row:last-of-type { border-bottom: none; }
-.vocab-it { font-size: 20px; font-weight: 700; color: var(--brand); }
-.vocab-de { font-size: 16px; color: var(--muted); text-align: right; }
+.vocab-it { font-size: 18px; font-weight: 700; color: var(--brand); }
+.vocab-de { font-size: 15px; color: var(--muted); text-align: right; }
 
 .curr-item {
   font-size: 15px;

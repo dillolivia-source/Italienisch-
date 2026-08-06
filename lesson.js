@@ -20,15 +20,15 @@
   var MODULES = D.grammarModules;
   var CURRICULUM = D.curriculum;
 
-  var NEW_PER_DAY = 5;
-  var REVIEW_MAX = 8;         // max. Vokabeln in der Wiederholung
-  var BASE_SENT = 5;          // Alltagssätze aus dem Satz-Pool pro Lektion
-  var GRAMMAR_PRACTICE = 6;   // Übungen im Grammatik-Teil
-  var GRAMMAR_REVIEW = 3;     // Übungen in der Grammatik-Wiederholung
+  var NEW_PER_DAY = 8;        // neue Vokabeln pro Lektion
+  var REVIEW_MAX = 16;        // max. Vokabeln in der Wiederholung
+  var BASE_SENT = 14;         // Alltagssätze aus dem Satz-Pool pro Lektion
+  var GRAMMAR_PRACTICE = 8;   // Übungen im Grammatik-Teil
+  var GRAMMAR_REVIEW = 5;     // Übungen in der Grammatik-Wiederholung
   var GRAMMAR_DAYS = 4;       // ein Grammatik-Thema bleibt so viele Tage
   var SRS_INTERVAL = [1, 1, 2, 3, 5, 8]; // Tage bis Wiederfälligkeit je Level
   var MASTER_VOCAB_LEVEL = 4; // ab hier gilt eine Vokabel als "gelernt"
-  var MASTER_GRAMMAR_HITS = 12; // so viele richtige Antworten → Modul "gelernt"
+  var MASTER_GRAMMAR_HITS = 18; // so viele richtige Antworten → Modul "gelernt" (über mehrere Tage)
 
   var LS_KEY = "olivia-it-lesson-v2";
 
@@ -117,6 +117,9 @@
   }
   function grammarMastered(moduleId) {
     return (S.grammarHits[moduleId] || 0) >= MASTER_GRAMMAR_HITS;
+  }
+  function grammarPct(moduleId) {
+    return Math.min(100, Math.round(((S.grammarHits[moduleId] || 0) / MASTER_GRAMMAR_HITS) * 100));
   }
   function curriculumProgress(level) {
     var g = (CURRICULUM[level] && CURRICULUM[level].grammar) || [];
@@ -253,7 +256,9 @@
       type: "info",
       title: "🧩 Grammatik: " + currentModule.title,
       html: C.mdInline(currentModule.rule),
-      note: "Tag " + S.dayOnTopic + " von " + GRAMMAR_DAYS + " zu diesem Thema."
+      note: "Tag " + S.dayOnTopic + " von " + GRAMMAR_DAYS + " zu diesem Thema.",
+      progressModuleId: currentModule.id,
+      progressLabel: currentModule.title
     });
     segments.push({
       type: "quiz",
@@ -397,13 +402,19 @@
     card.appendChild(C.el('<p class="hint" style="margin:12px 0 2px">Wortschatz: ' + p.vocabDone + '/' + p.vocabTotal + ' sitzt</p>'));
     card.appendChild(bar(vPct));
 
-    // Themenliste mit Status
+    // Themenliste mit Status + Fortschrittsbalken je Grammatik-Thema
     var list = C.el('<div style="margin-top:14px"></div>');
     p.items.forEach(function (t) {
-      var done = t.status === "ready" && grammarMastered(t.moduleId);
-      var icon = t.status === "planned" ? "⏳" : (done ? "✅" : "◻️");
+      var isReady = t.status === "ready";
+      var pct = isReady ? grammarPct(t.moduleId) : 0;
+      var done = isReady && grammarMastered(t.moduleId);
+      var icon = t.status === "planned" ? "⏳" : (done ? "✅" : (pct > 0 ? "📘" : "◻️"));
       var extra = t.status === "planned" ? ' <span class="badge gray">geplant</span>' : "";
-      list.appendChild(C.el('<p class="curr-item">' + icon + " " + C.esc(t.topic) + extra + "</p>"));
+      var item = C.el('<div class="curr-item" style="margin:9px 0"></div>');
+      item.appendChild(C.el('<div class="gp-row"><span>' + icon + " " + C.esc(t.topic) + extra +
+        '</span>' + (isReady ? '<span class="gp-pct">' + pct + '%</span>' : '') + '</div>'));
+      if (isReady) item.appendChild(bar(pct));
+      list.appendChild(item);
     });
     card.appendChild(list);
     root.appendChild(card);
@@ -456,6 +467,14 @@
     if (seg.type === "info") {
       var card = C.el('<div class="card"></div>');
       card.appendChild(C.el('<div class="rule">' + seg.html + "</div>"));
+      if (seg.progressModuleId) {
+        var pct = grammarPct(seg.progressModuleId);
+        var gp = C.el('<div class="gram-prog"></div>');
+        gp.appendChild(C.el('<div class="gp-row"><span>' + C.esc(seg.progressLabel) +
+          '</span><span class="gp-pct">' + pct + '% geschafft</span></div>'));
+        gp.appendChild(bar(pct));
+        card.appendChild(gp);
+      }
       var btn = C.el('<button class="btn primary">Weiter →</button>');
       btn.onclick = nextSegment;
       card.appendChild(btn);
