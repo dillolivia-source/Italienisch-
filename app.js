@@ -19,6 +19,18 @@
     work: "Arbeit", basics: "Grundlagen", social: "Soziales"
   };
 
+  /* ---------- Speicher-Prüfung (localStorage verfügbar?) ---------- */
+  function storageWorks() {
+    try {
+      const k = "__olivia_test__";
+      localStorage.setItem(k, "1");
+      const ok = localStorage.getItem(k) === "1";
+      localStorage.removeItem(k);
+      return ok;
+    } catch (e) { return false; }
+  }
+  const STORAGE_OK = storageWorks();
+
   /* ---------- Fortschritt (localStorage) ---------- */
   const STORE_KEY = "olivia-it-progress-v1";
   function loadProgress() {
@@ -260,6 +272,7 @@
     wordDiff: wordDiffSmart,
     pickClosest: pickClosest,
     noteField: noteField,
+    storageOk: STORAGE_OK,
     addWishword: addWishword,
     getWishlist: loadWish,
     removeWishword: function (word) {
@@ -653,6 +666,13 @@
       render();
     }
   });
+
+  // Warnung, falls der Browser nichts speichern kann (z. B. privater Modus)
+  if (!STORAGE_OK) {
+    const banner = $('<div class="storage-warn">⚠️ <b>Dein Browser speichert gerade nichts</b> – dein Fortschritt geht beim Schließen verloren.<br>Tipp: <b>nicht im privaten Modus</b> surfen und die App über „Zum Home-Bildschirm" öffnen.</div>');
+    const tb = document.querySelector(".topbar");
+    if (tb) tb.insertAdjacentElement("afterend", banner);
+  }
 
   // Erst rendern, wenn alle Skripte (inkl. lesson.js) geladen sind
   if (document.readyState === "loading") {

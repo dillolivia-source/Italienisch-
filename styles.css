@@ -311,6 +311,17 @@ textarea:focus, input.answer:focus {
   margin-top: 10px;
 }
 
+.storage-warn {
+  background: var(--red-soft);
+  color: #8a2b20;
+  border-bottom: 1px solid #f3c4bd;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+.storage-warn b { color: #8a2b20; }
+
 /* ---- Lektion ---- */
 .lesson-head { margin-bottom: 8px; }
 .lesson-step { font-size: 12px; color: var(--muted); margin: 0 0 2px; font-weight: 600; }
