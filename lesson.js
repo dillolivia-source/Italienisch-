@@ -16,16 +16,27 @@
   var C = window.Core;
   var D = window.LESSON_DATA;
 
-  var VOCAB = D.vocab;
   var MODULES = D.grammarModules;
   var CURRICULUM = D.curriculum;
 
-  var NEW_PER_DAY = 8;        // neue Vokabeln pro Lektion
-  var REVIEW_MAX = 16;        // max. Vokabeln in der Wiederholung
-  var BASE_SENT = 14;         // Alltagssätze aus dem Satz-Pool pro Lektion
-  var GRAMMAR_PRACTICE = 8;   // Übungen im Grammatik-Teil
-  var GRAMMAR_REVIEW = 5;     // Übungen in der Grammatik-Wiederholung
-  var GRAMMAR_DAYS = 4;       // ein Grammatik-Thema bleibt so viele Tage
+  // Eigene Vokabeln (von Olivia hinzugefügt) – lokal gespeichert
+  var USERVOCAB_KEY = "olivia-it-uservocab-v1";
+  function loadUserVocab() { try { return JSON.parse(localStorage.getItem(USERVOCAB_KEY)) || []; } catch (e) { return []; } }
+  function saveUserVocab(a) { try { localStorage.setItem(USERVOCAB_KEY, JSON.stringify(a)); } catch (e) {} }
+  function allVocab() { return D.vocab.concat(loadUserVocab()); }
+
+  // Lektionslängen zur Auswahl (5 / 10 / 15 Min)
+  var LENGTHS = {
+    short:  { label: "5 Min",  newVoc: 4, review: 6,  base: 5,  gram: 5, gramReview: 3 },
+    medium: { label: "10 Min", newVoc: 6, review: 10, base: 9,  gram: 7, gramReview: 4 },
+    long:   { label: "15 Min", newVoc: 8, review: 16, base: 14, gram: 8, gramReview: 5 }
+  };
+  var LENGTH_ORDER = ["short", "medium", "long"];
+  function curLen() { return LENGTHS[S.lengthPref] || LENGTHS.medium; }
+
+  var LEARN_DAYS = 2;         // ein neues Grammatik-Thema wird 2 Lektionen gelernt
+  // Auffrischungs-Abstände (in Lektionen) je Box – verdoppeln sich bei Erfolg
+  var GRAM_INTERVALS = [2, 4, 8, 16, 32, 64];
   var SRS_INTERVAL = [1, 1, 2, 3, 5, 8]; // Tage bis Wiederfälligkeit je Level
   var MASTER_VOCAB_LEVEL = 4; // ab hier gilt eine Vokabel als "gelernt"
   var MASTER_GRAMMAR_HITS = 18; // so viele richtige Antworten → Modul "gelernt" (über mehrere Tage)
@@ -41,10 +52,13 @@
       completedDate: null,     // Datum der letzten ABGESCHLOSSENEN Lektion
       introduced: [],          // Vokabel-IDs, die schon eingeführt wurden
       srs: {},                 // id -> {level, streak, wrong, due, last}
-      grammarIndex: 0,         // Position im Modul-Rotationsplan (pro Level)
-      dayOnTopic: 0,           // an welchem Tag (1..GRAMMAR_DAYS) des Themas
-      lastGrammarModuleId: null, // Modul der vorigen Lektion (für Schritt 1)
-      grammarHits: {},         // moduleId -> Anzahl richtiger Antworten
+      lengthPref: "medium",    // Lektionslänge: short/medium/long (5/10/15 Min)
+      // --- Grammatik-SRS (Themen-Ebene) ---
+      learnIndex: 0,           // Position im Lern-Plan der Grammatik-Themen
+      learnDays: 0,            // wie viele Lektionen schon am aktuellen Lernthema
+      gramSrs: {},             // moduleId -> {box, due, wrong, seen}
+      gramLessonStats: {},     // moduleId -> {c, w} in DIESER Lektion (für Neuplanung)
+      grammarHits: {},         // moduleId -> Anzahl richtiger Antworten (Fortschrittsbalken)
       plan: null,              // aktuell laufender Lektionsplan
       seg: 0,                  // aktueller Segment-Index im Plan
       segSolved: {},           // im aktuellen Segment schon richtig gelöste Fragen (für Resume)
@@ -77,11 +91,64 @@
   function levelLE(a, b) { return LEVEL_ORDER.indexOf(a) <= LEVEL_ORDER.indexOf(b); }
 
   function vocabForLevel() {
-    return VOCAB.filter(function (v) { return levelLE(v.cefr, S.level); });
+    return allVocab().filter(function (v) { return levelLE(v.cefr, S.level); });
   }
   function modulesForLevel() {
     // aktuelles Niveau UND darunter (A1-Themen werden bei A2 mitgeübt)
     return MODULES.filter(function (m) { return levelLE(m.cefr, S.level); });
+  }
+  function moduleById(id) {
+    return MODULES.filter(function (m) { return m.id === id; })[0] || null;
+  }
+  // Pädagogische Lern-Reihenfolge der Grammatik: aus dem Curriculum (A1 → A2 → …),
+  // nur vorhandene Module bis zum aktuellen Niveau.
+  function learnOrder() {
+    var ids = [], seen = {};
+    LEVEL_ORDER.forEach(function (lv) {
+      if (!levelLE(lv, S.level)) return;
+      var g = (CURRICULUM[lv] && CURRICULUM[lv].grammar) || [];
+      g.forEach(function (t) {
+        if (t.status === "ready" && t.moduleId && moduleById(t.moduleId) && !seen[t.moduleId]) {
+          seen[t.moduleId] = 1; ids.push(t.moduleId);
+        }
+      });
+    });
+    // eventuelle Module ohne Curriculum-Eintrag hinten anhängen
+    modulesForLevel().forEach(function (m) { if (!seen[m.id]) { seen[m.id] = 1; ids.push(m.id); } });
+    return ids;
+  }
+  /* ---------------- Grammatik-SRS (Themen-Ebene) ---------------- */
+  function gramFor(id) {
+    if (!S.gramSrs[id]) S.gramSrs[id] = { box: 0, due: S.lessonNo, wrong: 0, seen: false };
+    return S.gramSrs[id];
+  }
+  // Nach einer Lektion: Box/Fälligkeit eines Themas anhand richtig/falsch neu setzen.
+  function scheduleGram(id, correct, wrong) {
+    var e = gramFor(id);
+    e.seen = true;
+    if (wrong > 0) {
+      e.box = Math.max(0, e.box - 1);   // Fehler → zurück, kommt schneller wieder
+      e.wrong += wrong;
+    } else if (correct > 0) {
+      e.box = Math.min(GRAM_INTERVALS.length - 1, e.box + 1); // Erfolg → längerer Abstand
+    }
+    e.due = S.lessonNo + GRAM_INTERVALS[e.box];
+    save();
+  }
+  // Wähle ein Auffrischungs-Thema: fällig & schwach zuerst; nie das Lernthema.
+  function pickRefresher(excludeId) {
+    var cand = Object.keys(S.gramSrs).filter(function (id) {
+      return id !== excludeId && S.gramSrs[id].seen && moduleById(id);
+    });
+    if (!cand.length) return null;
+    var due = cand.filter(function (id) { return S.gramSrs[id].due <= S.lessonNo; });
+    var pool = due.length ? due : cand; // sonst das am ehesten fällige
+    pool.sort(function (a, b) {
+      var ea = S.gramSrs[a], eb = S.gramSrs[b];
+      if ((eb.wrong || 0) !== (ea.wrong || 0)) return (eb.wrong || 0) - (ea.wrong || 0);
+      return ea.due - eb.due;
+    });
+    return pool[0];
   }
 
   /* ---------------- SRS-Helfer ---------------- */
@@ -107,7 +174,7 @@
 
   /* ---------------- Fortschritt / Curriculum ---------------- */
   function vocabMasteredCount(level) {
-    var pool = VOCAB.filter(function (v) { return levelLE(v.cefr, level); });
+    var pool = allVocab().filter(function (v) { return levelLE(v.cefr, level); });
     var n = 0;
     pool.forEach(function (v) {
       var e = S.srs[v.id];
@@ -148,40 +215,36 @@
   function buildPlan() {
     S.lessonNo += 1;
     S.lastDate = todayKey();
+    S.gramLessonStats = {};
+    var L = curLen();
 
-    // Grammatik-Rotation bestimmen
-    var mods = modulesForLevel();
-    if (mods.length === 0) mods = MODULES; // Fallback
-    if (S.dayOnTopic === 0 || S.dayOnTopic >= GRAMMAR_DAYS) {
-      // neues Thema
-      if (S.dayOnTopic !== 0) S.grammarIndex = (S.grammarIndex + 1) % mods.length;
-      S.dayOnTopic = 1;
+    // --- Grammatik: neues Lernthema bestimmen (LEARN_DAYS Lektionen lang) ---
+    var order = learnOrder();
+    if (order.length === 0) order = modulesForLevel().map(function (m) { return m.id; });
+    if (S.learnDays >= LEARN_DAYS) {
+      S.learnIndex = (S.learnIndex + 1) % order.length;
+      S.learnDays = 1;
     } else {
-      S.dayOnTopic += 1;
+      S.learnDays = (S.learnDays || 0) + 1;
     }
-    var currentModule = mods[S.grammarIndex % mods.length];
+    var learnMod = moduleById(order[S.learnIndex % order.length]) || moduleById(order[0]);
+
+    // --- Grammatik: Auffrischungsthema (fällig/schwach, nie das Lernthema) ---
+    var rid = pickRefresher(learnMod ? learnMod.id : null);
+    var refresherMod = rid ? moduleById(rid) : null;
 
     var segments = [];
 
-    // --- Schritt 1: Grammatik-Wiederholung der letzten Lektion ---
-    var prevModule = S.lastGrammarModuleId
-      ? MODULES.filter(function (m) { return m.id === S.lastGrammarModuleId; })[0]
-      : null;
-    if (prevModule) {
-      segments.push({
-        type: "info",
-        title: "🔁 Wiederholung: " + prevModule.title,
-        html: C.mdInline(prevModule.rule),
-        note: "Kurze Auffrischung vom letzten Mal."
-      });
+    // 1. Auffrischung eines früheren Grammatik-Themas (Spaced Repetition)
+    if (refresherMod) {
       segments.push({
         type: "quiz",
-        title: "🔁 Grammatik-Wiederholung",
-        questions: pickGrammarQuestions(prevModule, GRAMMAR_REVIEW)
+        title: "🔁 Auffrischung: " + refresherMod.title,
+        questions: pickGrammarQuestions(refresherMod, L.gramReview)
       });
     }
 
-    // --- Schritt 2: Vokabel-Wiederholung (adaptiv) ---
+    // 2. Vokabel-Wiederholung (adaptiv)
     var due = vocabForLevel().filter(function (v) {
       return S.introduced.indexOf(v.id) !== -1 &&
         (S.srs[v.id] ? S.srs[v.id].due <= S.lessonNo : true);
@@ -189,10 +252,10 @@
     due.sort(function (a, b) {
       var ea = S.srs[a.id] || { wrong: 0, level: 0 };
       var eb = S.srs[b.id] || { wrong: 0, level: 0 };
-      if (eb.wrong !== ea.wrong) return eb.wrong - ea.wrong; // mehr Fehler zuerst
-      return ea.level - eb.level;                            // niedrigeres Level zuerst
+      if (eb.wrong !== ea.wrong) return eb.wrong - ea.wrong;
+      return ea.level - eb.level;
     });
-    due = due.slice(0, REVIEW_MAX);
+    due = due.slice(0, L.review);
     if (due.length) {
       segments.push({
         type: "quiz",
@@ -202,10 +265,10 @@
       });
     }
 
-    // --- Schritt 3: 5 neue Vokabeln ---
+    // 3. neue Vokabeln + sofortige Abfrage
     var fresh = vocabForLevel().filter(function (v) {
       return S.introduced.indexOf(v.id) === -1;
-    }).slice(0, NEW_PER_DAY);
+    }).slice(0, L.newVoc);
 
     if (fresh.length) {
       segments.push({
@@ -220,15 +283,9 @@
         srs: true,
         introduce: fresh.map(function (v) { return v.id; })
       });
-      // --- Schritt 4: Übersetzungen mit den neuen Vokabeln ---
+      // 4. Übersetzungen mit den neuen Vokabeln
       var transQs = fresh.filter(function (v) { return v.ex; }).map(function (v) {
-        // Kein Vokabel-Hinweis in der Auswertung – nur Rot/Grün-Diff.
-        return {
-          kind: "type",
-          id: v.id + "_ex",
-          prompt: v.ex.de,
-          accept: v.ex.it
-        };
+        return { kind: "type", id: v.id + "_ex", prompt: v.ex.de, accept: v.ex.it };
       });
       if (transQs.length) {
         segments.push({
@@ -239,8 +296,8 @@
       }
     }
 
-    // --- Alltagssätze (macht die Lektion voller, ~10 Min) ---
-    var baseQs = pickBaseSentences(BASE_SENT).map(function (s) {
+    // 5. Alltagssätze
+    var baseQs = pickBaseSentences(L.base).map(function (s) {
       return { kind: "type", id: s.id, prompt: s.de, accept: s.it };
     });
     if (baseQs.length) {
@@ -251,26 +308,27 @@
       });
     }
 
-    // --- Schritt 5: Grammatik-Teil (aktuelles Thema) ---
-    segments.push({
-      type: "info",
-      title: "🧩 Grammatik: " + currentModule.title,
-      html: C.mdInline(currentModule.rule),
-      note: "Tag " + S.dayOnTopic + " von " + GRAMMAR_DAYS + " zu diesem Thema.",
-      progressModuleId: currentModule.id,
-      progressLabel: currentModule.title
-    });
-    segments.push({
-      type: "quiz",
-      title: "🧩 Grammatik üben",
-      questions: pickGrammarQuestions(currentModule, GRAMMAR_PRACTICE),
-      grammarModuleId: currentModule.id
-    });
+    // 6. Neues Grammatik-Thema: erst Regel erklären, dann üben
+    if (learnMod) {
+      segments.push({
+        type: "info",
+        title: "🧩 Grammatik: " + learnMod.title,
+        html: C.mdInline(learnMod.rule),
+        note: "Neu · Tag " + S.learnDays + " von " + LEARN_DAYS + " – danach im Auffrischungs-Rhythmus.",
+        progressModuleId: learnMod.id,
+        progressLabel: learnMod.title
+      });
+      segments.push({
+        type: "quiz",
+        title: "🧩 Grammatik üben",
+        questions: pickGrammarQuestions(learnMod, L.gram),
+        grammarModuleId: learnMod.id
+      });
+    }
 
-    S.plan = { segments: segments, moduleId: currentModule.id, lessonNo: S.lessonNo };
+    S.plan = { segments: segments, lessonNo: S.lessonNo };
     S.seg = 0;
     S.segSolved = {};
-    S.lastGrammarModuleId = currentModule.id;
     save();
   }
 
@@ -366,8 +424,18 @@
         S.lessonNo + ' Lektion' + (S.lessonNo === 1 ? "" : "en") + ' · ' +
         S.introduced.length + ' Vokabeln gelernt. Weiter geht’s mit Lektion ' + (S.lessonNo + 1) + '.</p>'));
     }
-    card.appendChild(C.el('<p class="hint">Heute: kurze Wiederholung, ' +
-      NEW_PER_DAY + ' neue Vokabeln und dein Grammatik-Thema.</p>'));
+    card.appendChild(C.el('<p class="hint" style="margin-bottom:6px">Wie lange möchtest du üben?</p>'));
+    var chips = C.el('<div class="len-row"></div>');
+    LENGTH_ORDER.forEach(function (key) {
+      var c = C.el('<button class="chip" aria-pressed="' + (S.lengthPref === key) + '">' +
+        C.esc(LENGTHS[key].label) + '</button>');
+      c.onclick = function () { S.lengthPref = key; save(); renderStartScreen_refresh(); };
+      chips.appendChild(c);
+    });
+    card.appendChild(chips);
+
+    card.appendChild(C.el('<p class="hint" style="margin-top:10px">Heute: kurze Auffrischung, ' +
+      curLen().newVoc + ' neue Vokabeln, Sätze und dein Grammatik-Thema.</p>'));
 
     var btn = C.el('<button class="btn primary">Lektion starten →</button>');
     btn.onclick = function () { buildPlan(); render(root); };
@@ -376,6 +444,8 @@
 
     renderProgressCard();
   }
+  // Startbildschirm neu zeichnen (nach Längenauswahl), ohne Plan zu bauen
+  function renderStartScreen_refresh() { root.innerHTML = ""; renderStartScreen(); }
 
   function renderDoneToday() {
     var card = C.el('<div class="card" style="text-align:center"></div>');
@@ -428,7 +498,7 @@
       var go = C.el('<button class="btn primary">Auf B1 wechseln</button>');
       go.onclick = function () {
         if (confirm("Ab jetzt Lektionen auf B1-Niveau? (Du kannst später zurückwechseln.)")) {
-          S.level = "B1"; S.grammarIndex = 0; S.dayOnTopic = 0; S.b1Offered = true;
+          S.level = "B1"; S.learnIndex = 0; S.learnDays = 0; S.b1Offered = true;
           save(); render(root);
         }
       };
@@ -445,7 +515,7 @@
       var a = C.el('<a href="#" style="margin:0 6px;' + (lv === S.level ? "font-weight:700" : "") + '">' + lv + "</a>");
       a.onclick = function (e) {
         e.preventDefault();
-        S.level = lv; S.grammarIndex = 0; S.dayOnTopic = 0; save(); render(root);
+        S.level = lv; S.learnIndex = 0; S.learnDays = 0; save(); render(root);
       };
       sw.appendChild(a);
     });
@@ -518,6 +588,12 @@
 
   function finishLesson() {
     S.completedDate = todayKey();
+    // Grammatik-Themen dieser Lektion neu einplanen (Box/Fälligkeit nach richtig/falsch)
+    Object.keys(S.gramLessonStats || {}).forEach(function (mid) {
+      var st = S.gramLessonStats[mid];
+      scheduleGram(mid, st.c || 0, st.w || 0);
+    });
+    S.gramLessonStats = {};
     S.plan = null;
     S.seg = 0;
     save();
@@ -568,10 +644,12 @@
       // Statistik + SRS/Grammatik-Protokoll
       C.record(q.id, ok);
       if (seg.srs) srsUpdate(q.id, ok);
-      // Grammatik-Protokoll: pro richtiger Antwort genau einmal zählen
-      if (ok) {
-        var mid = q.moduleId || seg.grammarModuleId;
-        if (mid) registerGrammarHit(mid);
+      // Grammatik-Protokoll: richtig/falsch pro Thema für die Neuplanung (SRS)
+      var mid = q.moduleId || seg.grammarModuleId;
+      if (mid) {
+        if (!S.gramLessonStats[mid]) S.gramLessonStats[mid] = { c: 0, w: 0 };
+        if (ok) { S.gramLessonStats[mid].c++; registerGrammarHit(mid); }
+        else { S.gramLessonStats[mid].w++; }
       }
 
       queue.shift();
@@ -670,9 +748,121 @@
     step();
   }
 
+  /* ============ VOKABEL-TRAINER (Karteikasten) ============ */
+  var vocabQueue = null;
+  var showAddVocab = false;
+
+  function buildVocabSession() {
+    var pool = vocabForLevel();
+    if (!pool.length) return [];
+    var scored = pool.map(function (v) {
+      var e = S.srs[v.id];
+      var w = e ? (e.wrong || 0) * 2 : 1;   // schwierige öfter, neue einstreuen
+      if (e && e.last === "no") w += 2;
+      if (e && e.due <= S.lessonNo) w += 2; // fällige bevorzugen
+      return { v: v, w: w + Math.random() };
+    });
+    scored.sort(function (a, b) { return b.w - a.w; });
+    return scored.slice(0, 12).map(function (x) { return x.v; });
+  }
+
+  function renderVocab(container) {
+    root = container;
+    root.innerHTML = "";
+    var head = C.el('<div class="lesson-head"></div>');
+    head.appendChild(C.el('<h2 class="lesson-title">📇 Vokabeln – Karteikasten</h2>'));
+    root.appendChild(head);
+
+    var addBtn = C.el('<button class="btn ghost" style="margin:0 0 10px">➕ Eigene Vokabel hinzufügen</button>');
+    addBtn.onclick = function () { showAddVocab = !showAddVocab; renderVocab(root); };
+    root.appendChild(addBtn);
+    if (showAddVocab) root.appendChild(vocabAddForm());
+
+    if (!vocabQueue || !vocabQueue.length) vocabQueue = buildVocabSession();
+    if (!vocabQueue.length) {
+      root.appendChild(C.el('<p class="empty">Noch keine Vokabeln auf deinem Niveau.<br>Füge oben eigene hinzu! 🇮🇹</p>'));
+      return;
+    }
+    vocabCard(vocabQueue[0]);
+  }
+
+  function vocabAddForm() {
+    var card = C.el('<div class="card"></div>');
+    card.appendChild(C.el('<p class="hint" style="margin-top:0">Neue Vokabel – nur Deutsch und Italienisch, keine Erklärung nötig.</p>'));
+    var de = C.el('<input type="text" class="note-input" autocapitalize="off" placeholder="Deutsch (z. B. der Schlüssel)" style="margin-bottom:8px">');
+    var it = C.el('<input type="text" class="note-input" autocapitalize="off" placeholder="Italienisch (z. B. la chiave)">');
+    var msg = C.el('<p class="note-msg"></p>');
+    var save2 = C.el('<button class="btn primary" style="margin-top:10px">Speichern</button>');
+    function doSave() {
+      var d = de.value.trim(), i = it.value.trim();
+      if (!d || !i) { msg.style.color = "var(--red)"; msg.textContent = "Bitte Deutsch UND Italienisch ausfüllen."; return; }
+      var arr = loadUserVocab();
+      var base = "uv_" + d.toLowerCase().replace(/[^a-zäöü]/g, "").slice(0, 8), id = base, n = 1;
+      while (arr.some(function (x) { return x.id === id; })) { id = base + (++n); }
+      arr.push({ id: id, it: i, de: d, cefr: S.level, theme: "custom" });
+      saveUserVocab(arr);
+      msg.style.color = "var(--green)"; msg.textContent = "✓ „" + d + "“ hinzugefügt – kommt gleich dran.";
+      de.value = ""; it.value = "";
+      vocabQueue = null; // Session neu aufbauen, damit die neue Vokabel drankommt
+      setTimeout(function () { de.focus(); }, 20);
+    }
+    save2.onclick = doSave;
+    it.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doSave(); } });
+    card.appendChild(de); card.appendChild(it); card.appendChild(save2); card.appendChild(msg);
+    return card;
+  }
+
+  function vocabCard(v) {
+    root.appendChild(C.el('<p class="progress-line">' + vocabQueue.length + ' Karten in dieser Runde</p>'));
+    var card = C.el('<div class="card"></div>');
+    card.appendChild(C.el('<p class="prompt-de">' + C.esc(v.de) + '</p>'));
+    card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
+    var ta = C.el('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
+    card.appendChild(ta);
+    var fb = C.el("<div></div>");
+    card.appendChild(fb);
+    var btn = C.el('<button class="btn primary">Prüfen</button>');
+    card.appendChild(btn);
+    root.appendChild(card);
+
+    var answered = false;
+    btn.onclick = function () {
+      if (!answered) {
+        answered = true;
+        var res = C.checkAnswer(ta.value, [v.it]);
+        ta.setAttribute("readonly", "");
+        var ok = res === "ok";
+        var cls = ok ? "ok" : (res === "near" ? "near" : "no");
+        var box = C.el('<div class="feedback ' + cls + '"></div>');
+        if (ok) {
+          box.appendChild(C.el('<p class="lead ok">✓ Richtig!</p>'));
+          box.appendChild(C.el('<p class="solution">' + C.esc(v.it) + "</p>"));
+        } else {
+          box.appendChild(C.el('<p class="lead ' + cls + '">' +
+            (res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>"));
+          var d = C.wordDiff(ta.value, v.it);
+          if (ta.value.trim()) box.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>' + d.userHtml + "</p>"));
+          box.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' + d.correctHtml + "</p>"));
+        }
+        fb.appendChild(box);
+        C.record(v.id, ok);
+        srsUpdate(v.id, ok);
+        if (S.introduced.indexOf(v.id) === -1) S.introduced.push(v.id);
+        save();
+        vocabQueue.shift();
+        if (!ok) vocabQueue.push(v); // falsch → hinten dran (Karteikasten)
+        btn.textContent = "Weiter →";
+      } else {
+        renderVocab(root);
+      }
+    };
+    setTimeout(function () { ta.focus(); }, 40);
+  }
+
   /* ---------------- Öffentliche API ---------------- */
   window.Lektion = {
     render: render,
+    renderVocab: renderVocab,
     // Wird vom Notizfeld aufgerufen, wenn ein gemerktes Wort einer Vokabel
     // entspricht: Level zurücksetzen und sofort wieder fällig machen.
     markUnknown: function (vocabId) {

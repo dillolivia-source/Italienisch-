@@ -374,6 +374,8 @@ textarea:focus, input.answer:focus {
   background: var(--green-soft);
 }
 .lesson-start .hint { margin-bottom: 16px; }
+.len-row { display: flex; gap: 8px; }
+.len-row .chip { flex: 1; text-align: center; padding: 10px 0; font-size: 15px; }
 
 /* Rot/Grün-Diff-Zeilen in der Auswertung */
 .diff-line {

@@ -624,6 +624,10 @@
       if (window.Lektion) window.Lektion.render(viewEl);
       else viewEl.innerHTML = '<p class="empty">Lektion wird geladen…</p>';
     }
+    else if (state.view === "vokabeln") {
+      if (window.Lektion) window.Lektion.renderVocab(viewEl);
+      else viewEl.innerHTML = '<p class="empty">Vokabeln werden geladen…</p>';
+    }
     else if (state.view === "uebersetzen") renderUebersetzen();
     else if (state.view === "quiz") renderQuiz();
     else if (state.view === "karten") renderKarten();

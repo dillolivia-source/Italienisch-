@@ -39,10 +39,18 @@ Diese Zuordnung bitte beibehalten.
 - **Fehler-Auswertung**: nur die falsche Stelle zeigen – rot die Eingabe, grün
   richtig (Wort-Diff `wordDiffSmart`). Kein Vokabel-Hinweis in der Auswertung.
 - **Fehler-Nachdrill**: falsche Aufgaben werden wiederholt, bis richtig.
-- **Tageslektion** (lesson.js): Grammatik-Wiederholung → adaptive Vokabel-
-  Wiederholung (Leitner) → 5 neue Vokabeln + Abfrage → Übersetzungen mit diesen
-  Vokabeln → „Sätze aus deinem Alltag" → Grammatik-Teil (bleibt 4 Tage gleich).
-  Grammatik: **erst Regel erklären, dann üben**.
+- **Lektionslänge** wählbar (5/10/15 Min, `LENGTHS`/`S.lengthPref`).
+- **Tageslektion** (lesson.js): Grammatik-Auffrischung (SRS) → adaptive Vokabel-
+  Wiederholung (Leitner) → neue Vokabeln + Abfrage → Übersetzungen mit diesen
+  Vokabeln → „Sätze aus deinem Alltag" → **neues** Grammatik-Thema
+  (erst Regel erklären, dann üben).
+- **Grammatik-SRS** (Themen-Ebene, `S.gramSrs`): neues Thema `LEARN_DAYS`=2
+  Lektionen lernen, danach Auffrischung nach `GRAM_INTERVALS` (2·4·8·16·32),
+  Abstände verdoppeln sich bei Erfolg, Fehler setzen die Box zurück (kommt
+  schneller wieder). Jede Lektion: ein neues + ein Auffrischungs-Thema.
+- **Vokabel-Tab** (`window.Lektion.renderVocab`): reiner Karteikasten über
+  dieselbe Vokabel-SRS (`S.srs`), mit Feld zum Hinzufügen eigener Vokabeln
+  (`olivia-it-uservocab-v1`).
 - **Enter** löst überall den primären CTA aus (zentraler Handler in app.js).
 - **„Wort, das du nicht kennst?"**: deutsches Grundwort → Merkliste (Statistik);
   vorhandene Vokabel wird häufiger abgefragt (`window.Lektion.markUnknown`).
