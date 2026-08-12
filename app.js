@@ -18,7 +18,7 @@
     time: "Zeit", health: "Gesundheit", clothing: "Kleidung", city: "Stadt",
     work: "Arbeit", basics: "Grundlagen", social: "Soziales", body: "Körper",
     nature: "Natur", animals: "Tiere", school: "Schule", tech: "Technik",
-    abstract: "Abstrakt"
+    abstract: "Abstrakt", spirit: "Spiritualität"
   };
 
   /* ---------- Speicher-Prüfung (localStorage verfügbar?) ---------- */
