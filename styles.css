@@ -369,6 +369,38 @@ textarea:focus, input.answer:focus {
   margin: 5px 0;
   line-height: 1.4;
 }
+.curr-clickable {
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: border-color .12s, background .12s;
+}
+.curr-clickable:hover { border-color: var(--brand); background: var(--brand-soft); }
+
+/* Vokabel-Einführung mit "kenne ich"-Knopf */
+.vintro-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+.vintro-row:last-of-type { border-bottom: none; }
+.vintro-txt { display: flex; flex-direction: column; }
+.vintro-known {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vintro-known:hover { border-color: var(--green); color: var(--green); }
 .levelup {
   text-align: center;
   border: 2px solid var(--green);

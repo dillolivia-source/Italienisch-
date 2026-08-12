@@ -1,5 +1,5 @@
 /* Service Worker – macht die App offline nutzbar */
-const CACHE = "olivia-it-v16";
+const CACHE = "olivia-it-v17";
 const ASSETS = [
   ".",
   "index.html",

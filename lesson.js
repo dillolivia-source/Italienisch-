@@ -332,6 +332,44 @@
     save();
   }
 
+  // "kenne ich schon": Vokabel als bekannt+sicher markieren und durch eine
+  // neue ersetzen, bis die Einheit aus lauter unbekannten besteht.
+  function markVocabKnownInIntro(seg, id) {
+    if (S.introduced.indexOf(id) === -1) S.introduced.push(id);
+    var e = srsFor(id);
+    e.level = SRS_INTERVAL.length - 1; // gilt als "sicher"
+    e.streak = 3; e.wrong = 0; e.last = "ok";
+    e.due = S.lessonNo + SRS_INTERVAL[e.level];
+    var used = {}; seg.vocab.forEach(function (v) { used[v.id] = 1; });
+    var repl = vocabForLevel().filter(function (v) {
+      return S.introduced.indexOf(v.id) === -1 && !used[v.id];
+    })[0];
+    var idx = -1;
+    for (var i = 0; i < seg.vocab.length; i++) { if (seg.vocab[i].id === id) { idx = i; break; } }
+    if (idx >= 0) {
+      if (repl) seg.vocab[idx] = repl;
+      else seg.vocab.splice(idx, 1);
+    }
+    seg.title = "✨ " + seg.vocab.length + " neue Vokabeln";
+    syncFreshSegments(seg.vocab);
+    save();
+    render(root);
+  }
+  // Abfrage- und Übersetzungs-Segment an die geänderte Vokabel-Auswahl anpassen
+  function syncFreshSegments(fresh) {
+    S.plan.segments.forEach(function (s) {
+      if (s.type === "quiz" && s.introduce) {
+        s.questions = fresh.map(vocabQuestion);
+        s.introduce = fresh.map(function (v) { return v.id; });
+      }
+      if (s.type === "quiz" && s.title && s.title.indexOf("Übersetzen mit den neuen") !== -1) {
+        s.questions = fresh.filter(function (v) { return v.ex; }).map(function (v) {
+          return { kind: "type", id: v.id + "_ex", prompt: v.ex.de, accept: v.ex.it };
+        });
+      }
+    });
+  }
+
   function vocabQuestion(v) {
     // Kein "explain" – die richtige Lösung zeigt schon die grüne Zeile.
     return {
@@ -472,18 +510,24 @@
     card.appendChild(C.el('<p class="hint" style="margin:12px 0 2px">Wortschatz: ' + p.vocabDone + '/' + p.vocabTotal + ' sitzt</p>'));
     card.appendChild(bar(vPct));
 
-    // Themenliste mit Status + Fortschrittsbalken je Grammatik-Thema
-    var list = C.el('<div style="margin-top:14px"></div>');
+    // Themenliste mit Status + Fortschrittsbalken je Grammatik-Thema.
+    // Ready-Themen sind anklickbar → gezieltes Üben.
+    card.appendChild(C.el('<p class="section-title" style="margin:16px 0 4px">Grammatik gezielt üben</p>'));
+    card.appendChild(C.el('<p class="hint" style="margin:0 0 8px">Tippe ein Thema, um nur dieses zu üben.</p>'));
+    var list = C.el('<div></div>');
     p.items.forEach(function (t) {
       var isReady = t.status === "ready";
       var pct = isReady ? grammarPct(t.moduleId) : 0;
       var done = isReady && grammarMastered(t.moduleId);
       var icon = t.status === "planned" ? "⏳" : (done ? "✅" : (pct > 0 ? "📘" : "◻️"));
       var extra = t.status === "planned" ? ' <span class="badge gray">geplant</span>' : "";
-      var item = C.el('<div class="curr-item" style="margin:9px 0"></div>');
+      var item = C.el('<div class="curr-item' + (isReady ? " curr-clickable" : "") + '" style="margin:9px 0"></div>');
       item.appendChild(C.el('<div class="gp-row"><span>' + icon + " " + C.esc(t.topic) + extra +
-        '</span>' + (isReady ? '<span class="gp-pct">' + pct + '%</span>' : '') + '</div>'));
-      if (isReady) item.appendChild(bar(pct));
+        '</span>' + (isReady ? '<span class="gp-pct">' + pct + '% ›</span>' : '') + '</div>'));
+      if (isReady) {
+        item.appendChild(bar(pct));
+        item.onclick = function () { startGrammarPractice(t.moduleId); };
+      }
       list.appendChild(item);
     });
     card.appendChild(list);
@@ -554,10 +598,16 @@
 
     if (seg.type === "vocabIntro") {
       var c2 = C.el('<div class="card"></div>');
+      c2.appendChild(C.el('<p class="hint" style="margin-top:0">Kennst du eins schon sicher? Tippe „kenne ich" – dann kommt ein neues Wort nach.</p>'));
       seg.vocab.forEach(function (v) {
-        var row = C.el('<div class="vocab-row"></div>');
-        row.appendChild(C.el('<span class="vocab-it">' + C.esc(v.it) + "</span>"));
-        row.appendChild(C.el('<span class="vocab-de">' + C.esc(v.de) + "</span>"));
+        var row = C.el('<div class="vintro-row"></div>');
+        var txt = C.el('<div class="vintro-txt"></div>');
+        txt.appendChild(C.el('<span class="vocab-it">' + C.esc(v.it) + "</span>"));
+        txt.appendChild(C.el('<span class="vocab-de">' + C.esc(v.de) + "</span>"));
+        row.appendChild(txt);
+        var known = C.el('<button class="vintro-known">kenne ich ✓</button>');
+        known.onclick = function () { markVocabKnownInIntro(seg, v.id); };
+        row.appendChild(known);
         c2.appendChild(row);
       });
       var b2 = C.el('<button class="btn primary">Verstanden, abfragen →</button>');
@@ -568,6 +618,7 @@
     }
 
     if (seg.type === "quiz") {
+      if (!seg.questions || seg.questions.length === 0) { nextSegment(); return; }
       runQuiz(seg);
       return;
     }
@@ -586,22 +637,47 @@
     }
   }
 
+  // Gezieltes Grammatik-Üben: nur ein Thema (Regel + Übungen), zählt NICHT als
+  // Tageslektion, aktualisiert aber den Fortschritt/die Fälligkeit des Themas.
+  function startGrammarPractice(id) {
+    var m = moduleById(id);
+    if (!m) return;
+    S.gramLessonStats = {};
+    S.plan = {
+      practice: true,
+      segments: [
+        { type: "info", title: "🧩 " + m.title, html: C.mdInline(m.rule), note: "Gezieltes Üben", progressModuleId: m.id, progressLabel: m.title },
+        { type: "quiz", title: "🧩 " + m.title + " – üben", questions: pickGrammarQuestions(m, 8), grammarModuleId: m.id }
+      ]
+    };
+    S.seg = 0;
+    S.segSolved = {};
+    save();
+    render(root);
+  }
+
   function finishLesson() {
-    S.completedDate = todayKey();
-    // Grammatik-Themen dieser Lektion neu einplanen (Box/Fälligkeit nach richtig/falsch)
+    var wasPractice = S.plan && S.plan.practice;
+    // Grammatik-Themen neu einplanen (Box/Fälligkeit nach richtig/falsch)
     Object.keys(S.gramLessonStats || {}).forEach(function (mid) {
       var st = S.gramLessonStats[mid];
       scheduleGram(mid, st.c || 0, st.w || 0);
     });
     S.gramLessonStats = {};
+    if (!wasPractice) S.completedDate = todayKey();
     S.plan = null;
     S.seg = 0;
     save();
     root.innerHTML = "";
     var card = C.el('<div class="card" style="text-align:center"></div>');
     card.appendChild(C.el('<div style="font-size:44px">🎉</div>'));
-    card.appendChild(C.el('<h2 style="margin:4px 0">Lektion ' + S.lessonNo + ' geschafft!</h2>'));
-    card.appendChild(C.el('<p class="hint">Stark! Deine Fehler hast du bis zur richtigen Lösung wiederholt. Morgen geht es weiter.</p>'));
+    if (wasPractice) {
+      card.appendChild(C.el('<h2 style="margin:4px 0">Grammatik geübt!</h2>'));
+      card.appendChild(C.el('<p class="hint">Gut gemacht – das Thema ist aufgefrischt.</p>'));
+    } else {
+      card.appendChild(C.el('<h2 style="margin:4px 0">Lektion ' + S.lessonNo + ' geschafft!</h2>'));
+      card.appendChild(C.el('<p class="hint">Stark! Deine Fehler hast du bis zur richtigen Lösung wiederholt. Morgen geht es weiter.</p>'));
+    }
     var b = C.el('<button class="btn primary">Zum Fortschritt</button>');
     b.onclick = function () { render(root); };
     card.appendChild(b);
