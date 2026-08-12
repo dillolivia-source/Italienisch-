@@ -879,10 +879,30 @@
     setTimeout(function () { ta.focus(); }, 40);
   }
 
+  /* ---------------- Kennzahlen für die Statistik ---------------- */
+  function getStats() {
+    var pool = vocabForLevel();
+    var poolIds = {};
+    pool.forEach(function (v) { poolIds[v.id] = 1; });
+    var learned = S.introduced.filter(function (id) { return poolIds[id]; }).length;
+    var mastered = 0;
+    Object.keys(S.srs).forEach(function (id) {
+      if (poolIds[id] && S.srs[id].level >= MASTER_VOCAB_LEVEL) mastered++;
+    });
+    return {
+      lessonNo: S.lessonNo,
+      level: S.level,
+      vocabTotal: pool.length,
+      vocabLearned: learned,
+      vocabMastered: mastered
+    };
+  }
+
   /* ---------------- Öffentliche API ---------------- */
   window.Lektion = {
     render: render,
     renderVocab: renderVocab,
+    getStats: getStats,
     // Wird vom Notizfeld aufgerufen, wenn ein gemerktes Wort einer Vokabel
     // entspricht: Level zurücksetzen und sofort wieder fällig machen.
     markUnknown: function (vocabId) {

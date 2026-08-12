@@ -540,79 +540,88 @@
   }
 
   /* ============ VIEW: FORTSCHRITT ============ */
+  function statTile(num, label, sub) {
+    return $(`<div class="stat"><div class="num">${num}</div><div class="lbl">${label}</div>` +
+      (sub ? `<div class="sub">${sub}</div>` : "") + `</div>`);
+  }
+  // Verständliches Etikett für eine ID (nur Vokabeln & Sätze; Grammatik-IDs überspringen)
+  function labelFor(id) {
+    const V = (window.LESSON_DATA && window.LESSON_DATA.vocab) || [];
+    let base = id, isSentence = false;
+    if (/_ex$/.test(id)) base = id.slice(0, -3); // Beispielsatz zu einer Vokabel
+    const v = V.find(x => x.id === base);
+    if (v) return v.de + " → " + v.it;
+    const s = SENT.find(x => x.id === id);
+    if (s) return s.de;
+    return null; // Grammatik/andere → in der Liste auslassen
+  }
+
   function renderFortschritt() {
     viewEl.innerHTML = "";
-    const allIds = [...SB.map(b => b.id), ...SENT.map(s => s.id)];
-    let seen = 0, totalCorrect = 0, totalWrong = 0, mastered = 0;
-    allIds.forEach(id => {
-      const p = progress[id];
-      if (p) {
-        seen++;
-        totalCorrect += p.correct; totalWrong += p.wrong;
-        if (p.correct >= 2 && p.last === "ok") mastered++;
-      }
+    const st = (window.Lektion && window.Lektion.getStats)
+      ? window.Lektion.getStats()
+      : { lessonNo: 0, level: "A2", vocabTotal: 0, vocabLearned: 0, vocabMastered: 0 };
+
+    // Trefferquote über alle aufgezeichneten Antworten
+    let totalCorrect = 0, totalWrong = 0;
+    Object.keys(progress).forEach(id => {
+      totalCorrect += progress[id].correct || 0;
+      totalWrong += progress[id].wrong || 0;
     });
-    const total = allIds.length;
     const attempts = totalCorrect + totalWrong;
     const rate = attempts ? Math.round((totalCorrect / attempts) * 100) : 0;
 
+    viewEl.appendChild($('<h2 class="lesson-title" style="margin:2px 0 4px">📊 Deine Statistik</h2>'));
+    viewEl.appendChild($('<p class="hint" style="margin:0 0 12px">Was du bisher geschafft hast – alles nur auf diesem Gerät gespeichert.</p>'));
+
     const grid = $('<div class="stat-grid"></div>');
-    grid.appendChild($(`<div class="stat"><div class="num">${seen}/${total}</div><div class="lbl">geübt</div></div>`));
-    grid.appendChild($(`<div class="stat"><div class="num">${mastered}</div><div class="lbl">gemeistert</div></div>`));
-    grid.appendChild($(`<div class="stat"><div class="num">${rate}%</div><div class="lbl">Trefferquote</div></div>`));
-    grid.appendChild($(`<div class="stat"><div class="num">${attempts}</div><div class="lbl">Antworten</div></div>`));
+    grid.appendChild(statTile(st.lessonNo, "Lektionen", "ganz abgeschlossen"));
+    grid.appendChild(statTile(st.vocabLearned + "/" + st.vocabTotal, "Vokabeln gelernt", "schon mind. 1× geübt"));
+    grid.appendChild(statTile(st.vocabMastered, "Vokabeln sicher", "sitzen fest"));
+    grid.appendChild(statTile(rate + "%", "Trefferquote", totalCorrect + " von " + attempts + " richtig"));
     viewEl.appendChild(grid);
 
-    const pct = total ? Math.round((seen / total) * 100) : 0;
+    // Wortschatz-Balken
+    const pct = st.vocabTotal ? Math.round((st.vocabLearned / st.vocabTotal) * 100) : 0;
     const barCard = $('<div class="card"></div>');
-    barCard.appendChild($(`<p class="section-title" style="margin-top:0">Insgesamt geübt</p>`));
+    barCard.appendChild($(`<p class="section-title" style="margin-top:0">Wortschatz · Niveau ${esc(st.level)}</p>`));
     barCard.appendChild($(`<div class="bar"><span style="width:${pct}%"></span></div>`));
-    barCard.appendChild($(`<p class="hint" style="margin:6px 0 0">${seen} von ${total} Einträgen mindestens einmal geübt.</p>`));
+    barCard.appendChild($(`<p class="hint" style="margin:6px 0 0">${st.vocabLearned} von ${st.vocabTotal} Vokabeln auf deinem Niveau begonnen · ${st.vocabMastered} sitzen sicher.</p>`));
     viewEl.appendChild(barCard);
 
-    // schwierigste Einträge (meiste Fehler)
-    const trouble = allIds
-      .map(id => ({ id, p: progress[id] }))
-      .filter(x => x.p && x.p.wrong > 0)
+    // schwierigste Wörter (verständliche Labels)
+    const trouble = Object.keys(progress)
+      .map(id => ({ id, p: progress[id], label: labelFor(id) }))
+      .filter(x => x.p.wrong > 0 && x.label)
       .sort((a, b) => b.p.wrong - a.p.wrong)
       .slice(0, 5);
     if (trouble.length) {
-      viewEl.appendChild($('<p class="section-title">Deine größten Stolpersteine</p>'));
+      viewEl.appendChild($('<p class="section-title">Das fällt dir noch schwer</p>'));
       const list = $('<div class="card"></div>');
       trouble.forEach(x => {
-        const label = labelForId(x.id);
-        list.appendChild($(`<p class="ex" style="margin:4px 0"><span class="diff-del" style="text-decoration:none">${x.p.wrong}×</span> falsch — ${esc(label)}</p>`));
+        list.appendChild($(`<p class="ex" style="margin:5px 0"><span class="diff-del" style="text-decoration:none">${x.p.wrong}×</span> falsch — ${esc(x.label)}</p>`));
       });
       viewEl.appendChild(list);
-    } else {
-      viewEl.appendChild($('<p class="empty">Noch keine Fehler erfasst.<br>Leg im Übersetzen- oder Quiz-Modus los! 🇮🇹</p>'));
+      viewEl.appendChild($('<p class="offline-note">Diese kommen im Training häufiger dran, bis sie sitzen.</p>'));
     }
 
-    // Merkliste: Wörter, die Olivia nicht kannte
+    // Merkliste: Wörter aus „Wort, das du nicht kennst?"
     const wish = loadWish();
     if (wish.length) {
-      viewEl.appendChild($('<p class="section-title">📝 Deine Wörter zum Lernen</p>'));
+      viewEl.appendChild($('<p class="section-title">📝 Deine Merkliste</p>'));
       const wcard = $('<div class="card"></div>');
       wish.slice().reverse().forEach(w => {
-        const known = w.matchedId ? " · in App vorhanden" : "";
+        const known = w.matchedId ? " · schon in der App" : " · noch ohne Übersetzung";
         const rowEl = $('<div class="wish-row"></div>');
-        rowEl.appendChild($(`<span class="wish-word">${esc(w.word)}${known ? '<span class="wish-note">' + known + '</span>' : ''}</span>`));
+        rowEl.appendChild($(`<span class="wish-word">${esc(w.word)}<span class="wish-note">${known}</span></span>`));
         const del = $('<button class="wish-del" title="entfernen">✕</button>');
         del.onclick = () => { saveWish(loadWish().filter(x => norm(x.word) !== norm(w.word))); renderFortschritt(); };
         rowEl.appendChild(del);
         wcard.appendChild(rowEl);
       });
       viewEl.appendChild(wcard);
-      viewEl.appendChild($('<p class="offline-note">Diese Wörter kommen (falls in der App vorhanden) öfter dran. Neue Wörter kann Claude dir später mit Übersetzung einbauen.</p>'));
+      viewEl.appendChild($('<p class="offline-note">Wörter, die du dir gemerkt hast. Eigene Vokabeln legst du im Tab „Vokabeln" an.</p>'));
     }
-  }
-
-  function labelForId(id) {
-    const s = SENT.find(x => x.id === id);
-    if (s) return s.de;
-    const b = SB.find(x => x.id === id);
-    if (b) return (b.correct || "").split("/")[0].trim();
-    return id;
   }
 
   /* ---------- Utilities ---------- */
