@@ -16,7 +16,9 @@
     restaurant: "Restaurant", food: "Essen", routine: "Alltag", phone: "Telefon",
     shopping: "Einkauf", home: "Zuhause", emotions: "Gefühle", weather: "Wetter",
     time: "Zeit", health: "Gesundheit", clothing: "Kleidung", city: "Stadt",
-    work: "Arbeit", basics: "Grundlagen", social: "Soziales"
+    work: "Arbeit", basics: "Grundlagen", social: "Soziales", body: "Körper",
+    nature: "Natur", animals: "Tiere", school: "Schule", tech: "Technik",
+    abstract: "Abstrakt"
   };
 
   /* ---------- Speicher-Prüfung (localStorage verfügbar?) ---------- */
