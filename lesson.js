@@ -748,13 +748,16 @@
     step();
   }
 
-  /* ============ VOKABEL-TRAINER (Karteikasten) ============ */
-  var vocabQueue = null;
+  /* ============ VOKABEL-TRAINER (Karteikasten, Einheiten à 15) ============ */
+  var UNIT_SIZE = 15;
+  var vocabUnit = null;    // die 15 Vokabeln der aktuellen Einheit
+  var vocabQueue = null;   // noch nicht richtig beantwortete (Warteschlange)
+  var vocabSolved = null;  // {id: true} – in dieser Einheit schon richtig
   var showAddVocab = false;
 
-  function buildVocabSession() {
+  function buildVocabUnit() {
     var pool = vocabForLevel();
-    if (!pool.length) return [];
+    if (!pool.length) { vocabUnit = []; vocabQueue = []; vocabSolved = {}; return; }
     var scored = pool.map(function (v) {
       var e = S.srs[v.id];
       var w = e ? (e.wrong || 0) * 2 : 1;   // schwierige öfter, neue einstreuen
@@ -763,7 +766,9 @@
       return { v: v, w: w + Math.random() };
     });
     scored.sort(function (a, b) { return b.w - a.w; });
-    return scored.slice(0, 12).map(function (x) { return x.v; });
+    vocabUnit = scored.slice(0, Math.min(UNIT_SIZE, pool.length)).map(function (x) { return x.v; });
+    vocabQueue = vocabUnit.slice();
+    vocabSolved = {};
   }
 
   function renderVocab(container) {
@@ -778,12 +783,25 @@
     root.appendChild(addBtn);
     if (showAddVocab) root.appendChild(vocabAddForm());
 
-    if (!vocabQueue || !vocabQueue.length) vocabQueue = buildVocabSession();
-    if (!vocabQueue.length) {
+    if (!vocabUnit) buildVocabUnit();
+    if (!vocabUnit.length) {
       root.appendChild(C.el('<p class="empty">Noch keine Vokabeln auf deinem Niveau.<br>Füge oben eigene hinzu! 🇮🇹</p>'));
       return;
     }
+    if (vocabQueue.length === 0) { renderVocabDone(); return; }
     vocabCard(vocabQueue[0]);
+  }
+
+  function renderVocabDone() {
+    var n = Object.keys(vocabSolved).length;
+    var card = C.el('<div class="card" style="text-align:center"></div>');
+    card.appendChild(C.el('<div style="font-size:44px">🎉</div>'));
+    card.appendChild(C.el('<h2 style="margin:4px 0">Einheit geschafft!</h2>'));
+    card.appendChild(C.el('<p class="hint">' + n + ' Vokabeln durch – Falsche hast du bis zur richtigen Lösung wiederholt.</p>'));
+    var btn = C.el('<button class="btn primary">Neue Einheit (15) →</button>');
+    btn.onclick = function () { buildVocabUnit(); renderVocab(root); };
+    card.appendChild(btn);
+    root.appendChild(card);
   }
 
   function vocabAddForm() {
@@ -801,9 +819,8 @@
       while (arr.some(function (x) { return x.id === id; })) { id = base + (++n); }
       arr.push({ id: id, it: i, de: d, cefr: S.level, theme: "custom" });
       saveUserVocab(arr);
-      msg.style.color = "var(--green)"; msg.textContent = "✓ „" + d + "“ hinzugefügt – kommt gleich dran.";
+      msg.style.color = "var(--green)"; msg.textContent = "✓ „" + d + "“ hinzugefügt – kommt in einer nächsten Einheit dran.";
       de.value = ""; it.value = "";
-      vocabQueue = null; // Session neu aufbauen, damit die neue Vokabel drankommt
       setTimeout(function () { de.focus(); }, 20);
     }
     save2.onclick = doSave;
@@ -813,7 +830,9 @@
   }
 
   function vocabCard(v) {
-    root.appendChild(C.el('<p class="progress-line">' + vocabQueue.length + ' Karten in dieser Runde</p>'));
+    var solved = Object.keys(vocabSolved).length;
+    root.appendChild(C.el('<p class="progress-line">' + solved + ' / ' + vocabUnit.length +
+      ' richtig · noch ' + vocabQueue.length + ' offen</p>'));
     var card = C.el('<div class="card"></div>');
     card.appendChild(C.el('<p class="prompt-de">' + C.esc(v.de) + '</p>'));
     card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
@@ -850,7 +869,8 @@
         if (S.introduced.indexOf(v.id) === -1) S.introduced.push(v.id);
         save();
         vocabQueue.shift();
-        if (!ok) vocabQueue.push(v); // falsch → hinten dran (Karteikasten)
+        if (ok) vocabSolved[v.id] = true;
+        else vocabQueue.push(v); // falsch → hinten dran (Karteikasten)
         btn.textContent = "Weiter →";
       } else {
         renderVocab(root);
