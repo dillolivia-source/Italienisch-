@@ -52,6 +52,11 @@ Diese Zuordnung bitte beibehalten.
   dieselbe Vokabel-SRS (`S.srs`), mit Feld zum Hinzufügen eigener Vokabeln
   (`olivia-it-uservocab-v1`).
 - **Enter** löst überall den primären CTA aus (zentraler Handler in app.js).
+- **Hören**: `Core.speak`/`Core.speakButton` (Web Speech API, it-IT, offline); 🔊
+  bei Lösungen & Vokabeln, Auto-Vorlesen der richtigen Lösung. Vokabel-Tab hat
+  Modus **„🎤 Aussprache"** (Nachsprechen).
+- **Reibung**: `Core.accentBar(textarea)` (à è é ì ò ù ') unter jedem Eingabefeld;
+  „**war doch richtig ✓**"-Override gibt eine als falsch gewertete Antwort frei.
 - **„Wort, das du nicht kennst?"**: deutsches Grundwort → Merkliste (Statistik);
   vorhandene Vokabel wird häufiger abgefragt (`window.Lektion.markUnknown`).
 - **Fortschritt/Niveau**: Curriculum je Niveau; bei A2-Abschluss B1-Vorschlag.

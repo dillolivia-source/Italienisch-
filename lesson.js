@@ -602,7 +602,9 @@
       seg.vocab.forEach(function (v) {
         var row = C.el('<div class="vintro-row"></div>');
         var txt = C.el('<div class="vintro-txt"></div>');
-        txt.appendChild(C.el('<span class="vocab-it">' + C.esc(v.it) + "</span>"));
+        var itLine = C.el('<span class="vocab-it">' + C.esc(v.it) + "</span>");
+        var sbv = C.speakButton(v.it); if (sbv) itLine.appendChild(sbv);
+        txt.appendChild(itLine);
         txt.appendChild(C.el('<span class="vocab-de">' + C.esc(v.de) + "</span>"));
         row.appendChild(txt);
         var known = C.el('<button class="vintro-known">kenne ich ✓</button>');
@@ -744,12 +746,22 @@
       }
     }
 
+    // "War doch richtig": eine als falsch gewertete Antwort selbst freigeben
+    function acceptAsCorrect(q) {
+      for (var i = queue.length - 1; i >= 0; i--) { if (queue[i].id === q.id) { queue.splice(i, 1); break; } }
+      solvedIds[q.id] = true;
+      if (seg.srs) srsUpdate(q.id, true);
+      if (seg.introduce && seg.introduce.indexOf(q.id) !== -1 && S.introduced.indexOf(q.id) === -1) S.introduced.push(q.id);
+      save();
+    }
+
     function renderType(q) {
       var card = C.el('<div class="card"></div>');
       card.appendChild(C.el('<p class="prompt-de">' + C.esc(q.prompt) + "</p>"));
       card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
       var ta = C.el('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
       card.appendChild(ta);
+      card.appendChild(C.accentBar(ta));
       var fbSlot = C.el("<div></div>");
       card.appendChild(fbSlot);
       var btn = C.el('<button class="btn primary">Prüfen</button>');
@@ -764,23 +776,38 @@
           var res = C.checkAnswer(ta.value, q.accept);
           ta.setAttribute("readonly", "");
           var cls = res === "ok" ? "ok" : res === "near" ? "near" : "no";
+          var target = C.pickClosest(ta.value, q.accept);
           var fb = C.el('<div class="feedback ' + cls + '"></div>');
+          var lead = C.el('<p class="lead ' + cls + '">' +
+            (res === "ok" ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>");
+          fb.appendChild(lead);
           if (res === "ok") {
-            fb.appendChild(C.el('<p class="lead ok">✓ Richtig!</p>'));
-            fb.appendChild(C.el('<p class="solution">' + C.esc(q.accept[0]) + "</p>"));
+            var sol = C.el('<p class="solution">' + C.esc(q.accept[0]) + "</p>");
+            var sb0 = C.speakButton(q.accept[0]); if (sb0) sol.appendChild(sb0);
+            fb.appendChild(sol);
           } else {
-            fb.appendChild(C.el('<p class="lead ' + cls + '">' +
-              (res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>"));
-            var target = C.pickClosest(ta.value, q.accept);
             var d = C.wordDiff(ta.value, target);
             if (ta.value.trim()) {
               fb.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>' + d.userHtml + "</p>"));
             }
-            fb.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' + d.correctHtml + "</p>"));
+            var rl = C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' + d.correctHtml + "</p>");
+            var sb1 = C.speakButton(target); if (sb1) rl.appendChild(sb1);
+            fb.appendChild(rl);
           }
           if (q.explain) fb.appendChild(C.el('<p class="explanation" style="margin-top:8px">' + C.mdInline(q.explain) + "</p>"));
           fbSlot.appendChild(fb);
           onResult(q, res === "ok"); // "near" (nur Akzente) zählt als Fehler → Nachdrill
+          C.speak(target); // richtige Lösung vorlesen (im Klick = erlaubt auf iOS)
+          if (res !== "ok") {
+            var ov = C.el('<button type="button" class="override">war doch richtig ✓</button>');
+            ov.onclick = function () {
+              acceptAsCorrect(q);
+              ov.remove();
+              lead.className = "lead ok"; lead.textContent = "✓ Als richtig gewertet";
+              fb.className = "feedback ok";
+            };
+            fb.appendChild(ov);
+          }
           btn.textContent = "Weiter →";
         } else {
           step();
@@ -830,6 +857,7 @@
   var vocabQueue = null;   // noch nicht richtig beantwortete (Warteschlange)
   var vocabSolved = null;  // {id: true} – in dieser Einheit schon richtig
   var showAddVocab = false;
+  var vocabMode = "quiz";  // "quiz" = Abfrage · "speak" = Aussprache üben
 
   function buildVocabUnit() {
     var pool = vocabForLevel();
@@ -854,6 +882,17 @@
     head.appendChild(C.el('<h2 class="lesson-title">📇 Vokabeln – Karteikasten</h2>'));
     root.appendChild(head);
 
+    // Modus-Umschalter (nur wenn Vorlesen verfügbar)
+    if (C.canSpeak) {
+      var modeRow = C.el('<div class="len-row" style="margin-bottom:10px"></div>');
+      var mq = C.el('<button class="chip" aria-pressed="' + (vocabMode === "quiz") + '">📝 Abfrage</button>');
+      var ms = C.el('<button class="chip" aria-pressed="' + (vocabMode === "speak") + '">🎤 Aussprache</button>');
+      mq.onclick = function () { vocabMode = "quiz"; renderVocab(root); };
+      ms.onclick = function () { vocabMode = "speak"; renderVocab(root); };
+      modeRow.appendChild(mq); modeRow.appendChild(ms);
+      root.appendChild(modeRow);
+    }
+
     var addBtn = C.el('<button class="btn ghost" style="margin:0 0 10px">➕ Eigene Vokabel hinzufügen</button>');
     addBtn.onclick = function () { showAddVocab = !showAddVocab; renderVocab(root); };
     root.appendChild(addBtn);
@@ -864,8 +903,30 @@
       root.appendChild(C.el('<p class="empty">Noch keine Vokabeln auf deinem Niveau.<br>Füge oben eigene hinzu! 🇮🇹</p>'));
       return;
     }
+    if (vocabMode === "speak") { pronunciationCard(vocabQueue[0] || vocabUnit[0]); return; }
     if (vocabQueue.length === 0) { renderVocabDone(); return; }
     vocabCard(vocabQueue[0]);
+  }
+
+  // Aussprache üben: vorlesen → laut nachsprechen → nochmal / weiter
+  function pronunciationCard(v) {
+    root.appendChild(C.el('<p class="progress-line">🎤 Hör zu und sprich laut nach</p>'));
+    var card = C.el('<div class="card" style="text-align:center"></div>');
+    var big = C.el('<p class="prompt-de" style="font-size:26px;color:var(--brand);margin:6px 0">' + C.esc(v.it) + "</p>");
+    card.appendChild(big);
+    card.appendChild(C.el('<p class="vocab-de" style="text-align:center;margin:0 0 10px">' + C.esc(v.de) + "</p>"));
+    var hear = C.el('<button class="btn primary">🔊 Anhören</button>');
+    hear.onclick = function () { C.speak(v.it); };
+    card.appendChild(hear);
+    card.appendChild(C.el('<p class="hint" style="margin:10px 0 0">Sprich es jetzt laut nach.</p>'));
+    var next = C.el('<button class="btn ghost" style="margin-top:10px">Weiter →</button>');
+    next.onclick = function () {
+      vocabQueue.push(vocabQueue.shift()); // im Kreis weiter
+      renderVocab(root);
+    };
+    card.appendChild(next);
+    root.appendChild(card);
+    C.speak(v.it); // beim Öffnen direkt vorlesen (im Klick-Flow → iOS ok)
   }
 
   function renderVocabDone() {
@@ -914,6 +975,7 @@
     card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
     var ta = C.el('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
     card.appendChild(ta);
+    card.appendChild(C.accentBar(ta));
     var fb = C.el("<div></div>");
     card.appendChild(fb);
     var btn = C.el('<button class="btn primary">Prüfen</button>');
@@ -929,15 +991,19 @@
         var ok = res === "ok";
         var cls = ok ? "ok" : (res === "near" ? "near" : "no");
         var box = C.el('<div class="feedback ' + cls + '"></div>');
+        var lead = C.el('<p class="lead ' + cls + '">' +
+          (ok ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>");
+        box.appendChild(lead);
         if (ok) {
-          box.appendChild(C.el('<p class="lead ok">✓ Richtig!</p>'));
-          box.appendChild(C.el('<p class="solution">' + C.esc(v.it) + "</p>"));
+          var sol = C.el('<p class="solution">' + C.esc(v.it) + "</p>");
+          var sb0 = C.speakButton(v.it); if (sb0) sol.appendChild(sb0);
+          box.appendChild(sol);
         } else {
-          box.appendChild(C.el('<p class="lead ' + cls + '">' +
-            (res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>"));
           var d = C.wordDiff(ta.value, v.it);
           if (ta.value.trim()) box.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>' + d.userHtml + "</p>"));
-          box.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' + d.correctHtml + "</p>"));
+          var rl = C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' + d.correctHtml + "</p>");
+          var sb1 = C.speakButton(v.it); if (sb1) rl.appendChild(sb1);
+          box.appendChild(rl);
         }
         fb.appendChild(box);
         C.record(v.id, ok);
@@ -947,6 +1013,17 @@
         vocabQueue.shift();
         if (ok) vocabSolved[v.id] = true;
         else vocabQueue.push(v); // falsch → hinten dran (Karteikasten)
+        C.speak(v.it); // Wort vorlesen
+        if (!ok) {
+          var ov = C.el('<button type="button" class="override">war doch richtig ✓</button>');
+          ov.onclick = function () {
+            // aus der Warteschlange nehmen und als richtig zählen
+            for (var i = vocabQueue.length - 1; i >= 0; i--) { if (vocabQueue[i].id === v.id) { vocabQueue.splice(i, 1); break; } }
+            vocabSolved[v.id] = true; srsUpdate(v.id, true); save();
+            ov.remove(); lead.className = "lead ok"; lead.textContent = "✓ Als richtig gewertet"; box.className = "feedback ok";
+          };
+          box.appendChild(ov);
+        }
         btn.textContent = "Weiter →";
       } else {
         renderVocab(root);

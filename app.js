@@ -258,6 +258,59 @@
   const viewEl = document.getElementById("view");
   const resetBtn = document.getElementById("reset-btn");
 
+  /* ---------- Sprachausgabe (Hören) – kostenlos via Web Speech API ---------- */
+  const TTS = ("speechSynthesis" in window);
+  let _itVoice = null;
+  function loadVoices() {
+    if (!TTS) return;
+    try {
+      const vs = window.speechSynthesis.getVoices() || [];
+      _itVoice = vs.find(v => /^it([-_]|$)/i.test(v.lang)) ||
+        vs.find(v => /it/i.test(v.lang)) || null;
+    } catch (e) {}
+  }
+  if (TTS) {
+    loadVoices();
+    try { window.speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {}
+  }
+  function speak(text) {
+    if (!TTS || !text) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(text));
+      u.lang = "it-IT";
+      if (_itVoice) u.voice = _itVoice;
+      u.rate = 0.95; u.pitch = 1;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function speakButton(text) {
+    if (!TTS) return null;
+    const b = $('<button type="button" class="spk" aria-label="anhören" title="anhören">🔊</button>');
+    b.onclick = e => { e.preventDefault(); e.stopPropagation(); speak(text); };
+    return b;
+  }
+
+  /* ---------- Akzent-Schnelltasten (Reibung reduzieren) ---------- */
+  function insertAtCursor(ta, ch) {
+    const start = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+    const end = ta.selectionEnd != null ? ta.selectionEnd : ta.value.length;
+    ta.value = ta.value.slice(0, start) + ch + ta.value.slice(end);
+    const pos = start + ch.length;
+    try { ta.setSelectionRange(pos, pos); } catch (e) {}
+    ta.focus();
+  }
+  function accentBar(ta) {
+    const bar = $('<div class="acc-bar"></div>');
+    ["à", "è", "é", "ì", "ò", "ù", "'"].forEach(ch => {
+      const k = $('<button type="button" class="acc-key">' + ch + "</button>");
+      k.addEventListener("mousedown", e => e.preventDefault()); // Fokus behalten
+      k.onclick = e => { e.preventDefault(); insertAtCursor(ta, ch); };
+      bar.appendChild(k);
+    });
+    return bar;
+  }
+
   /* ---------- Gemeinsame Helfer für das Lektions-Modul (lesson.js) ---------- */
   window.Core = {
     esc: esc,
@@ -274,6 +327,10 @@
     wordDiff: wordDiffSmart,
     pickClosest: pickClosest,
     noteField: noteField,
+    canSpeak: TTS,
+    speak: speak,
+    speakButton: speakButton,
+    accentBar: accentBar,
     storageOk: STORAGE_OK,
     addWishword: addWishword,
     getWishlist: loadWish,
@@ -346,6 +403,7 @@
 
     const ta = $('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="…"></textarea>');
     card.appendChild(ta);
+    card.appendChild(accentBar(ta));
 
     const fbSlot = $("<div></div>");
     card.appendChild(fbSlot);
@@ -363,24 +421,37 @@
       ta.setAttribute("readonly", "");
       let cls = result === "ok" ? "ok" : result === "near" ? "near" : "no";
       const fb = $(`<div class="feedback ${cls}"></div>`);
+      const lead = $(`<p class="lead ${cls}">${result === "ok" ? "✓ Richtig!" : result === "near" ? "≈ Fast! Nur die Akzente stimmen nicht" : "✗ Nicht ganz"}</p>`);
+      fb.appendChild(lead);
+      const target = result === "ok" ? s.it[0] : pickClosest(ta.value, s.it);
       if (result === "ok") {
-        fb.appendChild($('<p class="lead ok">✓ Richtig!</p>'));
-        fb.appendChild($(`<p class="solution">${esc(s.it[0])}</p>`));
-        s.it.slice(1).forEach(sol => fb.appendChild($(`<p class="solution alt">auch: ${esc(sol)}</p>`)));
+        const sol = $(`<p class="solution">${esc(s.it[0])}</p>`);
+        const sb0 = speakButton(s.it[0]); if (sb0) sol.appendChild(sb0);
+        fb.appendChild(sol);
+        s.it.slice(1).forEach(sol2 => fb.appendChild($(`<p class="solution alt">auch: ${esc(sol2)}</p>`)));
       } else {
-        fb.appendChild($(`<p class="lead ${cls}">${result === "near" ? "≈ Fast! Nur die Akzente stimmen nicht" : "✗ Nicht ganz"}</p>`));
-        const target = pickClosest(ta.value, s.it);
         const d = wordDiffSmart(ta.value, target);
         if (ta.value.trim()) {
           fb.appendChild($(`<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>${d.userHtml}</p>`));
         }
-        fb.appendChild($(`<p class="diff-line"><span class="diff-lbl">richtig</span>${d.correctHtml}</p>`));
+        const rl = $(`<p class="diff-line"><span class="diff-lbl">richtig</span>${d.correctHtml}</p>`);
+        const sb1 = speakButton(target); if (sb1) rl.appendChild(sb1);
+        fb.appendChild(rl);
       }
       if (s.grammar_focus && s.grammar_focus.length) {
         fb.appendChild($(`<p class="hint" style="margin:8px 0 0">🔎 Fokus: ${esc(s.grammar_focus.map(prettyFocus).join(", "))}</p>`));
       }
-      fbSlot.appendChild(fb);
       record(s.id, result === "ok");
+      speak(target); // Lösung vorlesen (im Klick-Flow → iOS ok)
+      if (result !== "ok") {
+        const ov = $('<button type="button" class="override">war doch richtig ✓</button>');
+        ov.onclick = () => {
+          record(s.id, true);
+          ov.remove(); lead.className = "lead ok"; lead.textContent = "✓ Als richtig gewertet"; fb.className = "feedback ok";
+        };
+        fb.appendChild(ov);
+      }
+      fbSlot.appendChild(fb);
       row.innerHTML = "";
       const nextBtn = $('<button class="btn primary">Nächster Satz →</button>');
       nextBtn.onclick = () => { nextTranslation(); renderUebersetzen(); };
