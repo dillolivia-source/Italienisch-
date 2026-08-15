@@ -2,15 +2,8 @@
 (function () {
   "use strict";
 
-  const SB = window.APP_DATA.stumblingBlocks;
   const SENT = window.APP_DATA.sentences;
 
-  const CAT_LABEL = {
-    grammar: "Grammatik",
-    vocab: "Vokabeln",
-    preposition: "Präposition",
-    spelling: "Rechtschreibung"
-  };
   const THEME_LABEL = {
     travel: "Reise", family: "Familie", baby: "Kleinkind", beach: "Strand",
     restaurant: "Restaurant", food: "Essen", routine: "Alltag", phone: "Telefon",
@@ -81,24 +74,6 @@
       if (stripAccents(ni) === stripAccents(norm(a))) return "near";
     }
     return "no";
-  }
-
-  /* ---------- Wort-Diff für Hervorhebung ---------- */
-  function diffHighlight(wrong, correct) {
-    const w = wrong.split(/(\s+)/), c = correct.split(/(\s+)/);
-    let pre = 0;
-    while (pre < w.length && pre < c.length && w[pre] === c[pre]) pre++;
-    let sw = w.length - 1, sc = c.length - 1;
-    while (sw >= pre && sc >= pre && w[sw] === c[sc]) { sw--; sc--; }
-    const wMid = w.slice(pre, sw + 1).join("");
-    const cMid = c.slice(pre, sc + 1).join("");
-    const wrongHtml = esc(w.slice(0, pre).join("")) +
-      (wMid ? '<span class="diff-del">' + esc(wMid) + "</span>" : "") +
-      esc(w.slice(sw + 1).join(""));
-    const correctHtml = esc(c.slice(0, pre).join("")) +
-      (cMid ? '<span class="diff-add">' + esc(cMid) + "</span>" : "") +
-      esc(c.slice(sc + 1).join(""));
-    return { wrongHtml, correctHtml };
   }
 
   // Wort-Diff, der Groß/Klein & Satzzeichen beim Vergleich ignoriert –
@@ -224,18 +199,6 @@
     }
     return a;
   }
-  // priorisiert Einträge, die zuletzt falsch waren / selten geübt
-  function weightedPick(items, idOf) {
-    const scored = items.map(it => {
-      const p = progress[idOf(it)] || { correct: 0, wrong: 0, last: null };
-      let weight = 1 + p.wrong * 2;
-      if (p.last === "no") weight += 3;
-      if (p.correct === 0 && p.wrong === 0) weight += 1; // noch nie gesehen
-      return { it, weight: weight + Math.random() };
-    });
-    scored.sort((a, b) => b.weight - a.weight);
-    return scored[0].it;
-  }
   function $(html) {
     const t = document.createElement("template");
     t.innerHTML = html.trim();
@@ -247,12 +210,7 @@
     view: "lektion",
     transThemes: new Set(),   // aktive Theme-Filter
     transCefr: new Set(),
-    transCurrent: null,
-    quizCat: new Set(),
-    quizCurrent: null,
-    cardCat: new Set(),
-    cardIndex: 0,
-    cardFlipped: false
+    transCurrent: null
   };
 
   const viewEl = document.getElementById("view");
@@ -311,6 +269,37 @@
     return bar;
   }
 
+  /* ---------- Sichern & Übertragen (versioniertes Format) ---------- */
+  const BACKUP_KEYS = [
+    "olivia-it-progress-v1", "olivia-it-lesson-v2",
+    "olivia-it-uservocab-v1", "olivia-it-wishlist-v1"
+  ];
+  function collectBackup() {
+    const store = {};
+    BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v != null) store[k] = v; });
+    return { app: "olivia-italienisch", schema: 2, exportedAt: new Date().toISOString(), store };
+  }
+  function downloadBackup() {
+    const data = JSON.stringify(collectBackup());
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const d = new Date();
+    a.href = url;
+    a.download = "italienisch-sicherung-" + d.toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  function restoreBackup(text) {
+    let obj;
+    try { obj = JSON.parse(text); } catch (e) { return false; }
+    if (!obj || obj.app !== "olivia-italienisch" || !obj.store) return false;
+    Object.keys(obj.store).forEach(k => {
+      if (BACKUP_KEYS.indexOf(k) !== -1) { try { localStorage.setItem(k, obj.store[k]); } catch (e) {} }
+    });
+    return true;
+  }
+
   /* ---------- Gemeinsame Helfer für das Lektions-Modul (lesson.js) ---------- */
   window.Core = {
     esc: esc,
@@ -342,29 +331,54 @@
   };
 
   /* ============ VIEW: ÜBERSETZEN ============ */
+  // Satz-Pool = feste Sätze (data.js) + Beispielsätze aus den Vokabeln (wächst mit).
+  let _sentCache = null;
+  function allSentences() {
+    if (_sentCache) return _sentCache;
+    const out = SENT.slice();
+    const V = (window.LESSON_DATA && window.LESSON_DATA.vocab) || [];
+    V.forEach(v => {
+      if (v.ex && v.ex.de && Array.isArray(v.ex.it)) {
+        out.push({ id: v.id + "_ex", de: v.ex.de, it: v.ex.it, themes: [v.theme || "basics"], cefr: v.cefr || "A2" });
+      }
+    });
+    _sentCache = out;
+    return out;
+  }
   function filteredSentences() {
-    return SENT.filter(s => {
+    return allSentences().filter(s => {
       const themeOk = state.transThemes.size === 0 ||
-        s.themes.some(t => state.transThemes.has(t));
+        (s.themes || []).some(t => state.transThemes.has(t));
       const cefrOk = state.transCefr.size === 0 || state.transCefr.has(s.cefr);
       return themeOk && cefrOk;
     });
   }
 
+  // SRS-gesteuerte Auswahl: fällige & schwache Sätze zuerst (einheitliches Modell)
   function nextTranslation() {
     const pool = filteredSentences();
     if (!pool.length) { state.transCurrent = null; return; }
-    // nicht dieselbe zweimal hintereinander
-    let pick = weightedPick(pool, s => s.id);
-    if (pool.length > 1 && state.transCurrent && pick.id === state.transCurrent.id) {
-      pick = weightedPick(pool.filter(s => s.id !== state.transCurrent.id), s => s.id);
-    }
+    const L = window.Lektion;
+    const clock = L ? L.srsClock() : 0;
+    const scored = pool.map(s => {
+      const e = L ? L.getSrs(s.id) : null;
+      let w;
+      if (!e) w = 3; // neu → bevorzugt
+      else {
+        w = (e.wrong || 0) * 2 + (e.last === "no" ? 2 : 0) + Math.max(0, 3 - (e.level || 0));
+        if (e.due <= clock) w += 3; // fällig
+      }
+      return { s, w: w + Math.random() };
+    });
+    scored.sort((a, b) => b.w - a.w);
+    let pick = scored[0].s;
+    if (pool.length > 1 && state.transCurrent && pick.id === state.transCurrent.id) pick = scored[1].s;
     state.transCurrent = pick;
   }
 
   function renderUebersetzen() {
-    const allThemes = [...new Set(SENT.flatMap(s => s.themes))];
-    const cefrs = [...new Set(SENT.map(s => s.cefr))].sort();
+    const allThemes = [...new Set(allSentences().flatMap(s => s.themes || []))];
+    const cefrs = [...new Set(allSentences().map(s => s.cefr))].sort();
 
     const filters = $('<div class="filters"></div>');
     for (const t of allThemes) {
@@ -442,11 +456,13 @@
         fb.appendChild($(`<p class="hint" style="margin:8px 0 0">🔎 Fokus: ${esc(s.grammar_focus.map(prettyFocus).join(", "))}</p>`));
       }
       record(s.id, result === "ok");
+      if (window.Lektion && window.Lektion.reviewItem) window.Lektion.reviewItem(s.id, result === "ok");
       speak(target); // Lösung vorlesen (im Klick-Flow → iOS ok)
       if (result !== "ok") {
         const ov = $('<button type="button" class="override">war doch richtig ✓</button>');
         ov.onclick = () => {
           record(s.id, true);
+          if (window.Lektion && window.Lektion.reviewItem) window.Lektion.reviewItem(s.id, true);
           ov.remove(); lead.className = "lead ok"; lead.textContent = "✓ Als richtig gewertet"; fb.className = "feedback ok";
         };
         fb.appendChild(ov);
@@ -471,145 +487,6 @@
 
   function prettyFocus(f) {
     return f.replace(/_/g, " ");
-  }
-
-  /* ============ VIEW: STOLPER-QUIZ ============ */
-  function quizPool() {
-    return SB.filter(b => state.quizCat.size === 0 || state.quizCat.has(b.category));
-  }
-  function nextQuiz() {
-    const pool = quizPool();
-    if (!pool.length) { state.quizCurrent = null; return; }
-    let pick = weightedPick(pool, b => b.id);
-    if (pool.length > 1 && state.quizCurrent && pick.id === state.quizCurrent.id) {
-      pick = weightedPick(pool.filter(b => b.id !== state.quizCurrent.id), b => b.id);
-    }
-    state.quizCurrent = pick;
-  }
-
-  function renderQuiz() {
-    const cats = [...new Set(SB.map(b => b.category))];
-    const filters = $('<div class="filters"></div>');
-    for (const c of cats) {
-      const chip = $(`<button class="chip" aria-pressed="${state.quizCat.has(c)}">${esc(CAT_LABEL[c] || c)}</button>`);
-      chip.onclick = () => { toggle(state.quizCat, c); nextQuiz(); renderQuiz(); };
-      filters.appendChild(chip);
-    }
-
-    if (!state.quizCurrent) nextQuiz();
-    viewEl.innerHTML = "";
-    viewEl.appendChild(filters);
-
-    if (!state.quizCurrent) {
-      viewEl.appendChild($('<p class="empty">Keine Stolpersteine für diese Auswahl.</p>'));
-      return;
-    }
-
-    const b = state.quizCurrent;
-    const ex = b.examples && b.examples[0];
-    viewEl.appendChild($(`<p class="progress-line">Welcher Satz ist richtig?</p>`));
-
-    const card = $('<div class="card"></div>');
-    card.appendChild($(`<div class="meta-row"><span class="badge">${esc(CAT_LABEL[b.category] || b.category)}</span></div>`));
-
-    if (!ex) {
-      // Kein Beispielsatz → Wort-Vergleich
-      card.appendChild($(`<p class="prompt-de">Was ist korrekt?</p>`));
-    }
-
-    const options = ex
-      ? shuffle([{ text: ex.correct, ok: true }, { text: ex.wrong, ok: false }])
-      : shuffle([{ text: b.correct, ok: true }, { text: b.wrong, ok: false }]);
-
-    const fbSlot = $("<div></div>");
-    let answered = false;
-    const btns = [];
-    options.forEach(opt => {
-      const btn = $(`<button class="choice">${esc(opt.text)}</button>`);
-      btn.onclick = () => {
-        if (answered) return;
-        answered = true;
-        const ok = opt.ok;
-        btns.forEach(x => {
-          x.disabled = true;
-          if (x._ok) x.classList.add("correct");
-        });
-        if (!ok) btn.classList.add("wrong");
-        record(b.id, ok);
-
-        const fb = $(`<div class="feedback ${ok ? "ok" : "no"}"></div>`);
-        fb.appendChild($(`<p class="lead ${ok ? "ok" : "no"}">${ok ? "✓ Genau!" : "✗ Leider falsch"}</p>`));
-        if (ex) {
-          const d = diffHighlight(ex.wrong, ex.correct);
-          fb.appendChild($(`<p class="solution">${d.correctHtml}</p>`));
-          fb.appendChild($(`<p class="solution alt" style="text-decoration:none">statt: ${d.wrongHtml}</p>`));
-        }
-        fb.appendChild($(`<p class="explanation">${mdInline(b.explanation)}</p>`));
-        fbSlot.appendChild(fb);
-
-        const nextBtn = $('<button class="btn primary">Weiter →</button>');
-        nextBtn.onclick = () => { nextQuiz(); renderQuiz(); };
-        card.appendChild(nextBtn);
-        if (resetBtn.hidden) resetBtn.hidden = false;
-      };
-      btn._ok = opt.ok;
-      btns.push(btn);
-      card.appendChild(btn);
-    });
-    card.appendChild(fbSlot);
-
-    viewEl.appendChild(card);
-  }
-
-  /* ============ VIEW: KARTEN (Lernen) ============ */
-  function cardPool() {
-    return SB.filter(b => state.cardCat.size === 0 || state.cardCat.has(b.category));
-  }
-  function renderKarten() {
-    const cats = [...new Set(SB.map(b => b.category))];
-    const filters = $('<div class="filters"></div>');
-    for (const c of cats) {
-      const chip = $(`<button class="chip" aria-pressed="${state.cardCat.has(c)}">${esc(CAT_LABEL[c] || c)}</button>`);
-      chip.onclick = () => { toggle(state.cardCat, c); state.cardIndex = 0; state.cardFlipped = false; renderKarten(); };
-      filters.appendChild(chip);
-    }
-
-    const pool = cardPool();
-    viewEl.innerHTML = "";
-    viewEl.appendChild(filters);
-    if (!pool.length) { viewEl.appendChild($('<p class="empty">Keine Karten.</p>')); return; }
-
-    if (state.cardIndex >= pool.length) state.cardIndex = 0;
-    const b = pool[state.cardIndex];
-    viewEl.appendChild($(`<p class="progress-line">Karte ${state.cardIndex + 1} / ${pool.length}</p>`));
-
-    const card = $('<div class="card"></div>');
-    card.appendChild($(`<div class="meta-row"><span class="badge">${esc(CAT_LABEL[b.category] || b.category)}</span></div>`));
-
-    if (!state.cardFlipped) {
-      card.appendChild($(`<p class="wrong-line">✗ ${esc(b.wrong)}</p>`));
-      const flipBtn = $('<button class="btn primary">Auflösung →</button>');
-      flipBtn.onclick = () => { state.cardFlipped = true; renderKarten(); };
-      card.appendChild(flipBtn);
-    } else {
-      card.appendChild($(`<p class="wrong-line">✗ ${esc(b.wrong)}</p>`));
-      card.appendChild($(`<p class="correct-line">✓ ${esc(b.correct)}</p>`));
-      card.appendChild($(`<p class="explanation" style="margin-top:12px">${mdInline(b.explanation)}</p>`));
-      (b.examples || []).forEach(ex => {
-        const d = diffHighlight(ex.wrong, ex.correct);
-        card.appendChild($(`<p class="ex"><span class="lbl">falsch:</span> <span class="diff-del">${esc(ex.wrong)}</span></p>`));
-        card.appendChild($(`<p class="ex"><span class="lbl">richtig:</span> ${d.correctHtml}</p>`));
-      });
-    }
-    viewEl.appendChild(card);
-
-    const nav = $('<div class="btn-row"></div>');
-    const prev = $('<button class="btn ghost">← Zurück</button>');
-    const next = $('<button class="btn ghost">Weiter →</button>');
-    prev.onclick = () => { state.cardIndex = (state.cardIndex - 1 + pool.length) % pool.length; state.cardFlipped = false; renderKarten(); };
-    next.onclick = () => { state.cardIndex = (state.cardIndex + 1) % pool.length; state.cardFlipped = false; renderKarten(); };
-    nav.appendChild(prev); nav.appendChild(next);
-    viewEl.appendChild(nav);
   }
 
   /* ============ VIEW: FORTSCHRITT ============ */
@@ -654,6 +531,10 @@
     grid.appendChild(statTile(rate + "%", "Trefferquote", totalCorrect + " von " + attempts + " richtig"));
     viewEl.appendChild(grid);
 
+    if (st.dueToday) {
+      viewEl.appendChild($(`<p class="hint" style="margin:2px 0 0">🔁 <b>${st.dueToday}</b> Wörter/Sätze sind zur Wiederholung fällig – üben in Lektion, Vokabeln oder Übersetzen.</p>`));
+    }
+
     // Wortschatz-Balken
     const pct = st.vocabTotal ? Math.round((st.vocabLearned / st.vocabTotal) * 100) : 0;
     const barCard = $('<div class="card"></div>');
@@ -695,6 +576,49 @@
       viewEl.appendChild(wcard);
       viewEl.appendChild($('<p class="offline-note">Wörter, die du dir gemerkt hast. Eigene Vokabeln legst du im Tab „Vokabeln" an.</p>'));
     }
+
+    // Sichern & Übertragen (Backup / anderes Gerät)
+    viewEl.appendChild($('<p class="section-title">💾 Sichern & Übertragen</p>'));
+    viewEl.appendChild($('<p class="hint" style="margin:0 0 8px">Lade eine Sicherung herunter oder spiele sie auf einem anderen Gerät wieder ein.</p>'));
+    const bcard = $('<div class="card"></div>');
+    const brow = $('<div class="backup-row"></div>');
+    const dl = $('<button class="btn primary">⬇︎ Sicherung laden</button>');
+    dl.onclick = () => downloadBackup();
+    const upLabel = $('<label class="file-label">⬆︎ Wiederherstellen<input type="file" accept="application/json,.json"></label>');
+    const fileInp = upLabel.querySelector("input");
+    fileInp.onchange = () => {
+      const f = fileInp.files && fileInp.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (restoreBackup(String(reader.result))) {
+          alert("✓ Sicherung wiederhergestellt. Die App wird neu geladen.");
+          location.reload();
+        } else {
+          alert("Das war keine gültige Sicherungsdatei.");
+        }
+      };
+      reader.readAsText(f);
+    };
+    brow.appendChild(dl); brow.appendChild(upLabel);
+    bcard.appendChild(brow);
+    // Fallback per Code (z. B. Handy → Computer ohne Datei)
+    const codeToggle = $('<button class="btn ghost" style="margin-top:10px">🔡 Per Code übertragen</button>');
+    const codeWrap = $('<div hidden style="margin-top:10px"></div>');
+    const codeArea = $('<textarea rows="3" class="note-input" placeholder="Hier den Sicherungs-Code einfügen…"></textarea>');
+    const codeRow = $('<div class="backup-row" style="margin-top:8px"></div>');
+    const showCode = $('<button class="btn ghost">Code anzeigen</button>');
+    const applyCode = $('<button class="btn primary">Code einspielen</button>');
+    showCode.onclick = () => { codeArea.value = JSON.stringify(collectBackup()); codeArea.focus(); codeArea.select(); };
+    applyCode.onclick = () => {
+      if (restoreBackup(codeArea.value)) { alert("✓ Wiederhergestellt. Neu laden."); location.reload(); }
+      else alert("Ungültiger Code.");
+    };
+    codeToggle.onclick = () => { codeWrap.hidden = !codeWrap.hidden; };
+    codeRow.appendChild(showCode); codeRow.appendChild(applyCode);
+    codeWrap.appendChild(codeArea); codeWrap.appendChild(codeRow);
+    bcard.appendChild(codeToggle); bcard.appendChild(codeWrap);
+    viewEl.appendChild(bcard);
   }
 
   /* ---------- Utilities ---------- */
@@ -711,8 +635,6 @@
       else viewEl.innerHTML = '<p class="empty">Vokabeln werden geladen…</p>';
     }
     else if (state.view === "uebersetzen") renderUebersetzen();
-    else if (state.view === "quiz") renderQuiz();
-    else if (state.view === "karten") renderKarten();
     else if (state.view === "fortschritt") renderFortschritt();
     viewEl.scrollTop = 0;
     window.scrollTo(0, 0);

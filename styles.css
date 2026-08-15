@@ -420,6 +420,28 @@ textarea:focus, input.answer:focus {
 }
 .curr-clickable:hover { border-color: var(--brand); background: var(--brand-soft); }
 
+/* Lernpfad */
+.milestone {
+  background: var(--brand-soft);
+  border: 1px solid #f6cabf;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 6px 0 12px;
+}
+.ms-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--brand); font-weight: 700; }
+.ms-topic { font-size: 16px; font-weight: 700; margin: 2px 0 8px; }
+.path { position: relative; }
+
+/* Sichern & Übertragen */
+.backup-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.backup-row .btn { margin-top: 0; flex: 1 1 46%; }
+.file-label {
+  display: block; text-align: center; cursor: pointer;
+  background: transparent; color: var(--muted); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px; font-size: 16px; font-weight: 700; flex: 1 1 46%;
+}
+.file-label input { display: none; }
+
 /* Vokabel-Einführung mit "kenne ich"-Knopf */
 .vintro-row {
   display: flex;

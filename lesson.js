@@ -46,6 +46,7 @@
   /* ---------------- Persistenter Zustand ---------------- */
   function freshState() {
     return {
+      schemaVersion: 2,        // für spätere Migrationen
       level: "A2",
       lessonNo: 0,
       lastDate: null,          // "YYYY-MM-DD" der letzten begonnenen Lektion
@@ -291,7 +292,8 @@
         segments.push({
           type: "quiz",
           title: "✍️ Übersetzen mit den neuen Vokabeln",
-          questions: transQs
+          questions: transQs,
+          srs: true
         });
       }
     }
@@ -304,7 +306,8 @@
       segments.push({
         type: "quiz",
         title: "✍️ Sätze aus deinem Alltag",
-        questions: baseQs
+        questions: baseQs,
+        srs: true
       });
     }
 
@@ -500,21 +503,36 @@
   function renderProgressCard() {
     var p = curriculumProgress(S.level);
     var card = C.el('<div class="card"></div>');
-    card.appendChild(C.el('<p class="section-title" style="margin-top:0">📊 Dein ' + S.level + '-Fortschritt</p>'));
+    card.appendChild(C.el('<p class="section-title" style="margin-top:0">🗺️ Dein Lernpfad · Niveau ' + S.level + '</p>'));
+
+    // Nächster Meilenstein = erstes fertiges, noch nicht gemeistertes Thema
+    var next = null;
+    for (var i = 0; i < p.items.length; i++) {
+      var t0 = p.items[i];
+      if (t0.status === "ready" && !grammarMastered(t0.moduleId)) { next = t0; break; }
+    }
+    if (next) {
+      var np = grammarPct(next.moduleId);
+      var mb = C.el('<div class="milestone"></div>');
+      mb.appendChild(C.el('<div class="ms-label">Nächster Meilenstein</div>'));
+      mb.appendChild(C.el('<div class="ms-topic">' + C.esc(next.topic) + ' · ' + np + '%</div>'));
+      mb.appendChild(bar(np));
+      card.appendChild(mb);
+    } else {
+      card.appendChild(C.el('<p class="hint" style="margin:6px 0 10px">🎉 Alle ' + S.level + '-Grammatikthemen gemeistert!</p>'));
+    }
 
     var gPct = p.grammarReady ? Math.round((p.grammarDone / p.grammarReady) * 100) : 0;
     card.appendChild(C.el('<p class="hint" style="margin:8px 0 2px">Grammatik-Themen: ' + p.grammarDone + '/' + p.grammarReady + ' gemeistert</p>'));
     card.appendChild(bar(gPct));
 
     var vPct = p.vocabTotal ? Math.round((p.vocabDone / p.vocabTotal) * 100) : 0;
-    card.appendChild(C.el('<p class="hint" style="margin:12px 0 2px">Wortschatz: ' + p.vocabDone + '/' + p.vocabTotal + ' sitzt</p>'));
+    card.appendChild(C.el('<p class="hint" style="margin:12px 0 2px">Wortschatz: ' + p.vocabDone + '/' + p.vocabTotal + ' sitzt sicher</p>'));
     card.appendChild(bar(vPct));
 
-    // Themenliste mit Status + Fortschrittsbalken je Grammatik-Thema.
-    // Ready-Themen sind anklickbar → gezieltes Üben.
-    card.appendChild(C.el('<p class="section-title" style="margin:16px 0 4px">Grammatik gezielt üben</p>'));
-    card.appendChild(C.el('<p class="hint" style="margin:0 0 8px">Tippe ein Thema, um nur dieses zu üben.</p>'));
-    var list = C.el('<div></div>');
+    // Meilenstein-Liste (Pfad). Ready-Themen sind anklickbar → gezieltes Üben.
+    card.appendChild(C.el('<p class="section-title" style="margin:16px 0 4px">Meilensteine · zum gezielten Üben tippen</p>'));
+    var list = C.el('<div class="path"></div>');
     p.items.forEach(function (t) {
       var isReady = t.status === "ready";
       var pct = isReady ? grammarPct(t.moduleId) : 0;
@@ -1038,24 +1056,42 @@
     var poolIds = {};
     pool.forEach(function (v) { poolIds[v.id] = 1; });
     var learned = S.introduced.filter(function (id) { return poolIds[id]; }).length;
-    var mastered = 0;
+    var mastered = 0, dueToday = 0, itemsSeen = 0, itemsMastered = 0;
     Object.keys(S.srs).forEach(function (id) {
-      if (poolIds[id] && S.srs[id].level >= MASTER_VOCAB_LEVEL) mastered++;
+      var e = S.srs[id];
+      itemsSeen++;
+      if (e.level >= MASTER_VOCAB_LEVEL) itemsMastered++;
+      if (poolIds[id] && e.level >= MASTER_VOCAB_LEVEL) mastered++;
+      if (e.due <= S.lessonNo && e.level > 0 && e.level < MASTER_VOCAB_LEVEL) dueToday++;
     });
+    // Grammatik-Themen des Curriculums
+    var cp = curriculumProgress(S.level);
     return {
       lessonNo: S.lessonNo,
       level: S.level,
       vocabTotal: pool.length,
       vocabLearned: learned,
-      vocabMastered: mastered
+      vocabMastered: mastered,
+      itemsSeen: itemsSeen,          // alle Elemente (Wörter + Sätze) mit SRS
+      itemsMastered: itemsMastered,
+      dueToday: dueToday,            // fällig zur Wiederholung
+      grammarReady: cp.grammarReady,
+      grammarDone: cp.grammarDone
     };
   }
+  // Einheitliche SRS-Schnittstelle (auch für Sätze im Übersetzen-Tab)
+  function reviewItem(id, ok) { srsUpdate(id, ok); }
+  function getSrs(id) { return S.srs[id] || null; }
+  function srsClock() { return S.lessonNo; }
 
   /* ---------------- Öffentliche API ---------------- */
   window.Lektion = {
     render: render,
     renderVocab: renderVocab,
     getStats: getStats,
+    reviewItem: reviewItem,
+    getSrs: getSrs,
+    srsClock: srsClock,
     // Wird vom Notizfeld aufgerufen, wenn ein gemerktes Wort einer Vokabel
     // entspricht: Level zurücksetzen und sofort wieder fällig machen.
     markUnknown: function (vocabId) {
