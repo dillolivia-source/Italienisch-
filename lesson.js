@@ -33,6 +33,7 @@
   };
   var LENGTH_ORDER = ["short", "medium", "long"];
   function curLen() { return LENGTHS[S.lengthPref] || LENGTHS.medium; }
+  var NEW_MIN = 4;            // pro Lektion mindestens so viele neue Vokabeln
 
   var LEARN_DAYS = 2;         // ein neues Grammatik-Thema wird 2 Lektionen gelernt
   // Auffrischungs-Abstände (in Lektionen) je Box – verdoppeln sich bei Erfolg
@@ -266,10 +267,11 @@
       });
     }
 
-    // 3. neue Vokabeln + sofortige Abfrage
+    // 3. neue Vokabeln + sofortige Abfrage (immer mindestens NEW_MIN)
+    var newTarget = Math.max(L.newVoc, NEW_MIN);
     var fresh = vocabForLevel().filter(function (v) {
       return S.introduced.indexOf(v.id) === -1;
-    }).slice(0, L.newVoc);
+    }).slice(0, newTarget);
 
     if (fresh.length) {
       segments.push({
@@ -343,15 +345,20 @@
     e.level = SRS_INTERVAL.length - 1; // gilt als "sicher"
     e.streak = 3; e.wrong = 0; e.last = "ok";
     e.due = S.lessonNo + SRS_INTERVAL[e.level];
-    var used = {}; seg.vocab.forEach(function (v) { used[v.id] = 1; });
-    var repl = vocabForLevel().filter(function (v) {
-      return S.introduced.indexOf(v.id) === -1 && !used[v.id];
-    })[0];
+    // die als bekannt markierte Vokabel aus der Einheit entfernen …
     var idx = -1;
     for (var i = 0; i < seg.vocab.length; i++) { if (seg.vocab[i].id === id) { idx = i; break; } }
-    if (idx >= 0) {
-      if (repl) seg.vocab[idx] = repl;
-      else seg.vocab.splice(idx, 1);
+    if (idx >= 0) seg.vocab.splice(idx, 1);
+    // … und die Einheit wieder auf das Ziel (mind. NEW_MIN) mit neuen auffüllen.
+    var target = Math.max(curLen().newVoc, NEW_MIN);
+    var used = {}; seg.vocab.forEach(function (v) { used[v.id] = 1; });
+    var pool = vocabForLevel().filter(function (v) {
+      return S.introduced.indexOf(v.id) === -1 && !used[v.id];
+    });
+    while (seg.vocab.length < target && pool.length) {
+      var next = pool.shift();
+      used[next.id] = 1;
+      seg.vocab.push(next);
     }
     seg.title = "✨ " + seg.vocab.length + " neue Vokabeln";
     syncFreshSegments(seg.vocab);
