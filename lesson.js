@@ -54,6 +54,7 @@
       completedDate: null,     // Datum der letzten ABGESCHLOSSENEN Lektion
       introduced: [],          // Vokabel-IDs, die schon eingeführt wurden
       srs: {},                 // id -> {level, streak, wrong, due, last}
+      conj: {},                // Verb-Konjugations-SRS: verbId -> {level, streak, wrong, due, last}
       lengthPref: "medium",    // Lektionslänge: short/medium/long (5/10/15 Min)
       // --- Grammatik-SRS (Themen-Ebene) ---
       learnIndex: 0,           // Position im Lern-Plan der Grammatik-Themen
@@ -1057,6 +1058,223 @@
     setTimeout(function () { ta.focus(); }, 40);
   }
 
+  /* ============ KONJUGATIONS-TRAINER (Präsens, Karteikasten) ============ */
+  var VD = window.VERB_DATA || { pronouns: [], typeLabel: {}, verbs: [] };
+  var VERB_UNIT = 6;          // kleine Lektion: 6 Verben pro Einheit
+  var PERS_PER_VERB = 3;      // so viele Personen je Verb werden abgefragt
+  var verbFilter = "all";     // "all" | "reg" | "irr"
+  var verbUnit = null;        // Verben der aktuellen Einheit
+  var verbPhase = "learn";    // "learn" = Tabellen ansehen · "quiz" = abfragen
+  var verbQueue = null;       // offene Frage-Warteschlange (Person-Ebene)
+  var verbSolved = null;      // {questionId: true}
+  var verbTotalQ = 0;         // Anzahl Fragen der Einheit
+  var verbWrong = null;       // {verbId: true} – in dieser Einheit falsch gehabt
+
+  // eigene, von der Vokabel-SRS getrennte Leitner-Logik für Verben
+  function conjFor(id) {
+    if (!S.conj) S.conj = {};
+    if (!S.conj[id]) S.conj[id] = { level: 0, streak: 0, wrong: 0, due: S.lessonNo, last: null };
+    return S.conj[id];
+  }
+  function conjUpdate(id, ok) {
+    var e = conjFor(id);
+    if (ok) { e.streak++; e.level = Math.min(SRS_INTERVAL.length - 1, e.level + 1); e.last = "ok"; }
+    else { e.streak = 0; e.level = Math.max(0, e.level - 1); e.wrong++; e.last = "no"; }
+    e.due = S.lessonNo + SRS_INTERVAL[e.level];
+    save();
+  }
+  function verbPool() {
+    return VD.verbs.filter(function (v) {
+      if (verbFilter === "reg") return v.type !== "irr";
+      if (verbFilter === "irr") return v.type === "irr";
+      return true;
+    });
+  }
+  function buildVerbUnit() {
+    var pool = verbPool();
+    if (!pool.length) { verbUnit = []; verbQueue = []; verbSolved = {}; verbTotalQ = 0; verbWrong = {}; return; }
+    var scored = pool.map(function (v) {
+      var e = S.conj && S.conj[v.id];
+      var w = e ? (e.wrong || 0) * 2 : 3;    // Neue bevorzugt einstreuen, Schwere öfter
+      if (e && e.last === "no") w += 2;
+      if (e && e.due <= S.lessonNo) w += 2;  // fällige nach vorne
+      return { v: v, w: w + Math.random() };
+    });
+    scored.sort(function (a, b) { return b.w - a.w; });
+    verbUnit = scored.slice(0, Math.min(VERB_UNIT, pool.length)).map(function (x) { return x.v; });
+    verbPhase = "learn";
+    verbWrong = {};
+    buildVerbQueue();
+  }
+  function buildVerbQueue() {
+    var qs = [];
+    verbUnit.forEach(function (v) {
+      // PERS_PER_VERB verschiedene Personen je Verb (immer variiert)
+      var idx = C.shuffle([0, 1, 2, 3, 4, 5]).slice(0, Math.min(PERS_PER_VERB, 6));
+      idx.forEach(function (p) {
+        qs.push({
+          id: v.id + "_" + p,
+          verbId: v.id,
+          person: VD.pronouns[p],
+          inf: v.inf, de: v.de,
+          accept: [v.forms[p]]
+        });
+      });
+    });
+    verbQueue = C.shuffle(qs);
+    verbSolved = {};
+    verbTotalQ = qs.length;
+  }
+
+  function renderVerbs(container) {
+    root = container;
+    root.innerHTML = "";
+    var head = C.el('<div class="lesson-head"></div>');
+    head.appendChild(C.el('<h2 class="lesson-title">🔤 Verben – Präsens üben</h2>'));
+    root.appendChild(head);
+
+    // Filter: Alle · Regelmäßig · Unregelmäßig
+    var fRow = C.el('<div class="len-row" style="margin-bottom:10px"></div>');
+    [["all", "Alle"], ["reg", "Regelmäßig"], ["irr", "Unregelmäßig"]].forEach(function (f) {
+      var c = C.el('<button class="chip" aria-pressed="' + (verbFilter === f[0]) + '">' + f[1] + "</button>");
+      c.onclick = function () {
+        if (verbFilter === f[0]) return;
+        verbFilter = f[0]; verbUnit = null; renderVerbs(root);
+      };
+      fRow.appendChild(c);
+    });
+    root.appendChild(fRow);
+
+    // Fortschritt: wie viele Verben schon sicher
+    var seen = 0, mastered = 0;
+    verbPool().forEach(function (v) {
+      var e = S.conj && S.conj[v.id];
+      if (e) { seen++; if (e.level >= MASTER_VOCAB_LEVEL) mastered++; }
+    });
+    root.appendChild(C.el('<p class="progress-line">' + verbPool().length + ' Verben · ' +
+      seen + ' geübt · ' + mastered + ' sicher</p>'));
+
+    if (!verbUnit) buildVerbUnit();
+    if (!verbUnit.length) {
+      root.appendChild(C.el('<p class="empty">Keine Verben in dieser Auswahl.</p>'));
+      return;
+    }
+    if (verbPhase === "learn") { verbLearnCard(); return; }
+    if (verbQueue.length === 0) { renderVerbsDone(); return; }
+    verbQuizCard(verbQueue[0]);
+  }
+
+  // Lernphase: Konjugationstabellen der Einheit ansehen (mit Vorlesen)
+  function verbLearnCard() {
+    root.appendChild(C.el('<p class="hint" style="margin-top:0">Schau dir die ' + verbUnit.length +
+      ' Verben an – dann fragen wir einzelne Formen ab.</p>'));
+    verbUnit.forEach(function (v) {
+      var card = C.el('<div class="card verb-card"></div>');
+      var top = C.el('<div class="verb-top"></div>');
+      var t = C.el('<span class="verb-inf">' + C.esc(v.inf) + "</span>");
+      var sb = C.speakButton(v.inf); if (sb) t.appendChild(sb);
+      top.appendChild(t);
+      top.appendChild(C.el('<span class="verb-de">' + C.esc(v.de) + "</span>"));
+      card.appendChild(top);
+      card.appendChild(C.el('<span class="verb-type verb-type-' + v.type + '">' +
+        C.esc(VD.typeLabel[v.type] || "") + "</span>"));
+      var tbl = C.el('<div class="conj-table"></div>');
+      v.forms.forEach(function (form, i) {
+        var row = C.el('<div class="conj-row"></div>');
+        row.appendChild(C.el('<span class="conj-pron">' + C.esc(VD.pronouns[i]) + "</span>"));
+        var f = C.el('<span class="conj-form">' + C.esc(form) + "</span>");
+        row.appendChild(f);
+        var sbf = C.speakButton(form); if (sbf) row.appendChild(sbf);
+        tbl.appendChild(row);
+      });
+      card.appendChild(tbl);
+      root.appendChild(card);
+    });
+    var go = C.el('<button class="btn primary">Verstanden, abfragen →</button>');
+    go.onclick = function () { verbPhase = "quiz"; buildVerbQueue(); renderVerbs(root); };
+    root.appendChild(go);
+  }
+
+  function verbQuizCard(q) {
+    var solved = Object.keys(verbSolved).length;
+    root.appendChild(C.el('<p class="progress-line">' + solved + ' / ' + verbTotalQ +
+      ' richtig · noch ' + verbQueue.length + ' offen</p>'));
+    var card = C.el('<div class="card"></div>');
+    card.appendChild(C.el('<p class="prompt-de"><b>' + C.esc(q.inf) + '</b> <span class="verb-de">(' +
+      C.esc(q.de) + ')</span></p>'));
+    card.appendChild(C.el('<p class="hint">Konjugiere für <b class="conj-ask">' + C.esc(q.person) + "</b> (Präsens):</p>"));
+    var ta = C.el('<textarea rows="1" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
+    card.appendChild(ta);
+    card.appendChild(C.accentBar(ta));
+    var fb = C.el("<div></div>");
+    card.appendChild(fb);
+    var btn = C.el('<button class="btn primary">Prüfen</button>');
+    card.appendChild(btn);
+    root.appendChild(card);
+
+    var answered = false;
+    btn.onclick = function () {
+      if (!answered) {
+        answered = true;
+        var res = C.checkAnswer(ta.value, q.accept);
+        ta.setAttribute("readonly", "");
+        var ok = res === "ok";
+        var cls = ok ? "ok" : (res === "near" ? "near" : "no");
+        var box = C.el('<div class="feedback ' + cls + '"></div>');
+        var lead = C.el('<p class="lead ' + cls + '">' +
+          (ok ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>");
+        box.appendChild(lead);
+        if (ok) {
+          var sol = C.el('<p class="solution">' + C.esc(q.person) + " " + C.esc(q.accept[0]) + "</p>");
+          var sb0 = C.speakButton(q.accept[0]); if (sb0) sol.appendChild(sb0);
+          box.appendChild(sol);
+        } else {
+          var d = C.wordDiff(ta.value, q.accept[0]);
+          if (ta.value.trim()) box.appendChild(C.el('<p class="diff-line"><span class="diff-lbl">deine Eingabe</span>' + d.userHtml + "</p>"));
+          var rl = C.el('<p class="diff-line"><span class="diff-lbl">richtig</span>' +
+            '<span class="conj-pron-inline">' + C.esc(q.person) + " </span>" + d.correctHtml + "</p>");
+          var sb1 = C.speakButton(q.accept[0]); if (sb1) rl.appendChild(sb1);
+          box.appendChild(rl);
+        }
+        fb.appendChild(box);
+        C.record("conj_" + q.verbId, ok);
+        verbQueue.shift();
+        if (ok) { verbSolved[q.id] = true; }
+        else { verbWrong[q.verbId] = true; verbQueue.push(q); }
+        save();
+        C.speak(q.accept[0]);
+        if (!ok) {
+          var ov = C.el('<button type="button" class="override">war doch richtig ✓</button>');
+          ov.onclick = function () {
+            for (var i = verbQueue.length - 1; i >= 0; i--) { if (verbQueue[i].id === q.id) { verbQueue.splice(i, 1); break; } }
+            verbSolved[q.id] = true;
+            ov.remove(); lead.className = "lead ok"; lead.textContent = "✓ Als richtig gewertet"; box.className = "feedback ok";
+          };
+          box.appendChild(ov);
+        }
+        btn.textContent = "Weiter →";
+      } else {
+        renderVerbs(root);
+      }
+    };
+    setTimeout(function () { ta.focus(); }, 40);
+  }
+
+  function renderVerbsDone() {
+    // Leitner-Wertung je Verb: ohne Fehler in dieser Einheit → hoch, sonst runter
+    verbUnit.forEach(function (v) { conjUpdate(v.id, !verbWrong[v.id]); });
+    var card = C.el('<div class="card" style="text-align:center"></div>');
+    card.appendChild(C.el('<div style="font-size:44px">🎉</div>'));
+    card.appendChild(C.el('<h2 style="margin:4px 0">Einheit geschafft!</h2>'));
+    card.appendChild(C.el('<p class="hint">' + verbUnit.length +
+      ' Verben durch – falsche Formen hast du bis zur richtigen Lösung wiederholt.</p>'));
+    var btn = C.el('<button class="btn primary">Neue Einheit (' + VERB_UNIT + ') →</button>');
+    btn.onclick = function () { buildVerbUnit(); renderVerbs(root); };
+    card.appendChild(btn);
+    root.appendChild(card);
+    C.showReset();
+  }
+
   /* ---------------- Kennzahlen für die Statistik ---------------- */
   function getStats() {
     var pool = vocabForLevel();
@@ -1095,6 +1313,7 @@
   window.Lektion = {
     render: render,
     renderVocab: renderVocab,
+    renderVerbs: renderVerbs,
     getStats: getStats,
     reviewItem: reviewItem,
     getSrs: getSrs,

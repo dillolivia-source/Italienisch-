@@ -406,6 +406,36 @@ textarea:focus, input.answer:focus {
 .vocab-it { font-size: 18px; font-weight: 700; color: var(--brand); }
 .vocab-de { font-size: 15px; color: var(--muted); text-align: right; }
 
+/* ---------- Konjugations-Trainer (Verben) ---------- */
+.verb-card { padding-top: 12px; }
+.verb-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.verb-inf { font-size: 20px; font-weight: 800; color: var(--brand); }
+.verb-top .verb-de { font-size: 15px; }
+.verb-type {
+  display: inline-block;
+  margin: 6px 0 2px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--muted);
+}
+.verb-type-irr { background: var(--brand-soft); color: var(--brand); }
+.conj-table { margin-top: 8px; }
+.conj-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
+  border-bottom: 1px solid var(--line);
+}
+.conj-row:last-child { border-bottom: none; }
+.conj-pron { flex: 0 0 66px; color: var(--muted); font-size: 14px; }
+.conj-form { font-size: 17px; font-weight: 700; color: var(--text); }
+.conj-ask { color: var(--brand); }
+.conj-pron-inline { color: var(--muted); }
+
 .curr-item {
   font-size: 15px;
   margin: 5px 0;

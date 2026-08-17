@@ -634,6 +634,10 @@
       if (window.Lektion) window.Lektion.renderVocab(viewEl);
       else viewEl.innerHTML = '<p class="empty">Vokabeln werden geladen…</p>';
     }
+    else if (state.view === "verben") {
+      if (window.Lektion) window.Lektion.renderVerbs(viewEl);
+      else viewEl.innerHTML = '<p class="empty">Verben werden geladen…</p>';
+    }
     else if (state.view === "uebersetzen") renderUebersetzen();
     else if (state.view === "fortschritt") renderFortschritt();
     viewEl.scrollTop = 0;
