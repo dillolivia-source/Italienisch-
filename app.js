@@ -218,14 +218,46 @@
 
   /* ---------- Sprachausgabe (Hören) – kostenlos via Web Speech API ---------- */
   const TTS = ("speechSynthesis" in window);
-  let _itVoice = null;
+  const VOICE_KEY = "olivia-it-voice-v1";
+  let _itVoices = [];   // alle verfügbaren italienischen Stimmen
+  let _itVoice = null;  // aktuell gewählte Stimme
+
+  // Namens-Heuristik, um ohne Metadaten männlich/weiblich & Qualität zu erraten.
+  const MALE_NAMES = /(luca|diego|cosimo|gianni|giuseppe|roberto|paolo|marco|giorgio|carlo|alberto|nicola|riccardo|lorenzo|matteo|francesco|stefano|maschile|\buomo\b|\bmale\b|\bman\b)/i;
+  const FEMALE_NAMES = /(alice|elsa|isabella|federica|paola|palmira|fabiola|fiamma|imelda|emma|silvia|giulia|chiara|carla|bianca|femminile|donna|\bfemale\b|\bwoman\b)/i;
+  const HD_MARK = /(enhanced|premium|neural|siri|natural|google|microsoft|multilingual)/i;
+
+  function loadVoicePref() { try { return localStorage.getItem(VOICE_KEY) || ""; } catch (e) { return ""; } }
+  function saveVoicePref(v) { try { v ? localStorage.setItem(VOICE_KEY, v) : localStorage.removeItem(VOICE_KEY); } catch (e) {} }
+
+  // je höher, desto lieber: männlich + hochwertig bevorzugt
+  function scoreVoice(v) {
+    const n = (v.name || "") + " " + (v.voiceURI || "");
+    let s = 0;
+    if (MALE_NAMES.test(n)) s += 100;
+    if (FEMALE_NAMES.test(n)) s -= 60;
+    if (HD_MARK.test(n)) s += 30;
+    if (/enhanced|premium|neural/i.test(n)) s += 25; // klar HD-Qualität
+    if (/^it[-_]?it/i.test(v.lang)) s += 8;          // echtes it-IT vor it-CH etc.
+    if (v.localService) s += 3;                       // offline verlässlich
+    return s;
+  }
+
   function loadVoices() {
     if (!TTS) return;
     try {
       const vs = window.speechSynthesis.getVoices() || [];
-      _itVoice = vs.find(v => /^it([-_]|$)/i.test(v.lang)) ||
-        vs.find(v => /it/i.test(v.lang)) || null;
+      _itVoices = vs.filter(v => /^it([-_]|$)/i.test(v.lang) || /(^|[-_])it([-_]|$)/i.test(v.lang) || /it/i.test(v.lang));
+      pickVoice();
     } catch (e) {}
+  }
+  function pickVoice() {
+    if (!_itVoices.length) { _itVoice = null; return; }
+    const pref = loadVoicePref();
+    const chosen = pref && _itVoices.find(v => v.voiceURI === pref || v.name === pref);
+    if (chosen) { _itVoice = chosen; return; }
+    // sonst: beste männliche/hochwertige Stimme automatisch
+    _itVoice = _itVoices.slice().sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] || null;
   }
   if (TTS) {
     loadVoices();
@@ -238,7 +270,7 @@
       const u = new SpeechSynthesisUtterance(String(text));
       u.lang = "it-IT";
       if (_itVoice) u.voice = _itVoice;
-      u.rate = 0.95; u.pitch = 1;
+      u.rate = 0.92; u.pitch = 0.96; // etwas ruhiger & wärmer
       window.speechSynthesis.speak(u);
     } catch (e) {}
   }
@@ -248,6 +280,15 @@
     b.onclick = e => { e.preventDefault(); e.stopPropagation(); speak(text); };
     return b;
   }
+  // --- API für die Stimmen-Auswahl (Statistik-Seite) ---
+  function listItVoices() {
+    // hübsch sortiert: bevorzugte zuerst
+    return _itVoices.slice().sort((a, b) => scoreVoice(b) - scoreVoice(a));
+  }
+  function currentVoiceId() { return _itVoice ? (_itVoice.voiceURI || _itVoice.name) : ""; }
+  function setVoice(id) { saveVoicePref(id || ""); pickVoice(); }
+  function voiceIsMale(v) { return MALE_NAMES.test((v.name || "") + " " + (v.voiceURI || "")); }
+  function voiceIsHd(v) { return HD_MARK.test((v.name || "") + " " + (v.voiceURI || "")); }
 
   /* ---------- Akzent-Schnelltasten (Reibung reduzieren) ---------- */
   function insertAtCursor(ta, ch) {
@@ -319,6 +360,11 @@
     canSpeak: TTS,
     speak: speak,
     speakButton: speakButton,
+    listItVoices: listItVoices,
+    currentVoiceId: currentVoiceId,
+    setVoice: setVoice,
+    voiceIsMale: voiceIsMale,
+    voiceIsHd: voiceIsHd,
     accentBar: accentBar,
     storageOk: STORAGE_OK,
     addWishword: addWishword,
@@ -575,6 +621,41 @@
       });
       viewEl.appendChild(wcard);
       viewEl.appendChild($('<p class="offline-note">Wörter, die du dir gemerkt hast. Eigene Vokabeln legst du im Tab „Vokabeln" an.</p>'));
+    }
+
+    // Stimme zum Vorlesen auswählen
+    if (TTS) {
+      viewEl.appendChild($('<p class="section-title">🔊 Stimme zum Vorlesen</p>'));
+      const vcard = $('<div class="card"></div>');
+      const voices = listItVoices();
+      if (!voices.length) {
+        vcard.appendChild($('<p class="hint" style="margin:0">Dein Gerät hat gerade keine italienische Stimme geladen. Tippe unten einmal auf „anhören" – manchmal erscheinen sie erst danach.</p>'));
+      } else {
+        vcard.appendChild($('<p class="hint" style="margin:0 0 8px">Wähle die Stimme, die dir am besten gefällt. <b>♂</b> = männlich · <b>HD</b> = besonders klar.</p>'));
+        const sel = $('<select class="voice-select"></select>');
+        const curId = currentVoiceId();
+        const autoOpt = $('<option value="">Automatisch (beste männliche Stimme)</option>');
+        sel.appendChild(autoOpt);
+        const savedPref = (function () { try { return localStorage.getItem(VOICE_KEY) || ""; } catch (e) { return ""; } })();
+        voices.forEach(v => {
+          const id = v.voiceURI || v.name;
+          const tags = (voiceIsMale(v) ? " ♂" : "") + (voiceIsHd(v) ? " · HD" : "");
+          const opt = $('<option></option>');
+          opt.value = id;
+          opt.textContent = v.name + tags;
+          if (savedPref && (v.voiceURI === savedPref || v.name === savedPref)) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        vcard.appendChild(sel);
+        const vrow = $('<div class="backup-row" style="margin-top:10px"></div>');
+        const test = $('<button class="btn primary">▶︎ Anhören</button>');
+        test.onclick = () => { setVoice(sel.value); speak("Ciao Olivia, andiamo a imparare l'italiano!"); };
+        vrow.appendChild(test);
+        vcard.appendChild(vrow);
+        sel.onchange = () => { setVoice(sel.value); speak("Ciao! Questa è la mia voce."); };
+        vcard.appendChild($('<p class="offline-note" style="margin-top:10px">Tipp fürs iPhone: unter <b>Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Italienisch</b> kannst du weitere – auch männliche und hochwertige – Stimmen kostenlos laden. Danach hier auswählen.</p>'));
+      }
+      viewEl.appendChild(vcard);
     }
 
     // Sichern & Übertragen (Backup / anderes Gerät)

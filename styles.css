@@ -436,6 +436,20 @@ textarea:focus, input.answer:focus {
 .conj-ask { color: var(--brand); }
 .conj-pron-inline { color: var(--muted); }
 
+/* ---------- Stimmen-Auswahl ---------- */
+.voice-select {
+  width: 100%;
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.voice-select:focus { outline: none; border-color: var(--brand); }
+
 .curr-item {
   font-size: 15px;
   margin: 5px 0;
