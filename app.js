@@ -546,6 +546,48 @@
     return $(`<div class="stat"><div class="num">${num}</div><div class="lbl">${label}</div>` +
       (sub ? `<div class="sub">${sub}</div>` : "") + `</div>`);
   }
+
+  const LEVEL_NAME = { A1: "Anfänger", A2: "Grundlagen", B1: "Mittelstufe", B2: "Fortgeschritten" };
+  // Motivations-Übersicht: pro Niveau ein zweifarbiger Balken (begonnen + sicher)
+  function levelJourney() {
+    if (!(window.Lektion && window.Lektion.getLevelProgress)) return null;
+    const rows = window.Lektion.getLevelProgress();
+    const card = $('<div class="card journey"></div>');
+    rows.forEach(lp => {
+      if (!lp.hasContent) {
+        card.appendChild($(
+          `<div class="lvl-row muted"><div class="lvl-head">` +
+          `<span class="lvl-badge gray">${lp.level}</span>` +
+          `<span class="lvl-name">${LEVEL_NAME[lp.level] || ""}</span>` +
+          `<span class="lvl-pct">in Vorbereitung</span></div></div>`));
+        return;
+      }
+      const row = $('<div class="lvl-row' + (lp.current ? " current" : "") + '"></div>');
+      const rightTxt = lp.complete ? '<span class="lvl-done">✓ geschafft</span>'
+        : `<span class="lvl-pct">${lp.pct}%</span>`;
+      const hereTag = lp.current ? '<span class="lvl-here">du bist hier</span>' : "";
+      row.appendChild($(
+        `<div class="lvl-head">` +
+        `<span class="lvl-badge">${lp.level}</span>` +
+        `<span class="lvl-name">${LEVEL_NAME[lp.level] || ""}${hereTag}</span>` +
+        rightTxt + `</div>`));
+      row.appendChild($(
+        `<div class="lvl-bar">` +
+        `<span class="lvl-fill-soft" style="width:${lp.startedPct}%"></span>` +
+        `<span class="lvl-fill" style="width:${lp.pct}%"></span></div>`));
+      const g = lp.grammar.total
+        ? `Grammatik ${lp.grammar.done}/${lp.grammar.total} Themen`
+        : "Grammatik folgt";
+      row.appendChild($(
+        `<p class="lvl-sub">Vokabeln ${lp.vocab.mastered}/${lp.vocab.total} sicher · ${g}</p>`));
+      card.appendChild(row);
+    });
+    card.appendChild($(
+      '<div class="lvl-legend">' +
+      '<span><i class="sw-soft"></i> begonnen</span>' +
+      '<span><i class="sw-solid"></i> sicher</span></div>'));
+    return card;
+  }
   // Verständliches Etikett für eine ID (nur Vokabeln & Sätze; Grammatik-IDs überspringen)
   function labelFor(id) {
     const V = (window.LESSON_DATA && window.LESSON_DATA.vocab) || [];
@@ -587,13 +629,13 @@
       viewEl.appendChild($(`<p class="hint" style="margin:2px 0 0">🔁 <b>${st.dueToday}</b> Wörter/Sätze sind zur Wiederholung fällig – üben in Lektion, Vokabeln oder Übersetzen.</p>`));
     }
 
-    // Wortschatz-Balken
-    const pct = st.vocabTotal ? Math.round((st.vocabLearned / st.vocabTotal) * 100) : 0;
-    const barCard = $('<div class="card"></div>');
-    barCard.appendChild($(`<p class="section-title" style="margin-top:0">Wortschatz · Niveau ${esc(st.level)}</p>`));
-    barCard.appendChild($(`<div class="bar"><span style="width:${pct}%"></span></div>`));
-    barCard.appendChild($(`<p class="hint" style="margin:6px 0 0">${st.vocabLearned} von ${st.vocabTotal} Vokabeln auf deinem Niveau begonnen · ${st.vocabMastered} sitzen sicher.</p>`));
-    viewEl.appendChild(barCard);
+    // Dein Weg durch die Niveaus (A1 · A2 · B1 · B2)
+    const journey = levelJourney();
+    if (journey) {
+      viewEl.appendChild($('<p class="section-title" style="margin-top:14px">🗺️ Dein Weg durch die Niveaus</p>'));
+      viewEl.appendChild($('<p class="hint" style="margin:0 0 8px">Vokabeln und Grammatik zusammen – heller Balken = begonnen, kräftiger = schon sicher.</p>'));
+      viewEl.appendChild(journey);
+    }
 
     // schwierigste Wörter (verständliche Labels)
     const trouble = Object.keys(progress)

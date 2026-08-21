@@ -1275,6 +1275,65 @@
     C.showReset();
   }
 
+  /* ------------- Fortschritt pro Niveau (für die Motivations-Balken) ------------- */
+  // Vokabeln GENAU dieses Niveaus (nicht kumulativ): begonnen & sicher.
+  function levelVocabStats(level) {
+    var pool = allVocab().filter(function (v) { return v.cefr === level; });
+    var started = 0, mastered = 0;
+    pool.forEach(function (v) {
+      var e = S.srs[v.id];
+      if (e && (e.level > 0 || e.last)) started++;
+      if (e && e.level >= MASTER_VOCAB_LEVEL) mastered++;
+    });
+    return { total: pool.length, started: started, mastered: mastered };
+  }
+  // Grammatik-Themen GENAU dieses Niveaus (nur schon vorhandene = "ready").
+  function levelGrammarStats(level) {
+    var g = (CURRICULUM[level] && CURRICULUM[level].grammar) || [];
+    var ready = g.filter(function (t) { return t.status === "ready"; });
+    var started = 0, done = 0;
+    ready.forEach(function (t) {
+      if ((S.grammarHits[t.moduleId] || 0) > 0) started++;
+      if (grammarMastered(t.moduleId)) done++;
+    });
+    return {
+      total: ready.length, started: started, done: done,
+      planned: g.filter(function (t) { return t.status === "planned"; }).length
+    };
+  }
+  // Kombinierter Prozentwert: Vokabeln und Grammatik je zur Hälfte gewichtet,
+  // damit auch Grammatik-Fortschritt den Balken sichtbar bewegt.
+  function combinePct(vPart, gPart) {
+    var parts = [];
+    if (vPart !== null) parts.push(vPart);
+    if (gPart !== null) parts.push(gPart);
+    if (!parts.length) return 0;
+    return parts.reduce(function (a, b) { return a + b; }, 0) / parts.length;
+  }
+  function getLevelProgress() {
+    var levels = ["A1", "A2", "B1", "B2"];
+    return levels.map(function (lv) {
+      var voc = levelVocabStats(lv);
+      var gram = levelGrammarStats(lv);
+      var hasContent = voc.total > 0 || gram.total > 0;
+      var vDone = voc.total ? (voc.mastered / voc.total) * 100 : null;
+      var vStart = voc.total ? (voc.started / voc.total) * 100 : null;
+      var gDone = gram.total ? (gram.done / gram.total) * 100 : null;
+      var gStart = gram.total ? (gram.started / gram.total) * 100 : null;
+      return {
+        level: lv,
+        current: lv === S.level,
+        hasContent: hasContent,
+        planned: gram.planned,
+        vocab: voc,
+        grammar: gram,
+        pct: Math.round(combinePct(vDone, gDone)),        // "sicher"-Anteil
+        startedPct: Math.round(combinePct(vStart, gStart)), // "begonnen"-Anteil
+        complete: levelComplete(lv)
+      };
+    });
+  }
+
   /* ---------------- Kennzahlen für die Statistik ---------------- */
   function getStats() {
     var pool = vocabForLevel();
@@ -1315,6 +1374,7 @@
     renderVocab: renderVocab,
     renderVerbs: renderVerbs,
     getStats: getStats,
+    getLevelProgress: getLevelProgress,
     reviewItem: reviewItem,
     getSrs: getSrs,
     srsClock: srsClock,
