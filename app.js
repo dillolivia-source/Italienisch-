@@ -268,9 +268,15 @@
     try {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(String(text));
-      u.lang = "it-IT";
-      if (_itVoice) u.voice = _itVoice;
-      u.rate = 0.92; u.pitch = 0.96; // etwas ruhiger & wärmer
+      if (_itVoice) {
+        // Stimme zuerst setzen und lang GENAU zur Stimme passend – sonst ersetzt
+        // iOS die gewählte Stimme durch die System-/Siri-Standardstimme.
+        u.voice = _itVoice;
+        u.lang = _itVoice.lang || "it-IT";
+      } else {
+        u.lang = "it-IT";
+      }
+      u.rate = 0.95; u.pitch = 1; // natürliche Tonhöhe (keine Verfälschung)
       window.speechSynthesis.speak(u);
     } catch (e) {}
   }
