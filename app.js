@@ -579,7 +579,7 @@
         ? `Grammatik ${lp.grammar.done}/${lp.grammar.total} Themen`
         : "Grammatik folgt";
       row.appendChild($(
-        `<p class="lvl-sub">Vokabeln ${lp.vocab.mastered}/${lp.vocab.total} sicher · ${g}</p>`));
+        `<p class="lvl-sub">Kernwortschatz ${lp.vocabSicher}/${lp.vocabTarget} sicher · ${g}</p>`));
       card.appendChild(row);
     });
     card.appendChild($(
@@ -633,7 +633,7 @@
     const journey = levelJourney();
     if (journey) {
       viewEl.appendChild($('<p class="section-title" style="margin-top:14px">🗺️ Dein Weg durch die Niveaus</p>'));
-      viewEl.appendChild($('<p class="hint" style="margin:0 0 8px">Vokabeln und Grammatik zusammen – heller Balken = begonnen, kräftiger = schon sicher.</p>'));
+      viewEl.appendChild($('<p class="hint" style="margin:0 0 8px">Prozent = Kernwortschatz + Grammatik zusammen. Er wächst mit jeder richtigen Antwort. Heller Balken = begonnen, kräftiger = schon sicher.</p>'));
       viewEl.appendChild(journey);
     }
 

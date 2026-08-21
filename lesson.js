@@ -205,12 +205,21 @@
       items: g
     };
   }
-  // A2 gilt als geschafft, wenn alle "ready"-Grammatikthemen gemeistert sind
-  // und (fast) der ganze Wortschatz sitzt.
+  // Realistischer Kernwortschatz je Niveau (statt des gesamten Vokabel-Bergs) –
+  // so ist ein Niveau erreichbar und der Prozentwert bewegt sich sichtbar.
+  var LEVEL_VOCAB_TARGET = { A1: 120, A2: 200, B1: 150, B2: 150 };
+  function vocabTargetFor(level, total) {
+    var t = LEVEL_VOCAB_TARGET[level] || 150;
+    return Math.max(1, Math.min(t, total || t));
+  }
+  // Ein Niveau gilt als geschafft, wenn alle "ready"-Grammatikthemen gemeistert
+  // sind UND der Kernwortschatz (fast) sitzt.
   function levelComplete(level) {
     var p = curriculumProgress(level);
+    var voc = levelVocabStats(level);
+    var target = vocabTargetFor(level, voc.total);
     var grammarOk = p.grammarReady > 0 && p.grammarDone >= p.grammarReady;
-    var vocabOk = p.vocabTotal > 0 && p.vocabDone >= Math.ceil(p.vocabTotal * 0.9);
+    var vocabOk = voc.total > 0 && voc.mastered >= Math.ceil(target * 0.9);
     return grammarOk && vocabOk;
   }
 
@@ -1276,28 +1285,34 @@
   }
 
   /* ------------- Fortschritt pro Niveau (für die Motivations-Balken) ------------- */
-  // Vokabeln GENAU dieses Niveaus (nicht kumulativ): begonnen & sicher.
+  // Vokabeln GENAU dieses Niveaus (nicht kumulativ): begonnen, sicher UND
+  // ein anteiliger Lernstand (Teilpunkte je nach SRS-Level), damit sich der
+  // Prozentwert mit jeder richtigen Antwort bewegt – nicht erst bei "sicher".
   function levelVocabStats(level) {
     var pool = allVocab().filter(function (v) { return v.cefr === level; });
-    var started = 0, mastered = 0;
+    var started = 0, mastered = 0, progress = 0;
     pool.forEach(function (v) {
       var e = S.srs[v.id];
-      if (e && (e.level > 0 || e.last)) started++;
-      if (e && e.level >= MASTER_VOCAB_LEVEL) mastered++;
+      if (!e) return;
+      if (e.level > 0 || e.last) started++;
+      if (e.level >= MASTER_VOCAB_LEVEL) mastered++;
+      progress += Math.min(e.level, MASTER_VOCAB_LEVEL) / MASTER_VOCAB_LEVEL; // 0..1 je Wort
     });
-    return { total: pool.length, started: started, mastered: mastered };
+    return { total: pool.length, started: started, mastered: mastered, progress: progress };
   }
   // Grammatik-Themen GENAU dieses Niveaus (nur schon vorhandene = "ready").
   function levelGrammarStats(level) {
     var g = (CURRICULUM[level] && CURRICULUM[level].grammar) || [];
     var ready = g.filter(function (t) { return t.status === "ready"; });
-    var started = 0, done = 0;
+    var started = 0, done = 0, progress = 0;
     ready.forEach(function (t) {
-      if ((S.grammarHits[t.moduleId] || 0) > 0) started++;
+      var h = S.grammarHits[t.moduleId] || 0;
+      if (h > 0) started++;
       if (grammarMastered(t.moduleId)) done++;
+      progress += Math.min(h / MASTER_GRAMMAR_HITS, 1); // 0..1 je Thema
     });
     return {
-      total: ready.length, started: started, done: done,
+      total: ready.length, started: started, done: done, progress: progress,
       planned: g.filter(function (t) { return t.status === "planned"; }).length
     };
   }
@@ -1316,9 +1331,13 @@
       var voc = levelVocabStats(lv);
       var gram = levelGrammarStats(lv);
       var hasContent = voc.total > 0 || gram.total > 0;
-      var vDone = voc.total ? (voc.mastered / voc.total) * 100 : null;
-      var vStart = voc.total ? (voc.started / voc.total) * 100 : null;
-      var gDone = gram.total ? (gram.done / gram.total) * 100 : null;
+      var target = voc.total ? vocabTargetFor(lv, voc.total) : 0;
+      // Fortschritt = anteiliger Lernstand am Kernwortschatz-Ziel (bewegt sich
+      // mit jeder Antwort und ist realistisch erreichbar).
+      var vProg = target ? Math.min(voc.progress, target) / target * 100 : null;
+      var gProg = gram.total ? (gram.progress / gram.total) * 100 : null;
+      // begonnen = wie viel des Ziels schon einmal angefasst wurde
+      var vStart = target ? Math.min(voc.started, target) / target * 100 : null;
       var gStart = gram.total ? (gram.started / gram.total) * 100 : null;
       return {
         level: lv,
@@ -1326,9 +1345,11 @@
         hasContent: hasContent,
         planned: gram.planned,
         vocab: voc,
+        vocabTarget: target,
+        vocabSicher: Math.min(voc.mastered, target),
         grammar: gram,
-        pct: Math.round(combinePct(vDone, gDone)),        // "sicher"-Anteil
-        startedPct: Math.round(combinePct(vStart, gStart)), // "begonnen"-Anteil
+        pct: Math.round(combinePct(vProg, gProg)),          // Fortschritt (Teilpunkte)
+        startedPct: Math.round(combinePct(vStart, gStart)), // begonnen (Abdeckung)
         complete: levelComplete(lv)
       };
     });
