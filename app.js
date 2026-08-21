@@ -740,12 +740,25 @@
     });
   });
 
+  // Touch-Gerät (Handy/Tablet)? Dann verhält sich die Return-Taste anders.
+  const COARSE_POINTER = (function () {
+    try { return window.matchMedia && window.matchMedia("(pointer: coarse)").matches; }
+    catch (e) { return "ontouchstart" in window; }
+  })();
+
   // Enter bestätigt immer den Haupt-Button (Weiter / Prüfen / Starten …).
   // Ausnahme: das Notizfeld "Wort, das du nicht kennst?" hat eigenes Enter.
   document.addEventListener("keydown", e => {
     if (e.key !== "Enter" || e.shiftKey || e.isComposing) return;
     const t = e.target;
     if (t && t.classList && t.classList.contains("note-input")) return;
+    // Am Handy NICHT mitten im Tippen prüfen: die Return-Taste im Antwortfeld
+    // löste sonst „Prüfen" aus, bevor ein mehrteiliges Wort fertig war
+    // (z. B. nach „il " bei „il marito"). Enter-zum-Bestätigen bleibt am Desktop.
+    if (COARSE_POINTER && t && (t.tagName === "TEXTAREA" || t.tagName === "INPUT")) {
+      e.preventDefault();
+      return;
+    }
     const ctas = Array.prototype.slice
       .call(viewEl.querySelectorAll("button.btn.primary"))
       .filter(btn => !btn.disabled && btn.offsetParent !== null &&
