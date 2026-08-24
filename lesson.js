@@ -55,6 +55,7 @@
       introduced: [],          // Vokabel-IDs, die schon eingeführt wurden
       srs: {},                 // id -> {level, streak, wrong, due, last}
       conj: {},                // Verb-Konjugations-SRS: verbId -> {level, streak, wrong, due, last}
+      baseSeen: {},            // Alltagssatz-ID -> Lektions-Nr., wann zuletzt gezeigt (Cooldown)
       lengthPref: "medium",    // Lektionslänge: short/medium/long (5/10/15 Min)
       // --- Grammatik-SRS (Themen-Ebene) ---
       learnIndex: 0,           // Position im Lern-Plan der Grammatik-Themen
@@ -401,18 +402,30 @@
   }
 
   // Alltagssätze aus dem Satz-Pool (data.js) – nach Niveau, Fokus auf Wackliges.
+  var BASE_COOLDOWN = 3; // so viele Lektionen pausiert ein gerade gezeigter Satz
   function pickBaseSentences(n) {
     var pool = (window.APP_DATA && window.APP_DATA.sentences || [])
       .filter(function (s) { return levelLE(s.cefr, S.level); });
+    if (!S.baseSeen) S.baseSeen = {};
     var scored = pool.map(function (s) {
       var e = C.getEntry(s.id) || { correct: 0, wrong: 0, last: null };
-      var w = 1 + (e.wrong || 0) * 2;
-      if (e.correct === 0 && e.wrong === 0) w += 1; // noch nie geübt
-      if (e.last === "no") w += 2;
-      return { s: s, w: w + Math.random() };
+      var w = 1 + (e.wrong || 0) * 1.5;                 // Fehler weiter bevorzugt (etwas milder)
+      if (e.correct === 0 && e.wrong === 0) w += 2;     // noch nie geübt: klar bevorzugen
+      if (e.last === "no") w += 2;                      // zuletzt falsch: wieder dran
+      w -= Math.min(e.correct || 0, 4) * 0.4;           // oft richtig → seltener
+      // Cooldown: kürzlich gezeigte Sätze deutlich (aber nur zeitweise) zurückstellen
+      var last = S.baseSeen[s.id];
+      if (last != null) {
+        var ago = S.lessonNo - last;
+        if (ago <= BASE_COOLDOWN) w -= (BASE_COOLDOWN - ago + 1) * 3;
+      }
+      return { s: s, w: w + Math.random() * 1.5 };      // mehr Zufall → mehr Abwechslung
     });
     scored.sort(function (a, b) { return b.w - a.w; });
-    return scored.slice(0, n).map(function (x) { return x.s; });
+    var chosen = scored.slice(0, n).map(function (x) { return x.s; });
+    // Merken, wann diese Sätze zuletzt dran waren (für den Cooldown)
+    chosen.forEach(function (s) { S.baseSeen[s.id] = S.lessonNo; });
+    return chosen;
   }
 
   function pickGrammarQuestions(module, n) {
