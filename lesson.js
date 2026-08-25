@@ -849,7 +849,7 @@
 
     function renderType(q) {
       var card = C.el('<div class="card"></div>');
-      card.appendChild(C.el('<p class="prompt-de">' + C.esc(q.prompt) + "</p>"));
+      card.appendChild(C.tappablePrompt(q.prompt));
       card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
       var ta = C.el('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
       card.appendChild(ta);

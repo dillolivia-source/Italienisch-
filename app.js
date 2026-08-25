@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v32"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v33"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -131,13 +131,25 @@
   function loadWish() { try { return JSON.parse(localStorage.getItem(WISH_KEY)) || []; } catch (e) { return []; } }
   function saveWish(w) { try { localStorage.setItem(WISH_KEY, JSON.stringify(w)); } catch (e) {} }
   function stripArticle(de) { return de.replace(/^\s*(der|die|das|l'|il|la|lo|i|le|gli)\s+/i, ""); }
+  // Artikel & häufige Funktionswörter (dt. + it.) – keine eigenen Lernwörter
+  const STOPWORDS = new Set([
+    "der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem", "eines",
+    "und", "oder", "aber", "ist", "sind", "war", "bin", "bist", "seid", "sein",
+    "zu", "in", "an", "auf", "mit", "fur", "von", "bei", "aus", "nach", "uber", "unter", "vor",
+    "nicht", "kein", "keine", "ich", "du", "er", "sie", "es", "wir", "ihr", "man",
+    "dort", "hier", "da", "dass", "wenn", "weil", "am", "im", "so", "auch", "noch", "schon",
+    "il", "lo", "la", "i", "gli", "le", "l", "un", "uno", "una",
+    "e", "o", "ma", "di", "a", "da", "con", "su", "per", "tra", "fra", "che", "ci", "non", "si", "ne"
+  ]);
+  function isStopword(word) { return STOPWORDS.has(norm(word)); }
   function matchVocab(word) {
     if (!window.LESSON_DATA) return null;
     const w = norm(word);
-    if (!w) return null;
+    if (!w || isStopword(w)) return null;
     return window.LESSON_DATA.vocab.filter(v => {
       const de = norm(stripArticle(v.de));
-      const parts = de.split(/[\s/]+/);
+      // interne Artikel/Funktionswörter nicht als Treffer zählen (z. B. „das Café")
+      const parts = de.split(/[\s/]+/).filter(x => x && !STOPWORDS.has(x));
       return de === w || parts.indexOf(w) !== -1;
     })[0] || null;
   }
@@ -180,6 +192,58 @@
     inner.appendChild(inp); inner.appendChild(btn); inner.appendChild(msg);
     wrap.appendChild(toggle); wrap.appendChild(inner);
     return wrap;
+  }
+
+  // Aufgaben-Text mit ANTIPPBAREN Wörtern: Wort antippen → „kenne ich nicht"
+  // → Vokabel (Deutsch = Italienisch) anzeigen und in die Vokabel-Abfrage übernehmen.
+  function tappablePrompt(text) {
+    const container = $('<div class="prompt-wrap"></div>');
+    const p = $('<p class="prompt-de tappable"></p>');
+    const menu = $('<div class="word-menu" hidden></div>');
+    String(text).split(/(\s+)/).forEach(tok => {
+      if (tok === "") return;
+      if (/^\s+$/.test(tok)) { p.appendChild(document.createTextNode(tok)); return; }
+      const clean = tok.replace(/^[^0-9A-Za-zÀ-ÿ]+|[^0-9A-Za-zÀ-ÿ]+$/g, "");
+      if (!clean) { p.appendChild(document.createTextNode(tok)); return; }
+      const span = $('<span class="tw">' + esc(tok) + "</span>");
+      span.addEventListener("click", e => { e.stopPropagation(); showWordMenu(clean, menu, text); });
+      p.appendChild(span);
+    });
+    container.appendChild(p);
+    container.appendChild($('<p class="tap-hint">👆 Wort antippen, das du nicht kennst</p>'));
+    container.appendChild(menu);
+    return container;
+  }
+
+  function showWordMenu(word, menu, context) {
+    menu.innerHTML = "";
+    menu.hidden = false;
+    menu.appendChild($('<p class="wm-word">„' + esc(word) + "“</p>"));
+    const learn = $('<button type="button" class="btn primary wm-btn">Dieses Wort kenne ich nicht</button>');
+    learn.onclick = () => {
+      const v = matchVocab(word);
+      menu.innerHTML = "";
+      menu.appendChild($('<p class="wm-word">„' + esc(word) + "“</p>"));
+      if (v) {
+        if (window.Lektion && window.Lektion.markUnknown) window.Lektion.markUnknown(v.id);
+        const res = $('<p class="wm-res"><b>' + esc(v.de) + "</b> = <b>" + esc(v.it) + "</b></p>");
+        const sb = speakButton(v.it); if (sb) res.appendChild(sb);
+        menu.appendChild(res);
+        menu.appendChild($('<p class="wm-note">✓ Kommt jetzt in deine Vokabeln und wird bald abgefragt.</p>'));
+      } else if (isStopword(word)) {
+        menu.appendChild($('<p class="wm-note">Das ist ein kleines Funktionswort (z. B. Artikel) – kein eigenes Lernwort.</p>'));
+      } else {
+        addWishword(word, context);
+        menu.appendChild($('<p class="wm-note">📝 „' + esc(word) + "“ ist noch nicht in der App – auf deiner Merkliste gemerkt.</p>"));
+      }
+      const ok = $('<button type="button" class="btn ghost wm-btn">OK</button>');
+      ok.onclick = () => { menu.hidden = true; };
+      menu.appendChild(ok);
+    };
+    const cancel = $('<button type="button" class="btn ghost wm-btn">Abbrechen</button>');
+    cancel.onclick = () => { menu.hidden = true; };
+    menu.appendChild(learn);
+    menu.appendChild(cancel);
   }
 
   /* ---------- Helpers ---------- */
@@ -365,6 +429,7 @@
     wordDiff: wordDiffSmart,
     pickClosest: pickClosest,
     noteField: noteField,
+    tappablePrompt: tappablePrompt,
     canSpeak: TTS,
     speak: speak,
     speakButton: speakButton,
@@ -466,7 +531,7 @@
     s.themes.forEach(t => meta.appendChild($(`<span class="badge">${esc(THEME_LABEL[t] || t)}</span>`)));
     card.appendChild(meta);
 
-    card.appendChild($(`<p class="prompt-de">${esc(s.de)}</p>`));
+    card.appendChild(tappablePrompt(s.de));
     card.appendChild($('<p class="hint">Tippe die italienische Übersetzung:</p>'));
 
     const ta = $('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="…"></textarea>');
