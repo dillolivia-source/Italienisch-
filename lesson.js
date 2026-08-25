@@ -76,10 +76,24 @@
       if (raw && typeof raw === "object") {
         var base = freshState();
         for (var k in raw) base[k] = raw[k];
+        migrateState(base);
         return base;
       }
     } catch (e) {}
     return freshState();
+  }
+  // Nachträgliche Anpassungen an einem gespeicherten Zustand (z. B. eine bereits
+  // laufende Lektion an neue Regeln angleichen).
+  function migrateState(st) {
+    if (st.plan && st.plan.segments) {
+      st.plan.segments.forEach(function (seg) {
+        // Alltagssätze: auf höchstens 5 kürzen (neue Regel)
+        if (seg.title && seg.title.indexOf("Sätze aus deinem Alltag") !== -1 &&
+          seg.questions && seg.questions.length > 5) {
+          seg.questions = seg.questions.slice(0, 5);
+        }
+      });
+    }
   }
   function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} }
 
