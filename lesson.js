@@ -311,8 +311,8 @@
       }
     }
 
-    // 5. Alltagssätze
-    var baseQs = pickBaseSentences(L.base).map(function (s) {
+    // 5. Alltagssätze – immer genau 5 (unabhängig von der Lektionslänge)
+    var baseQs = pickBaseSentences(5).map(function (s) {
       return { kind: "type", id: s.id, prompt: s.de, accept: s.it };
     });
     if (baseQs.length) {
