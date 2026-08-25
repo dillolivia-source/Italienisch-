@@ -1,5 +1,5 @@
 /* Service Worker – macht die App offline nutzbar */
-const CACHE = "olivia-it-v31";
+const CACHE = "olivia-it-v32";
 const ASSETS = [
   ".",
   "index.html",
@@ -28,19 +28,37 @@ self.addEventListener("activate", event => {
   );
 });
 
-// Cache-first: erst aus dem Cache, sonst Netzwerk (und dann cachen)
+// App-eigene Dateien: NETWORK-FIRST → online immer die neueste Version,
+// offline der Cache als Fallback. Fremde Ressourcen: cache-first.
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(resp => {
+  const url = new URL(event.request.url);
+  const sameOrigin = url.origin === self.location.origin;
+
+  if (sameOrigin) {
+    event.respondWith(
+      fetch(event.request).then(resp => {
         if (resp && resp.status === 200 && resp.type === "basic") {
           const clone = resp.clone();
           caches.open(CACHE).then(c => c.put(event.request, clone));
         }
         return resp;
-      }).catch(() => caches.match("index.html"));
-    })
+      }).catch(() =>
+        caches.match(event.request).then(c => c || caches.match("index.html"))
+      )
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then(cached =>
+      cached || fetch(event.request).then(resp => {
+        if (resp && resp.status === 200 && resp.type === "basic") {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(event.request, clone));
+        }
+        return resp;
+      }).catch(() => cached)
+    )
   );
 });

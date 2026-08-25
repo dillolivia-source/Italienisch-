@@ -2,6 +2,8 @@
 (function () {
   "use strict";
 
+  const APP_VERSION = "v32"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+
   const SENT = window.APP_DATA.sentences;
 
   const THEME_LABEL = {
@@ -756,6 +758,27 @@
     codeWrap.appendChild(codeArea); codeWrap.appendChild(codeRow);
     bcard.appendChild(codeToggle); bcard.appendChild(codeWrap);
     viewEl.appendChild(bcard);
+
+    // Version + manuelles Update (falls das Handy eine alte Version hält)
+    const upd = $('<button class="btn ghost" style="margin-top:16px">🔄 App aktualisieren</button>');
+    upd.onclick = forceUpdate;
+    viewEl.appendChild(upd);
+    viewEl.appendChild($(`<p class="offline-note" style="text-align:center;margin-top:6px">Version ${APP_VERSION}</p>`));
+  }
+
+  // Cache leeren + Service Worker aktualisieren + neu laden (holt sicher die neueste Version)
+  async function forceUpdate() {
+    try {
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.update().catch(() => {})));
+      }
+      if (window.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+    } catch (e) {}
+    location.reload();
   }
 
   /* ---------- Utilities ---------- */
@@ -843,10 +866,22 @@
     render();
   }
 
-  /* ---------- Service Worker (Offline) ---------- */
+  /* ---------- Service Worker (Offline + automatische Updates) ---------- */
   if ("serviceWorker" in navigator) {
+    const hadController = !!navigator.serviceWorker.controller;
+    let refreshing = false;
+    // Wenn eine neue Version die Kontrolle übernimmt: einmal neu laden.
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing || !hadController) return; // beim allerersten Besuch nicht reloaden
+      refreshing = true;
+      window.location.reload();
+    });
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").catch(() => {});
+      navigator.serviceWorker.register("sw.js").then(reg => {
+        // beim Öffnen und danach regelmäßig auf eine neue Version prüfen
+        reg.update().catch(() => {});
+        setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+      }).catch(() => {});
     });
   }
 })();
