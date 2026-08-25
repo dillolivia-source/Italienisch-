@@ -480,6 +480,14 @@
     row.appendChild(showBtn); row.appendChild(checkBtn);
     card.appendChild(row);
 
+    // „Sitzt schon – erstmal pausieren": Satz smart zurückstellen, kommt später wieder
+    const sitzt = $('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+    sitzt.onclick = () => {
+      if (window.Lektion && window.Lektion.snoozeItem) window.Lektion.snoozeItem(s.id);
+      nextTranslation(); renderUebersetzen();
+    };
+    card.appendChild(sitzt);
+
     let answered = false;
     function reveal(result) {
       if (answered) return;

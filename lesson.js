@@ -418,6 +418,32 @@
     if (S.introduced.indexOf(id) === -1) S.introduced.push(id);
     save();
   }
+  // Dasselbe für ein GRAMMATIK-THEMA: gilt als gelernt und pausiert wachsend.
+  var GRAM_SNOOZE_STEPS = [16, 32, 64, 120];
+  function snoozeGrammar(id) {
+    var e = gramFor(id);
+    e.seen = true;
+    e.box = GRAM_INTERVALS.length - 1;
+    e.wrong = 0;
+    e.snooze = (e.snooze || 0) + 1;
+    var step = GRAM_SNOOZE_STEPS[Math.min(e.snooze - 1, GRAM_SNOOZE_STEPS.length - 1)];
+    e.due = S.lessonNo + step;
+    S.grammarHits[id] = MASTER_GRAMMAR_HITS; // zählt als „gelernt"
+    if (S.gramLessonStats && S.gramLessonStats[id]) delete S.gramLessonStats[id];
+    save();
+  }
+  // … und für ein VERB im Konjugations-Trainer (eigene SRS S.conj).
+  function snoozeVerb(id) {
+    var e = conjFor(id);
+    e.level = SRS_INTERVAL.length - 1;
+    e.streak = (e.streak || 0) + 3;
+    e.wrong = 0;
+    e.last = "ok";
+    e.snooze = (e.snooze || 0) + 1;
+    var step = SNOOZE_STEPS[Math.min(e.snooze - 1, SNOOZE_STEPS.length - 1)];
+    e.due = S.lessonNo + step;
+    save();
+  }
 
   // Alltagssätze aus dem Satz-Pool (data.js) – nach Niveau, Fokus auf Wackliges.
   var BASE_COOLDOWN = 3; // so viele Lektionen pausiert ein gerade gezeigter Satz
@@ -832,7 +858,8 @@
       card.appendChild(fbSlot);
       var btn = C.el('<button class="btn primary">Prüfen</button>');
       card.appendChild(btn);
-      // „Sitzt schon – erstmal pausieren" (nur bei Vokabeln)
+      // „Sitzt schon – erstmal pausieren"
+      var gmid = q.moduleId || seg.grammarModuleId;
       if (q.vocabId) {
         var sitzt = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
         sitzt.onclick = function () {
@@ -844,6 +871,30 @@
           step();
         };
         card.appendChild(sitzt);
+      } else if (gmid) {
+        // Grammatik-Übung: das ganze Thema pausieren (alle Fragen dazu überspringen)
+        var sitztG = C.el('<button type="button" class="sitzt-btn">😌 Thema sitzt – erstmal pausieren</button>');
+        sitztG.onclick = function () {
+          snoozeGrammar(gmid);
+          for (var j = queue.length - 1; j >= 0; j--) {
+            var m = queue[j].moduleId || seg.grammarModuleId;
+            if (m === gmid) { solvedIds[queue[j].id] = true; queue.splice(j, 1); }
+          }
+          save();
+          step();
+        };
+        card.appendChild(sitztG);
+      } else if (seg.srs) {
+        // Satz-Frage (Alltagssätze / Übersetzungen) – diesen Satz pausieren
+        var sitztS = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+        sitztS.onclick = function () {
+          snoozeVocab(q.id);
+          for (var k = queue.length - 1; k >= 0; k--) { if (queue[k].id === q.id) { queue.splice(k, 1); break; } }
+          solvedIds[q.id] = true;
+          save();
+          step();
+        };
+        card.appendChild(sitztS);
       }
       card.appendChild(C.noteField(q.prompt));
       root.appendChild(card);
@@ -923,6 +974,21 @@
         card.appendChild(b);
       });
       card.appendChild(fbSlot);
+      // „Thema sitzt – erstmal pausieren" (Grammatik-Übung)
+      var gmidC = q.moduleId || seg.grammarModuleId;
+      if (gmidC) {
+        var sitztC = C.el('<button type="button" class="sitzt-btn">😌 Thema sitzt – erstmal pausieren</button>');
+        sitztC.onclick = function () {
+          snoozeGrammar(gmidC);
+          for (var j = queue.length - 1; j >= 0; j--) {
+            var m = queue[j].moduleId || seg.grammarModuleId;
+            if (m === gmidC) { solvedIds[queue[j].id] = true; queue.splice(j, 1); }
+          }
+          save();
+          step();
+        };
+        card.appendChild(sitztC);
+      }
       card.appendChild(C.noteField(q.prompt));
       root.appendChild(card);
     }
@@ -1271,6 +1337,13 @@
     card.appendChild(fb);
     var btn = C.el('<button class="btn primary">Prüfen</button>');
     card.appendChild(btn);
+    var sitztV = C.el('<button type="button" class="sitzt-btn">😌 Verb sitzt – erstmal pausieren</button>');
+    sitztV.onclick = function () {
+      snoozeVerb(q.verbId);
+      for (var i = verbQueue.length - 1; i >= 0; i--) { if (verbQueue[i].verbId === q.verbId) { verbSolved[verbQueue[i].id] = true; verbQueue.splice(i, 1); } }
+      renderVerbs(root);
+    };
+    card.appendChild(sitztV);
     root.appendChild(card);
 
     var answered = false;
@@ -1449,6 +1522,7 @@
     getStats: getStats,
     getLevelProgress: getLevelProgress,
     reviewItem: reviewItem,
+    snoozeItem: snoozeVocab,   // „Sitzt schon" für ein einzelnes SRS-Element (z. B. Satz)
     getSrs: getSrs,
     srsClock: srsClock,
     // Wird vom Notizfeld aufgerufen, wenn ein gemerktes Wort einer Vokabel
