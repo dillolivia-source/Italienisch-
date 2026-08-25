@@ -485,6 +485,15 @@ textarea:focus, input.answer:focus {
 .sw-soft { background: #f6b6ab; }
 .sw-solid { background: var(--brand); }
 
+/* „Sitzt schon – erstmal pausieren" */
+.sitzt-btn {
+  display: block; width: 100%; margin-top: 10px;
+  background: transparent; color: var(--muted);
+  border: 1px dashed var(--line); border-radius: 12px;
+  padding: 10px 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.sitzt-btn:active { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+
 .curr-item {
   font-size: 15px;
   margin: 5px 0;

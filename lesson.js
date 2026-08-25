@@ -396,9 +396,27 @@
     return {
       kind: "type",
       id: v.id,
+      vocabId: v.id,   // markiert: dies ist eine Vokabel → „Sitzt schon"-Knopf möglich
       prompt: v.de,
       accept: [v.it]
     };
+  }
+
+  // „Sitzt schon – erstmal pausieren": Vokabel als sicher markieren und mit
+  // WACHSENDER Pause zurückstellen; sie kommt aber garantiert irgendwann wieder
+  // zur Kontrolle (smarte Wiedervorlage).
+  var SNOOZE_STEPS = [15, 30, 60, 120]; // Lektionen Pause, steigt bei jedem „Sitzt"
+  function snoozeVocab(id) {
+    var e = srsFor(id);
+    e.level = SRS_INTERVAL.length - 1; // gilt als „sicher"
+    e.streak = (e.streak || 0) + 3;
+    e.wrong = 0;
+    e.last = "ok";
+    e.snooze = (e.snooze || 0) + 1;
+    var step = SNOOZE_STEPS[Math.min(e.snooze - 1, SNOOZE_STEPS.length - 1)];
+    e.due = S.lessonNo + step;
+    if (S.introduced.indexOf(id) === -1) S.introduced.push(id);
+    save();
   }
 
   // Alltagssätze aus dem Satz-Pool (data.js) – nach Niveau, Fokus auf Wackliges.
@@ -814,6 +832,19 @@
       card.appendChild(fbSlot);
       var btn = C.el('<button class="btn primary">Prüfen</button>');
       card.appendChild(btn);
+      // „Sitzt schon – erstmal pausieren" (nur bei Vokabeln)
+      if (q.vocabId) {
+        var sitzt = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+        sitzt.onclick = function () {
+          snoozeVocab(q.vocabId);
+          for (var i = queue.length - 1; i >= 0; i--) { if (queue[i].id === q.id) { queue.splice(i, 1); break; } }
+          solvedIds[q.id] = true;
+          if (seg.introduce && seg.introduce.indexOf(q.id) !== -1 && S.introduced.indexOf(q.id) === -1) S.introduced.push(q.id);
+          save();
+          step();
+        };
+        card.appendChild(sitzt);
+      }
       card.appendChild(C.noteField(q.prompt));
       root.appendChild(card);
 
@@ -1028,6 +1059,14 @@
     card.appendChild(fb);
     var btn = C.el('<button class="btn primary">Prüfen</button>');
     card.appendChild(btn);
+    var sitzt = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+    sitzt.onclick = function () {
+      snoozeVocab(v.id);
+      for (var i = vocabQueue.length - 1; i >= 0; i--) { if (vocabQueue[i].id === v.id) { vocabQueue.splice(i, 1); break; } }
+      vocabSolved[v.id] = true;
+      renderVocab(root);
+    };
+    card.appendChild(sitzt);
     root.appendChild(card);
 
     var answered = false;
