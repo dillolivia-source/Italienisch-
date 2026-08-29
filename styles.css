@@ -540,6 +540,7 @@ textarea:focus, input.answer:focus {
 }
 .ms-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--brand); font-weight: 700; }
 .ms-topic { font-size: 16px; font-weight: 700; margin: 2px 0 8px; }
+.ms-sub { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
 .path { position: relative; }
 
 /* Sichern & Übertragen */

@@ -602,9 +602,13 @@
     if (next) {
       var np = grammarPct(next.moduleId);
       var mb = C.el('<div class="milestone"></div>');
-      mb.appendChild(C.el('<div class="ms-label">Nächster Meilenstein</div>'));
-      mb.appendChild(C.el('<div class="ms-topic">' + C.esc(next.topic) + ' · ' + np + '%</div>'));
+      mb.appendChild(C.el('<div class="ms-label">Als Nächstes dran</div>'));
+      mb.appendChild(C.el('<div class="ms-topic">' + C.esc(next.topic) + '</div>'));
       mb.appendChild(bar(np));
+      mb.appendChild(C.el('<div class="ms-sub">' + (np > 0 ? np + '% geübt – weiter so' : 'Noch nicht geübt') + '</div>'));
+      var goBtn = C.el('<button class="btn primary" style="width:100%;margin-top:10px">▶ Jetzt üben</button>');
+      goBtn.onclick = function () { startGrammarPractice(next.moduleId); };
+      mb.appendChild(goBtn);
       card.appendChild(mb);
     } else {
       card.appendChild(C.el('<p class="hint" style="margin:6px 0 10px">🎉 Alle ' + S.level + '-Grammatikthemen gemeistert!</p>'));
@@ -619,7 +623,8 @@
     card.appendChild(bar(vPct));
 
     // Meilenstein-Liste (Pfad). Ready-Themen sind anklickbar → gezieltes Üben.
-    card.appendChild(C.el('<p class="section-title" style="margin:16px 0 4px">Meilensteine · zum gezielten Üben tippen</p>'));
+    card.appendChild(C.el('<p class="section-title" style="margin:16px 0 2px">Alle Grammatik-Themen</p>'));
+    card.appendChild(C.el('<p class="hint" style="margin:0 0 6px">Tippe ein Thema an, um es gezielt zu üben.</p>'));
     var list = C.el('<div class="path"></div>');
     p.items.forEach(function (t) {
       var isReady = t.status === "ready";
