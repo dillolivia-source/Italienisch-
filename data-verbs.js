@@ -130,6 +130,23 @@ window.VERB_DATA = {
     { id: "costruire", inf: "costruire", de: "bauen",         type: "isc", forms: ["costruisco","costruisci","costruisce","costruiamo","costruite","costruiscono"] },
     { id: "spedire",   inf: "spedire",   de: "verschicken",   type: "isc", forms: ["spedisco","spedisci","spedisce","spediamo","spedite","spediscono"] },
     { id: "guarire",   inf: "guarire",   de: "heilen, gesund werden", type: "isc", forms: ["guarisco","guarisci","guarisce","guariamo","guarite","guariscono"] },
-    { id: "unire",     inf: "unire",     de: "verbinden",     type: "isc", forms: ["unisco","unisci","unisce","uniamo","unite","uniscono"] }
+    { id: "unire",     inf: "unire",     de: "verbinden",     type: "isc", forms: ["unisco","unisci","unisce","uniamo","unite","uniscono"] },
+    { id: "colpire",     inf: "colpire",     de: "treffen, schlagen", type: "isc", forms: ["colpisco","colpisci","colpisce","colpiamo","colpite","colpiscono"] },
+    { id: "fornire",     inf: "fornire",     de: "liefern",           type: "isc", forms: ["fornisco","fornisci","fornisce","forniamo","fornite","forniscono"] },
+    { id: "garantire",   inf: "garantire",   de: "garantieren",       type: "isc", forms: ["garantisco","garantisci","garantisce","garantiamo","garantite","garantiscono"] },
+    { id: "gestire",     inf: "gestire",     de: "verwalten, managen",type: "isc", forms: ["gestisco","gestisci","gestisce","gestiamo","gestite","gestiscono"] },
+    { id: "inserire",    inf: "inserire",    de: "einfügen",          type: "isc", forms: ["inserisco","inserisci","inserisce","inseriamo","inserite","inseriscono"] },
+    { id: "restituire",  inf: "restituire",  de: "zurückgeben",       type: "isc", forms: ["restituisco","restituisci","restituisce","restituiamo","restituite","restituiscono"] },
+    { id: "riferire",    inf: "riferire",    de: "berichten",         type: "isc", forms: ["riferisco","riferisci","riferisce","riferiamo","riferite","riferiscono"] },
+    { id: "sostituire",  inf: "sostituire",  de: "ersetzen",          type: "isc", forms: ["sostituisco","sostituisci","sostituisce","sostituiamo","sostituite","sostituiscono"] },
+    { id: "stabilire",   inf: "stabilire",   de: "festlegen",         type: "isc", forms: ["stabilisco","stabilisci","stabilisce","stabiliamo","stabilite","stabiliscono"] },
+    { id: "suggerire",   inf: "suggerire",   de: "vorschlagen",       type: "isc", forms: ["suggerisco","suggerisci","suggerisce","suggeriamo","suggerite","suggeriscono"] },
+    { id: "chiarire",    inf: "chiarire",    de: "klären",            type: "isc", forms: ["chiarisco","chiarisci","chiarisce","chiariamo","chiarite","chiariscono"] },
+    { id: "reagire",     inf: "reagire",     de: "reagieren",         type: "isc", forms: ["reagisco","reagisci","reagisce","reagiamo","reagite","reagiscono"] },
+
+    /* ---------- Weitere unregelmäßige ---------- */
+    { id: "piacere",     inf: "piacere",     de: "gefallen",          type: "irr", forms: ["piaccio","piaci","piace","piacciamo","piacete","piacciono"] },
+    { id: "tradurre",    inf: "tradurre",    de: "übersetzen",        type: "irr", forms: ["traduco","traduci","traduce","traduciamo","traducete","traducono"] },
+    { id: "raccogliere", inf: "raccogliere", de: "sammeln, pflücken", type: "irr", forms: ["raccolgo","raccogli","raccoglie","raccogliamo","raccogliete","raccolgono"] }
   ]
 };

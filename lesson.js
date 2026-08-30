@@ -1208,7 +1208,7 @@
   var VD = window.VERB_DATA || { pronouns: [], typeLabel: {}, verbs: [] };
   var VERB_UNIT = 6;          // kleine Lektion: 6 Verben pro Einheit
   var PERS_PER_VERB = 3;      // so viele Personen je Verb werden abgefragt
-  var verbFilter = "all";     // "all" | "reg" | "irr"
+  var verbFilter = "all";     // "all" | "are" | "ere" | "ire" | "isc" | "irr"
   var verbUnit = null;        // Verben der aktuellen Einheit
   var verbPhase = "learn";    // "learn" = Tabellen ansehen · "quiz" = abfragen
   var verbQueue = null;       // offene Frage-Warteschlange (Person-Ebene)
@@ -1231,9 +1231,8 @@
   }
   function verbPool() {
     return VD.verbs.filter(function (v) {
-      if (verbFilter === "reg") return v.type !== "irr";
-      if (verbFilter === "irr") return v.type === "irr";
-      return true;
+      if (verbFilter === "all") return true;
+      return v.type === verbFilter; // are | ere | ire | isc | irr
     });
   }
   function buildVerbUnit() {
@@ -1279,9 +1278,10 @@
     head.appendChild(C.el('<h2 class="lesson-title">🔤 Verben – Präsens üben</h2>'));
     root.appendChild(head);
 
-    // Filter: Alle · Regelmäßig · Unregelmäßig
-    var fRow = C.el('<div class="len-row" style="margin-bottom:10px"></div>');
-    [["all", "Alle"], ["reg", "Regelmäßig"], ["irr", "Unregelmäßig"]].forEach(function (f) {
+    // Filter granular: Alle · -are · -ere · -ire · -ire (-isc-) · unregelmäßig
+    var fRow = C.el('<div class="filters" style="flex-wrap:wrap;margin-bottom:8px"></div>');
+    [["all", "Alle"], ["are", "-are"], ["ere", "-ere"], ["ire", "-ire"],
+     ["isc", "-ire (-isc-)"], ["irr", "unregelmäßig"]].forEach(function (f) {
       var c = C.el('<button class="chip" aria-pressed="' + (verbFilter === f[0]) + '">' + f[1] + "</button>");
       c.onclick = function () {
         if (verbFilter === f[0]) return;
@@ -1290,6 +1290,15 @@
       fRow.appendChild(c);
     });
     root.appendChild(fRow);
+    // kurze Erklärung des aktiven Typs
+    var typeHint = { are: "Verben auf -are (io -o, tu -i, lui -a, noi -iamo, voi -ate, loro -ano)",
+      ere: "Verben auf -ere (… -o, -i, -e, -iamo, -ete, -ono)",
+      ire: "Verben auf -ire (… -o, -i, -e, -iamo, -ite, -ono)",
+      isc: "Sonderform: -isc- wird eingeschoben (io capisco, tu capisci, … noi capiamo, loro capiscono)",
+      irr: "Unregelmäßige Verben – eigene Formen, am besten einzeln lernen." };
+    if (typeHint[verbFilter]) {
+      root.appendChild(C.el('<p class="hint" style="margin:0 0 8px">' + typeHint[verbFilter] + "</p>"));
+    }
 
     // Fortschritt: wie viele Verben schon sicher
     var seen = 0, mastered = 0;
