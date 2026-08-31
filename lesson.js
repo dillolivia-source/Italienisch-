@@ -40,7 +40,7 @@
   var GRAM_INTERVALS = [2, 4, 8, 16, 32, 64];
   var SRS_INTERVAL = [1, 1, 2, 3, 5, 8]; // Tage bis Wiederfälligkeit je Level
   var MASTER_VOCAB_LEVEL = 4; // ab hier gilt eine Vokabel als "gelernt"
-  var MASTER_GRAMMAR_HITS = 18; // so viele richtige Antworten → Modul "gelernt" (über mehrere Tage)
+  var MASTER_GRAMMAR_HITS = 36; // so viele richtige Antworten → Modul "gelernt" (über mehrere Tage; bewusst streng)
 
   var LS_KEY = "olivia-it-lesson-v2";
 

@@ -298,7 +298,36 @@ window.LESSON_DATA = {
         { kind: "fill", prompt: "Io ___ (parlare) italiano.", accept: ["parlo"], explain: "io → -o." },
         { kind: "fill", prompt: "Tu ___ (abitare) a Roma?", accept: ["abiti"], explain: "tu → -i." },
         { kind: "choice", prompt: "I nonni ___ in Italia.", options: ["abita", "abitano"], answer: "abitano", explain: "loro → -ano." },
-        { kind: "fill", prompt: "Noi ___ (cucinare) stasera.", accept: ["cuciniamo"], explain: "noi → -iamo." }
+        { kind: "fill", prompt: "Noi ___ (cucinare) stasera.", accept: ["cuciniamo"], explain: "noi → -iamo." },
+        { kind: "fill", prompt: "Tu ___ (cercare) le chiavi.", accept: ["cerchi"], explain: "-care bekommt ein **h** vor -i: **cerchi**." },
+        { kind: "fill", prompt: "Noi ___ (pagare) il conto.", accept: ["paghiamo"], explain: "-gare bekommt ein **h** vor -iamo: **paghiamo**." },
+        { kind: "choice", prompt: "Tu ___ (giocare) a calcio?", options: ["gioci", "giochi", "giocci"], answer: "giochi", explain: "-care: **giochi** (h vor -i)." },
+        { kind: "fill", prompt: "Tu ___ (mangiare) troppo in fretta.", accept: ["mangi"], explain: "-iare: nur **ein i** → **mangi**." },
+        { kind: "fill", prompt: "Loro ___ (lavorare) in ufficio.", accept: ["lavorano"], explain: "loro → -ano." }
+      ]
+    },
+    {
+      id: "g_conj_special",
+      title: "Präsens: Sonderformen (h-Einschub & -isc-)",
+      cefr: "A2",
+      rule: "Manche **-are**-Verben bekommen vor **-i** und **-iamo** ein **h**, damit der harte k/g-Klang bleibt:\n**-care**: cercare → tu cer**chi**, noi cer**chiamo**; giocare → gio**chi**, gio**chiamo**.\n**-gare**: pagare → tu pa**ghi**, noi pa**ghiamo**; spiegare → spie**ghi**.\nBei **-iare/-ciare/-giare** schreibt man nur **ein i**: mangiare → tu man**gi**, noi man**giamo**; studiare → tu stu**di**; cominciare → tu comin**ci**.\nViele **-ire**-Verben schieben **-isc-** ein: capire → cap**isco**, cap**isci**, cap**isce**, cap**iscono** – aber **noi cap**iamo**, voi cap**ite** (ohne -isc-).",
+      exercises: [
+        { kind: "fill", prompt: "Tu ___ (cercare) un lavoro.", accept: ["cerchi"], explain: "-care: **cerchi** (h vor -i)." },
+        { kind: "fill", prompt: "Noi ___ (cercare) una casa.", accept: ["cerchiamo"], explain: "-care: **cerchiamo** (h vor -iamo)." },
+        { kind: "fill", prompt: "Tu ___ (pagare) con la carta?", accept: ["paghi"], explain: "-gare: **paghi** (h vor -i)." },
+        { kind: "choice", prompt: "Noi ___ (pagare) subito.", options: ["paghiamo", "pagiamo", "paghamo"], answer: "paghiamo", explain: "-gare: **paghiamo**." },
+        { kind: "fill", prompt: "Noi ___ (giocare) a carte.", accept: ["giochiamo"], explain: "-care: **giochiamo** (h vor -iamo)." },
+        { kind: "fill", prompt: "Tu mi ___ (spiegare) la regola?", accept: ["spieghi"], explain: "-gare: **spieghi** (h vor -i)." },
+        { kind: "fill", prompt: "Tu ___ (mangiare) al ristorante.", accept: ["mangi"], explain: "-iare: nur ein i → **mangi**." },
+        { kind: "fill", prompt: "Noi ___ (mangiare) alle otto.", accept: ["mangiamo"], explain: "-iare: **mangiamo** (ein i)." },
+        { kind: "choice", prompt: "Noi ___ (cominciare) adesso.", options: ["cominciamo", "comminciamo", "cominciiamo"], answer: "cominciamo", explain: "-ciare: ein i → **cominciamo**." },
+        { kind: "fill", prompt: "Tu ___ (studiare) l'italiano.", accept: ["studi"], explain: "-iare: ein i → **studi**." },
+        { kind: "fill", prompt: "Non ___ (io, capire) bene.", accept: ["capisco"], explain: "-isc-: io **capisco**." },
+        { kind: "choice", prompt: "Lui non ___ (finire) mai in tempo.", options: ["finisce", "finise", "fine"], answer: "finisce", explain: "-isc-: lui **finisce**." },
+        { kind: "fill", prompt: "Loro ___ (preferire) il tè.", accept: ["preferiscono"], explain: "-isc-: loro **preferiscono**." },
+        { kind: "fill", prompt: "Tu ___ (pulire) la cucina.", accept: ["pulisci"], explain: "-isc-: tu **pulisci**." },
+        { kind: "choice", prompt: "Noi ___ (capire) la lezione.", options: ["capiamo", "capiscono", "capisciamo"], answer: "capiamo", explain: "**noi** hat KEIN -isc-: **capiamo**." },
+        { kind: "fill", prompt: "Io ___ (spedire) la lettera.", accept: ["spedisco"], explain: "-isc-: io **spedisco**." }
       ]
     },
     {
@@ -312,7 +341,11 @@ window.LESSON_DATA = {
         { kind: "choice", prompt: "Loro ___ (dormire) bene.", options: ["dormono", "dormano", "dorme"], answer: "dormono", explain: "loro -ire → **-ono**." },
         { kind: "fill", prompt: "Io ___ (prendere) un caffè.", accept: ["prendo"], explain: "io -ere → -o." },
         { kind: "choice", prompt: "Non ___ (capire) — puoi ripetere?", options: ["capo", "capisco", "capisce"], answer: "capisco", explain: "capire ist -isc-: io **capisco**." },
-        { kind: "fill", prompt: "Voi ___ (partire) domani.", accept: ["partite"], explain: "voi -ire → -ite." }
+        { kind: "fill", prompt: "Voi ___ (partire) domani.", accept: ["partite"], explain: "voi -ire → -ite." },
+        { kind: "fill", prompt: "Loro ___ (preferire) il mare.", accept: ["preferiscono"], explain: "-isc-: loro **preferiscono**." },
+        { kind: "fill", prompt: "Tu ___ (finire) i compiti.", accept: ["finisci"], explain: "-isc-: tu **finisci**." },
+        { kind: "choice", prompt: "Noi ___ (leggere) un libro.", options: ["leggiamo", "leggemo", "leggamo"], answer: "leggiamo", explain: "-ere noi → **-iamo**." },
+        { kind: "fill", prompt: "Lei ___ (scrivere) una lettera.", accept: ["scrive"], explain: "-ere lui/lei → -e." }
       ]
     },
     {
@@ -687,6 +720,7 @@ window.LESSON_DATA = {
       grammar: [
         { topic: "Präsens regelmäßig (-are)", moduleId: "g_conj_are", status: "ready" },
         { topic: "Präsens regelmäßig (-ere/-ire, -isc-)", moduleId: "g_conj_ere_ire", status: "ready" },
+        { topic: "Präsens: Sonderformen (h & -isc-)", moduleId: "g_conj_special", status: "ready" },
         { topic: "Präpositionen a/in (Orte, Verkehrsmittel)", moduleId: "g_prep_a_in", status: "ready" },
         { topic: "Präpositionen da/di", moduleId: "g_prep_da_di", status: "ready" },
         { topic: "Zusammengesetzte Präpositionen (nel, sul, al…)", moduleId: "g_prep_articolate", status: "ready" },
