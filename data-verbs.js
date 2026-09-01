@@ -19,7 +19,8 @@ window.VERB_DATA = {
     ere: "regelmäßig · -ere",
     ire: "regelmäßig · -ire",
     isc: "regelmäßig · -ire (-isc-)",
-    irr: "unregelmäßig"
+    irr: "unregelmäßig",
+    rifl: "reflexiv (-si)"
   },
   verbs: [
     /* ---------- Unregelmäßige Kernverben ---------- */
@@ -147,6 +148,26 @@ window.VERB_DATA = {
     /* ---------- Weitere unregelmäßige ---------- */
     { id: "piacere",     inf: "piacere",     de: "gefallen",          type: "irr", forms: ["piaccio","piaci","piace","piacciamo","piacete","piacciono"] },
     { id: "tradurre",    inf: "tradurre",    de: "übersetzen",        type: "irr", forms: ["traduco","traduci","traduce","traduciamo","traducete","traducono"] },
-    { id: "raccogliere", inf: "raccogliere", de: "sammeln, pflücken", type: "irr", forms: ["raccolgo","raccogli","raccoglie","raccogliamo","raccogliete","raccolgono"] }
+    { id: "raccogliere", inf: "raccogliere", de: "sammeln, pflücken", type: "irr", forms: ["raccolgo","raccogli","raccoglie","raccogliamo","raccogliete","raccolgono"] },
+
+    /* ---------- Reflexive Verben (-si): Reflexivpronomen mi/ti/si/ci/vi/si ---------- */
+    { id: "chiamarsi",     inf: "chiamarsi",     de: "heißen",            type: "rifl", forms: ["mi chiamo","ti chiami","si chiama","ci chiamiamo","vi chiamate","si chiamano"] },
+    { id: "alzarsi",       inf: "alzarsi",       de: "aufstehen",         type: "rifl", forms: ["mi alzo","ti alzi","si alza","ci alziamo","vi alzate","si alzano"] },
+    { id: "svegliarsi",    inf: "svegliarsi",    de: "aufwachen",         type: "rifl", forms: ["mi sveglio","ti svegli","si sveglia","ci svegliamo","vi svegliate","si svegliano"] },
+    { id: "lavarsi",       inf: "lavarsi",       de: "sich waschen",      type: "rifl", forms: ["mi lavo","ti lavi","si lava","ci laviamo","vi lavate","si lavano"] },
+    { id: "vestirsi",      inf: "vestirsi",      de: "sich anziehen",     type: "rifl", forms: ["mi vesto","ti vesti","si veste","ci vestiamo","vi vestite","si vestono"] },
+    { id: "sentirsi",      inf: "sentirsi",      de: "sich fühlen",       type: "rifl", forms: ["mi sento","ti senti","si sente","ci sentiamo","vi sentite","si sentono"] },
+    { id: "divertirsi",    inf: "divertirsi",    de: "sich amüsieren",    type: "rifl", forms: ["mi diverto","ti diverti","si diverte","ci divertiamo","vi divertite","si divertono"] },
+    { id: "riposarsi",     inf: "riposarsi",     de: "sich ausruhen",     type: "rifl", forms: ["mi riposo","ti riposi","si riposa","ci riposiamo","vi riposate","si riposano"] },
+    { id: "prepararsi",    inf: "prepararsi",    de: "sich vorbereiten",  type: "rifl", forms: ["mi preparo","ti prepari","si prepara","ci prepariamo","vi preparate","si preparano"] },
+    { id: "arrabbiarsi",   inf: "arrabbiarsi",   de: "sich ärgern",       type: "rifl", forms: ["mi arrabbio","ti arrabbi","si arrabbia","ci arrabbiamo","vi arrabbiate","si arrabbiano"] },
+    { id: "annoiarsi",     inf: "annoiarsi",     de: "sich langweilen",   type: "rifl", forms: ["mi annoio","ti annoi","si annoia","ci annoiamo","vi annoiate","si annoiano"] },
+    { id: "addormentarsi", inf: "addormentarsi", de: "einschlafen",       type: "rifl", forms: ["mi addormento","ti addormenti","si addormenta","ci addormentiamo","vi addormentate","si addormentano"] },
+    { id: "ricordarsi",    inf: "ricordarsi",    de: "sich erinnern",     type: "rifl", forms: ["mi ricordo","ti ricordi","si ricorda","ci ricordiamo","vi ricordate","si ricordano"] },
+    { id: "fermarsi",      inf: "fermarsi",      de: "anhalten, stehen bleiben", type: "rifl", forms: ["mi fermo","ti fermi","si ferma","ci fermiamo","vi fermate","si fermano"] },
+    { id: "occuparsi",     inf: "occuparsi",     de: "sich kümmern",      type: "rifl", forms: ["mi occupo","ti occupi","si occupa","ci occupiamo","vi occupate","si occupano"] },
+    { id: "truccarsi",     inf: "truccarsi",     de: "sich schminken",    type: "rifl", forms: ["mi trucco","ti trucchi","si trucca","ci trucchiamo","vi truccate","si truccano"] },
+    { id: "sedersi",       inf: "sedersi",       de: "sich setzen",       type: "rifl", forms: ["mi siedo","ti siedi","si siede","ci sediamo","vi sedete","si siedono"] },
+    { id: "trasferirsi",   inf: "trasferirsi",   de: "umziehen",          type: "rifl", forms: ["mi trasferisco","ti trasferisci","si trasferisce","ci trasferiamo","vi trasferite","si trasferiscono"] }
   ]
 };

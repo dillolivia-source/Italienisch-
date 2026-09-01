@@ -1281,7 +1281,7 @@
     // Filter granular: Alle · -are · -ere · -ire · -ire (-isc-) · unregelmäßig
     var fRow = C.el('<div class="filters" style="flex-wrap:wrap;margin-bottom:8px"></div>');
     [["all", "Alle"], ["are", "-are"], ["ere", "-ere"], ["ire", "-ire"],
-     ["isc", "-ire (-isc-)"], ["irr", "unregelmäßig"]].forEach(function (f) {
+     ["isc", "-ire (-isc-)"], ["irr", "unregelmäßig"], ["rifl", "reflexiv"]].forEach(function (f) {
       var c = C.el('<button class="chip" aria-pressed="' + (verbFilter === f[0]) + '">' + f[1] + "</button>");
       c.onclick = function () {
         if (verbFilter === f[0]) return;
@@ -1295,7 +1295,8 @@
       ere: "Verben auf -ere (… -o, -i, -e, -iamo, -ete, -ono)",
       ire: "Verben auf -ire (… -o, -i, -e, -iamo, -ite, -ono)",
       isc: "Sonderform: -isc- wird eingeschoben (io capisco, tu capisci, … noi capiamo, loro capiscono)",
-      irr: "Unregelmäßige Verben – eigene Formen, am besten einzeln lernen." };
+      irr: "Unregelmäßige Verben – eigene Formen, am besten einzeln lernen.",
+      rifl: "Reflexive Verben: Reflexivpronomen davor – io mi, tu ti, lui/lei si, noi ci, voi vi, loro si (z. B. mi chiamo, ti alzi, si sveglia)." };
     if (typeHint[verbFilter]) {
       root.appendChild(C.el('<p class="hint" style="margin:0 0 8px">' + typeHint[verbFilter] + "</p>"));
     }
