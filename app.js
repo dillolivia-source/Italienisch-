@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v40"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v41"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -346,9 +346,16 @@
       window.speechSynthesis.speak(u);
     } catch (e) {}
   }
+  // modernes Lautsprecher-Icon (Inline-SVG, Farbe über currentColor)
+  const SPK_SVG =
+    '<svg class="spk-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+    '<path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>' +
+    '<path d="M15.5 8.8a4.2 4.2 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+    '<path d="M18.4 6.2a8 8 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+    '</svg>';
   function speakButton(text) {
     if (!TTS) return null;
-    const b = $('<button type="button" class="spk" aria-label="anhören" title="anhören">🔊</button>');
+    const b = $('<button type="button" class="spk" aria-label="anhören" title="anhören">' + SPK_SVG + '</button>');
     b.onclick = e => { e.preventDefault(); e.stopPropagation(); speak(text); };
     return b;
   }

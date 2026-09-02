@@ -327,18 +327,22 @@ textarea:focus, input.answer:focus {
 }
 .storage-warn b { color: #8a2b20; }
 
-/* Vorlese-Knopf (Hören) */
+/* Vorlese-Knopf (Hören) – modernes Lautsprecher-Icon */
 .spk {
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 17px;
-  line-height: 1;
-  padding: 2px 4px;
+  padding: 3px 5px;
   margin-left: 6px;
   vertical-align: middle;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
 }
-.spk:hover { transform: scale(1.1); }
+.spk .spk-ico { display: block; }
+.spk:hover { color: var(--brand); background: var(--brand-soft); }
+.spk:active { color: var(--brand); transform: scale(1.05); }
 
 /* Akzent-Schnelltasten */
 .acc-bar { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
@@ -541,6 +545,15 @@ textarea:focus, input.answer:focus {
 .ms-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--brand); font-weight: 700; }
 .ms-topic { font-size: 16px; font-weight: 700; margin: 2px 0 8px; }
 .ms-sub { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+
+/* Großer Gesamt-Fortschrittsbalken (Niveau → nächstes Niveau) */
+.level-hero { margin: 2px 0 16px; }
+.lh-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+.lh-title { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: .01em; }
+.lh-pct { font-size: 24px; font-weight: 800; color: var(--brand); line-height: 1; }
+.bar.big { height: 18px; margin: 4px 0 6px; }
+.bar.big > span { background: linear-gradient(90deg, #f0674f, var(--brand)); }
+.lh-sub { font-size: 12.5px; color: var(--muted); }
 .path { position: relative; }
 
 /* Sichern & Übertragen */
@@ -563,7 +576,8 @@ textarea:focus, input.answer:focus {
   border-bottom: 1px solid var(--line);
 }
 .vintro-row:last-of-type { border-bottom: none; }
-.vintro-txt { display: flex; flex-direction: column; }
+.vintro-txt { display: flex; flex-direction: column; align-items: flex-start; }
+.vintro-txt .vocab-de { text-align: left; }
 .vintro-known {
   flex: 0 0 auto;
   border: 1px solid var(--line);

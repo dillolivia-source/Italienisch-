@@ -593,6 +593,21 @@
     var card = C.el('<div class="card"></div>');
     card.appendChild(C.el('<p class="section-title" style="margin-top:0">🗺️ Dein Lernpfad · Niveau ' + S.level + '</p>'));
 
+    // GROSSER Gesamt-Fortschrittsbalken: wie weit auf diesem Niveau bis zum nächsten
+    var lpAll = getLevelProgress();
+    var curLp = null;
+    for (var ci = 0; ci < lpAll.length; ci++) { if (lpAll[ci].level === S.level) { curLp = lpAll[ci]; break; } }
+    var nextLv = LEVEL_ORDER[LEVEL_ORDER.indexOf(S.level) + 1] || null;
+    if (curLp && nextLv) {
+      var hero = C.el('<div class="level-hero"></div>');
+      hero.appendChild(C.el('<div class="lh-row"><span class="lh-title">' + S.level + ' → ' + nextLv +
+        '</span><span class="lh-pct">' + curLp.pct + '%</span></div>'));
+      var big = C.el('<div class="bar big"><span style="width:' + curLp.pct + '%"></span></div>');
+      hero.appendChild(big);
+      hero.appendChild(C.el('<div class="lh-sub">So weit bist du auf dem Weg zu ' + nextLv + '.</div>'));
+      card.appendChild(hero);
+    }
+
     // Nächster Meilenstein = erstes fertiges, noch nicht gemeistertes Thema
     var next = null;
     for (var i = 0; i < p.items.length; i++) {
