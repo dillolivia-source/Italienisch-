@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v42"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v43"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -453,7 +453,12 @@
       saveWish(loadWish().filter(x => norm(x.word) !== norm(word)));
     },
     // erlaubt lesson.js, den Reset-Knopf sichtbar zu machen
-    showReset: function () { if (resetBtn.hidden) resetBtn.hidden = false; }
+    showReset: function () { if (resetBtn.hidden) resetBtn.hidden = false; },
+    // erlaubt lesson.js, zu einem anderen Tab zu wechseln (Schnellzugriffe)
+    goTab: function (view) {
+      const tab = document.querySelector('.tab[data-view="' + view + '"]');
+      if (tab) tab.click();
+    }
   };
 
   /* ============ VIEW: ÜBERSETZEN ============ */

@@ -543,18 +543,37 @@
     return h;
   }
 
-  function renderStartScreen() {
-    var p = curriculumProgress(S.level);
-    var card = C.el('<div class="card lesson-start"></div>');
+  // aktueller Fortschritt (in %) des laufenden Niveaus – für den Ring
+  function levelPct() {
+    var all = getLevelProgress();
+    for (var i = 0; i < all.length; i++) { if (all[i].level === S.level) return all[i].pct; }
+    return 0;
+  }
+  // Fokus-Hero: großer Fortschritts-Ring (Niveau → nächstes), Start-Knopf,
+  // Längenwahl und Schnellzugriffe.
+  function ringHero(done) {
+    var pct = levelPct();
+    var next = LEVEL_ORDER[LEVEL_ORDER.indexOf(S.level) + 1] || S.level;
+    var CIRC = 515, off = Math.round(CIRC * (1 - pct / 100));
+    var card = C.el('<div class="card focus-hero"></div>');
     card.appendChild(C.el('<div class="level-pill">Niveau ' + S.level + '</div>'));
-    card.appendChild(C.el('<h2 style="margin:6px 0 2px">Bereit für deine Lektion?</h2>'));
-    if (S.lessonNo > 0) {
-      card.appendChild(C.el('<p class="hint" style="margin:2px 0 8px">✅ Gespeichert: ' +
-        S.lessonNo + ' Lektion' + (S.lessonNo === 1 ? "" : "en") + ' · ' +
-        S.introduced.length + ' Vokabeln gelernt. Weiter geht’s mit Lektion ' + (S.lessonNo + 1) + '.</p>'));
-    }
-    card.appendChild(C.el('<p class="hint" style="margin-bottom:6px">Wie lange möchtest du üben?</p>'));
-    var chips = C.el('<div class="len-row"></div>');
+    card.appendChild(C.el(
+      '<div class="ringwrap"><svg class="ring" viewBox="0 0 200 200" role="img" aria-label="' +
+      S.level + ' zu ' + next + ', ' + pct + ' Prozent">' +
+      '<defs><linearGradient id="ringg" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#ffb24a"/><stop offset="1" stop-color="#f26451"/></linearGradient></defs>' +
+      '<circle cx="100" cy="100" r="82" fill="none" stroke="var(--line)" stroke-width="16"/>' +
+      '<circle cx="100" cy="100" r="82" fill="none" stroke="url(#ringg)" stroke-width="16" stroke-linecap="round" ' +
+      'stroke-dasharray="' + CIRC + '" stroke-dashoffset="' + off + '" transform="rotate(-90 100 100)"/>' +
+      '<text x="100" y="98" text-anchor="middle" class="ring-pc">' + pct + '%</text>' +
+      '<text x="100" y="124" text-anchor="middle" class="ring-lb">' + S.level + ' → ' + next + '</text>' +
+      '</svg></div>'));
+    var status = done
+      ? '🎉 <b>Heute geschafft!</b> Morgen geht’s weiter.'
+      : (S.lessonNo > 0 ? 'Weiter mit <b>Lektion ' + (S.lessonNo + 1) + '</b>' : '<b>Deine erste Lektion</b> wartet');
+    card.appendChild(C.el('<p class="focus-status">' + status + '</p>'));
+
+    var chips = C.el('<div class="len-row focus-len"></div>');
     LENGTH_ORDER.forEach(function (key) {
       var c = C.el('<button class="chip" aria-pressed="' + (S.lengthPref === key) + '">' +
         C.esc(LENGTHS[key].label) + '</button>');
@@ -563,28 +582,30 @@
     });
     card.appendChild(chips);
 
-    card.appendChild(C.el('<p class="hint" style="margin-top:10px">Heute: kurze Auffrischung, ' +
-      curLen().newVoc + ' neue Vokabeln, Sätze und dein Grammatik-Thema.</p>'));
-
-    var btn = C.el('<button class="btn primary">Lektion starten →</button>');
+    var btn = C.el('<button class="btn primary focus-cta">' +
+      (done ? 'Trotzdem üben →' : 'Lektion starten →') + '</button>');
     btn.onclick = function () { buildPlan(); render(root); };
     card.appendChild(btn);
-    root.appendChild(card);
 
+    var q = C.el('<div class="focus-quick"></div>');
+    [["vokabeln", "📇", "Vokabeln"], ["verben", "🔤", "Verben"], ["uebersetzen", "✍️", "Übersetzen"]].forEach(function (t) {
+      var a = C.el('<button class="fq"><span class="fq-ic">' + t[1] + '</span>' + t[2] + '</button>');
+      a.onclick = function () { if (C.goTab) C.goTab(t[0]); };
+      q.appendChild(a);
+    });
+    card.appendChild(q);
+    return card;
+  }
+
+  function renderStartScreen() {
+    root.appendChild(ringHero(false));
     renderProgressCard();
   }
   // Startbildschirm neu zeichnen (nach Längenauswahl), ohne Plan zu bauen
   function renderStartScreen_refresh() { root.innerHTML = ""; renderStartScreen(); }
 
   function renderDoneToday() {
-    var card = C.el('<div class="card" style="text-align:center"></div>');
-    card.appendChild(C.el('<div style="font-size:44px">✅</div>'));
-    card.appendChild(C.el('<h2 style="margin:4px 0">Heute geschafft!</h2>'));
-    card.appendChild(C.el('<p class="hint">Komm morgen wieder für die nächste Lektion. Bis dahin kannst du frei weiterüben.</p>'));
-    var again = C.el('<button class="btn ghost">Trotzdem nochmal üben</button>');
-    again.onclick = function () { buildPlan(); render(root); };
-    card.appendChild(again);
-    root.appendChild(card);
+    root.appendChild(ringHero(true));
     renderProgressCard();
   }
 
@@ -592,20 +613,6 @@
     var p = curriculumProgress(S.level);
     var card = C.el('<div class="card"></div>');
     card.appendChild(C.el('<p class="section-title" style="margin-top:0">🗺️ Dein Lernpfad · Niveau ' + S.level + '</p>'));
-
-    // GROSSER Gesamt-Fortschrittsbalken: wie weit auf diesem Niveau bis zum nächsten
-    var lpAll = getLevelProgress();
-    var curLp = null;
-    for (var ci = 0; ci < lpAll.length; ci++) { if (lpAll[ci].level === S.level) { curLp = lpAll[ci]; break; } }
-    var nextLv = LEVEL_ORDER[LEVEL_ORDER.indexOf(S.level) + 1] || null;
-    if (curLp && nextLv) {
-      var hero = C.el('<div class="level-hero"></div>');
-      hero.appendChild(C.el('<div class="lh-row"><span class="lh-title">' + S.level + ' → ' + nextLv +
-        '</span><span class="lh-pct">' + curLp.pct + '%</span></div>'));
-      var big = C.el('<div class="bar big"><span style="width:' + curLp.pct + '%"></span></div>');
-      hero.appendChild(big);
-      card.appendChild(hero);
-    }
 
     // Nächster Meilenstein = erstes fertiges, noch nicht gemeistertes Thema
     var next = null;

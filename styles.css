@@ -1,30 +1,40 @@
-/* Pomodoro-Palette · immer hell, kein Dark Mode.
-   Signal-Logik: Gelb = Aktion/Prüfen · Grün = richtig · Rot = falsch. */
+/* Design „Gelato" · immer hell, kein Dark Mode.
+   Signal-Logik bleibt: Gelb = Aktion/Prüfen · Grün = richtig · Rot = falsch.
+   Identität = Koralle. Überschriften rund (SF Rounded, offline). */
 :root {
   color-scheme: light;
   /* richtig / falsch */
-  --green: #2f9e5f;
-  --green-soft: #e4f4ea;
-  --red: #e5372a;
-  --red-soft: #fdeae7;
-  /* Aktion (Prüfen / Weiter / Starten) = Gelb/Gold */
-  --action: #f5a623;
-  --action-ink: #3a2410;
-  --action-deep: #c9760a;
-  --amber: #c9760a;
-  --amber-soft: #fdf1dd;
-  /* Marke / Identität = Tomatenrot (Kopf, aktiver Tab, Fortschritt) */
-  --brand: #e0402e;
-  --brand-soft: #fdeae6;
+  --green: #2fae6a;            /* Pistazie – richtig */
+  --green-soft: #e4f6ec;
+  --red: #e5443a;              /* Rot – falsch (klar von der Koralle unterscheidbar) */
+  --red-soft: #ffe9e6;
+  /* Aktion (Prüfen / Weiter / Starten) = warmes Zitronen-Gelb */
+  --action: #ffc24a;
+  --action-ink: #5a3410;
+  --action-deep: #e79a1e;
+  --amber: #e79a1e;
+  --amber-soft: #fff3dd;
+  /* Marke / Identität = Koralle */
+  --brand: #f26451;
+  --brand-soft: #ffe7e0;
   /* Flächen */
   --bg: #ffffff;
   --card: #ffffff;
-  --text: #33231b;
-  --muted: #8c7b6d;
-  --line: #ece4da;
-  --shadow: 0 2px 14px rgba(150, 70, 30, 0.09);
-  --radius: 18px;
+  --text: #263229;            /* dunkles Grün-Anthrazit */
+  --muted: #7f8c85;
+  --line: #eaefe9;            /* mint-getönte Linie */
+  --shadow: 0 8px 22px rgba(40, 60, 50, 0.08);
+  --radius: 20px;
   --tabbar-h: 64px;
+  /* runde, freundliche Überschrift – SF Rounded auf dem iPhone, sonst Fallback */
+  --display: ui-rounded, "SF Pro Rounded", "Baloo 2", -apple-system, system-ui, sans-serif;
+}
+
+/* Runde Anmutung für Überschriften, Zahlen, Buttons und die italienischen Wörter */
+h1, h2, .apptitle, .lesson-title, .lesson-step, .section-title, .btn, .chip,
+.stat .num, .lh-title, .lh-pct, .ms-topic, .ms-label, .vocab-it, .verb-inf,
+.lvl-badge, .prompt-de, .lead, .num, .cta {
+  font-family: var(--display);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -386,6 +396,25 @@ textarea:focus, input.answer:focus {
   padding: 3px 12px;
   border-radius: 999px;
 }
+
+/* ---------- Fokus-Hero mit Fortschritts-Ring ---------- */
+.focus-hero { text-align: center; padding: 18px 18px 16px; }
+.ringwrap { width: 208px; max-width: 66%; margin: 10px auto 2px; }
+.ring { width: 100%; height: auto; display: block; }
+.ring-pc { font-family: var(--display); font-weight: 800; font-size: 44px; fill: var(--text); }
+.ring-lb { font-family: var(--display); font-weight: 700; font-size: 15px; fill: var(--muted); }
+.focus-status { font-size: 15px; color: var(--muted); margin: 6px 0 13px; }
+.focus-status b { color: var(--text); }
+.focus-len { max-width: 300px; margin: 0 auto 12px; }
+.focus-cta { margin-top: 0; }
+.focus-quick { display: flex; gap: 9px; margin-top: 14px; }
+.fq {
+  flex: 1; background: var(--brand-soft); border: none; border-radius: 15px;
+  padding: 11px 6px; font-size: 12.5px; font-weight: 700; color: var(--brand);
+  cursor: pointer; font-family: var(--display);
+}
+.fq-ic { display: block; font-size: 19px; margin-bottom: 3px; }
+.fq:active { transform: scale(.97); }
 .rule {
   font-size: 15px;
   line-height: 1.45;
