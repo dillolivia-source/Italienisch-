@@ -604,7 +604,6 @@
         '</span><span class="lh-pct">' + curLp.pct + '%</span></div>'));
       var big = C.el('<div class="bar big"><span style="width:' + curLp.pct + '%"></span></div>');
       hero.appendChild(big);
-      hero.appendChild(C.el('<div class="lh-sub">So weit bist du auf dem Weg zu ' + nextLv + '.</div>'));
       card.appendChild(hero);
     }
 
