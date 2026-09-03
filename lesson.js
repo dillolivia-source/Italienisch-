@@ -560,10 +560,8 @@
     card.appendChild(C.el(
       '<div class="ringwrap"><svg class="ring" viewBox="0 0 200 200" role="img" aria-label="' +
       S.level + ' zu ' + next + ', ' + pct + ' Prozent">' +
-      '<defs><linearGradient id="ringg" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="#ffb24a"/><stop offset="1" stop-color="#f26451"/></linearGradient></defs>' +
       '<circle cx="100" cy="100" r="82" fill="none" stroke="var(--line)" stroke-width="16"/>' +
-      '<circle cx="100" cy="100" r="82" fill="none" stroke="url(#ringg)" stroke-width="16" stroke-linecap="round" ' +
+      '<circle cx="100" cy="100" r="82" fill="none" stroke="var(--brand)" stroke-width="16" stroke-linecap="round" ' +
       'stroke-dasharray="' + CIRC + '" stroke-dashoffset="' + off + '" transform="rotate(-90 100 100)"/>' +
       '<text x="100" y="98" text-anchor="middle" class="ring-pc">' + pct + '%</text>' +
       '<text x="100" y="124" text-anchor="middle" class="ring-lb">' + S.level + ' → ' + next + '</text>' +
