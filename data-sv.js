@@ -155,6 +155,43 @@ window.SV = {
       "✓ Läggs nu till bland dina glosor och förhörs snart.",
     "Das ist ein kleines Funktionswort (z. B. Artikel) – kein eigenes Lernwort.":
       "Det är ett litet funktionsord (t.ex. artikel) – inget eget glosord.",
+    // Lektions-Segment-Titel & Grammatik-Fragmente
+    "Auffrischung:": "Repetition:",
+    "Grammatik:": "Grammatik:",
+    " – üben": " – öva",
+    "🗂️ Vokabel-Wiederholung": "🗂️ Glosrepetition",
+    "✨ Neue Vokabeln abfragen": "✨ Förhör nya glosor",
+    "✍️ Übersetzen mit den neuen Vokabeln": "✍️ Översätt med de nya glosorna",
+    "🧩 Grammatik üben": "🧩 Öva grammatik",
+    "geplant": "planerat",
+    "Sprich es jetzt laut nach.": "Säg det högt nu.",
+    // Verb-Typ-Hinweise (italienische Beispiele bleiben)
+    "Verben auf -are (io -o, tu -i, lui -a, noi -iamo, voi -ate, loro -ano)":
+      "Verb på -are (io -o, tu -i, lui -a, noi -iamo, voi -ate, loro -ano)",
+    "Verben auf -ere (… -o, -i, -e, -iamo, -ete, -ono)":
+      "Verb på -ere (… -o, -i, -e, -iamo, -ete, -ono)",
+    "Verben auf -ire (… -o, -i, -e, -iamo, -ite, -ono)":
+      "Verb på -ire (… -o, -i, -e, -iamo, -ite, -ono)",
+    "Sonderform: -isc- wird eingeschoben (io capisco, tu capisci, … noi capiamo, loro capiscono)":
+      "Specialform: -isc- skjuts in (io capisco, tu capisci, … noi capiamo, loro capiscono)",
+    "Unregelmäßige Verben – eigene Formen, am besten einzeln lernen.":
+      "Oregelbundna verb – egna former, lär dig dem helst en och en.",
+    "Reflexive Verben: Reflexivpronomen davor – io mi, tu ti, lui/lei si, noi ci, voi vi, loro si (z. B. mi chiamo, ti alzi, si sveglia).":
+      "Reflexiva verb: reflexivpronomen framför – io mi, tu ti, lui/lei si, noi ci, voi vi, loro si (t.ex. mi chiamo, ti alzi, si sveglia).",
+    // Niveau-Aufstieg (B1)
+    "Du bist bereit für B1!": "Du är redo för B1!",
+    "Du hast den A2-Stoff systematisch durchgearbeitet. Willst du ab jetzt Lektionen auf B1-Niveau machen?":
+      "Du har arbetat igenom A2-stoffet systematiskt. Vill du köra lektioner på B1-nivå från och med nu?",
+    "Auf B1 wechseln": "Byt till B1",
+    // Native Dialoge (confirm/alert)
+    "Ab jetzt Lektionen auf B1-Niveau? (Du kannst später zurückwechseln.)":
+      "Lektioner på B1-nivå från och med nu? (Du kan byta tillbaka senare.)",
+    "Deinen ganzen Fortschritt wirklich löschen?": "Vill du verkligen radera hela dina framsteg?",
+    "✓ Sicherung wiederhergestellt. Die App wird neu geladen.":
+      "✓ Säkerhetskopian återställd. Appen laddas om.",
+    "Das war keine gültige Sicherungsdatei.": "Det var ingen giltig säkerhetskopia.",
+    "✓ Wiederhergestellt. Neu laden.": "✓ Återställt. Laddar om.",
+    "Ungültiger Code.": "Ogiltig kod.",
     // Speicher-Warnung
     "⚠️": "⚠️",
     // Sprachwahl (Statistik)
@@ -206,7 +243,12 @@ window.SV = {
     ["^Lektion (\\d+) geschafft!$", "Lektion $1 klar!"],
     ["^regelmäßig · (.+)$", "regelbunden · $1"],
     ["^🔁 (\\d+) Wörter/Sätze sind zur Wiederholung fällig – üben in Lektion, Vokabeln oder Übersetzen\\.$", "🔁 $1 ord/meningar ska repeteras – öva i Lektion, Glosor eller Översätt."],
-    ["^(.+) zu (.+), (\\d+) Prozent$", "$1 till $2, $3 procent"]
+    ["^(.+) zu (.+), (\\d+) Prozent$", "$1 till $2, $3 procent"],
+    ["^✨ (\\d+) neue Vokabeln$", "✨ $1 nya glosor"],
+    ["^🎉 Alle (.+)-Grammatikthemen gemeistert!$", "🎉 Alla $1-grammatikteman bemästrade!"],
+    ["^Neu · Tag (\\d+) von (\\d+) – danach im Auffrischungs-Rhythmus\\.$", "Nytt · Dag $1 av $2 – därefter i repetitionsrytm."],
+    ["^✓ „(.+)“ hinzugefügt – kommt in einer nächsten Einheit dran\\.$", "✓ „$1“ tillagd – kommer i en kommande enhet."],
+    ["^(\\d+)% geübt – weiter so$", "$1% övat – bra så"]
   ],
 
   // Vokabel-Bedeutung auf Schwedisch (id → schwedisches Wort). Italienisch bleibt.

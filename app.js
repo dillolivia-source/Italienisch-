@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v46"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v47"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -474,7 +474,14 @@
     // bekannte Bedeutung einer Vokabel (Schwedisch, sonst Deutsch)
     known: function (v) { return window.Lang ? window.Lang.vocab(v) : (v ? v.de : ""); },
     // bekannte Satz-Vorgabe (Schwedisch, sonst Deutsch)
-    knownSentence: function (s) { return window.Lang ? window.Lang.sent(s) : (s ? s.de : ""); }
+    knownSentence: function (s) { return window.Lang ? window.Lang.sent(s) : (s ? s.de : ""); },
+    knownSentenceById: function (id, de) { return window.Lang ? window.Lang.sentById(id, de) : de; },
+    // Verb-Bedeutung, Grammatik-Titel/-Regel/-Textstücke
+    knownVerb: function (v) { return window.Lang ? window.Lang.verb(v) : (v ? v.de : ""); },
+    gramTitle: function (m) { return window.Lang ? window.Lang.gramTitle(m) : (m ? m.title : ""); },
+    gramRule: function (m) { return window.Lang ? window.Lang.gramRule(m) : (m ? m.rule : ""); },
+    gramText: function (de) { return window.Lang ? window.Lang.gramText(de) : de; },
+    gramTopic: function (de) { return window.Lang ? window.Lang.gramTopic(de) : de; }
   };
 
   /* ============ VIEW: ÜBERSETZEN ============ */
@@ -843,10 +850,10 @@
       const reader = new FileReader();
       reader.onload = () => {
         if (restoreBackup(String(reader.result))) {
-          alert("✓ Sicherung wiederhergestellt. Die App wird neu geladen.");
+          alert(window.Core.tt("✓ Sicherung wiederhergestellt. Die App wird neu geladen."));
           location.reload();
         } else {
-          alert("Das war keine gültige Sicherungsdatei.");
+          alert(window.Core.tt("Das war keine gültige Sicherungsdatei."));
         }
       };
       reader.readAsText(f);
@@ -862,8 +869,8 @@
     const applyCode = $('<button class="btn primary">Code einspielen</button>');
     showCode.onclick = () => { codeArea.value = JSON.stringify(collectBackup()); codeArea.focus(); codeArea.select(); };
     applyCode.onclick = () => {
-      if (restoreBackup(codeArea.value)) { alert("✓ Wiederhergestellt. Neu laden."); location.reload(); }
-      else alert("Ungültiger Code.");
+      if (restoreBackup(codeArea.value)) { alert(window.Core.tt("✓ Wiederhergestellt. Neu laden.")); location.reload(); }
+      else alert(window.Core.tt("Ungültiger Code."));
     };
     codeToggle.onclick = () => { codeWrap.hidden = !codeWrap.hidden; };
     codeRow.appendChild(showCode); codeRow.appendChild(applyCode);

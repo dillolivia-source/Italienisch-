@@ -280,7 +280,7 @@
     if (refresherMod) {
       segments.push({
         type: "quiz",
-        title: "🔁 Auffrischung: " + refresherMod.title,
+        title: "🔁 " + C.tt("Auffrischung:") + " " + C.gramTitle(refresherMod),
         questions: pickGrammarQuestions(refresherMod, L.gramReview)
       });
     }
@@ -327,7 +327,7 @@
       });
       // 4. Übersetzungen mit den neuen Vokabeln
       var transQs = fresh.filter(function (v) { return v.ex; }).map(function (v) {
-        return { kind: "type", id: v.id + "_ex", prompt: v.ex.de, accept: v.ex.it };
+        return { kind: "type", id: v.id + "_ex", prompt: C.knownSentenceById(v.id + "_ex", v.ex.de), accept: v.ex.it };
       });
       if (transQs.length) {
         segments.push({
@@ -341,7 +341,7 @@
 
     // 5. Alltagssätze – immer genau 5 (unabhängig von der Lektionslänge)
     var baseQs = pickBaseSentences(5).map(function (s) {
-      return { kind: "type", id: s.id, prompt: s.de, accept: s.it };
+      return { kind: "type", id: s.id, prompt: C.knownSentence(s), accept: s.it };
     });
     if (baseQs.length) {
       segments.push({
@@ -356,11 +356,11 @@
     if (learnMod) {
       segments.push({
         type: "info",
-        title: "🧩 Grammatik: " + learnMod.title,
-        html: C.mdInline(learnMod.rule),
+        title: "🧩 " + C.tt("Grammatik:") + " " + C.gramTitle(learnMod),
+        html: C.mdInline(C.gramRule(learnMod)),
         note: "Neu · Tag " + S.learnDays + " von " + LEARN_DAYS + " – danach im Auffrischungs-Rhythmus.",
         progressModuleId: learnMod.id,
-        progressLabel: learnMod.title
+        progressLabel: C.gramTitle(learnMod)
       });
       segments.push({
         type: "quiz",
@@ -413,7 +413,7 @@
       }
       if (s.type === "quiz" && s.title && s.title.indexOf("Übersetzen mit den neuen") !== -1) {
         s.questions = fresh.filter(function (v) { return v.ex; }).map(function (v) {
-          return { kind: "type", id: v.id + "_ex", prompt: v.ex.de, accept: v.ex.it };
+          return { kind: "type", id: v.id + "_ex", prompt: C.knownSentenceById(v.id + "_ex", v.ex.de), accept: v.ex.it };
         });
       }
     });
@@ -507,19 +507,19 @@
         return {
           kind: "choice",
           id: module.id + "_c" + i,
-          prompt: q.prompt,
+          prompt: C.gramText(q.prompt),
           options: q.options,
           answer: q.answer,
-          explain: q.explain,
+          explain: q.explain ? C.gramText(q.explain) : q.explain,
           moduleId: module.id
         };
       }
       return {
         kind: "type",
         id: module.id + "_f" + i,
-        prompt: q.prompt,
+        prompt: C.gramText(q.prompt),
         accept: q.accept,
-        explain: q.explain,
+        explain: q.explain ? C.gramText(q.explain) : q.explain,
         moduleId: module.id
       };
     });
@@ -636,7 +636,7 @@
       var np = grammarPct(next.moduleId);
       var mb = C.el('<div class="milestone"></div>');
       mb.appendChild(C.el('<div class="ms-label">' + C.esc(C.tt('Als Nächstes dran')) + '</div>'));
-      mb.appendChild(C.el('<div class="ms-topic">' + C.esc(next.topic) + '</div>'));
+      mb.appendChild(C.el('<div class="ms-topic">' + C.esc(C.gramTopic(next.topic)) + '</div>'));
       mb.appendChild(bar(np));
       mb.appendChild(C.el('<div class="ms-sub">' + (np > 0 ? np + '% geübt – weiter so' : 'Noch nicht geübt') + '</div>'));
       var goBtn = C.el('<button class="btn primary" style="width:100%;margin-top:10px">' + C.esc(C.tt('▶ Jetzt üben')) + '</button>');
@@ -666,7 +666,7 @@
       var icon = t.status === "planned" ? "⏳" : (done ? "✅" : (pct > 0 ? "📘" : "◻️"));
       var extra = t.status === "planned" ? ' <span class="badge gray">geplant</span>' : "";
       var item = C.el('<div class="curr-item' + (isReady ? " curr-clickable" : "") + '" style="margin:9px 0"></div>');
-      item.appendChild(C.el('<div class="gp-row"><span>' + icon + " " + C.esc(t.topic) + extra +
+      item.appendChild(C.el('<div class="gp-row"><span>' + icon + " " + C.esc(C.gramTopic(t.topic)) + extra +
         '</span>' + (isReady ? '<span class="gp-pct">' + pct + '% ›</span>' : '') + '</div>'));
       if (isReady) {
         item.appendChild(bar(pct));
@@ -685,7 +685,7 @@
       up.appendChild(C.el('<p class="hint">Du hast den A2-Stoff systematisch durchgearbeitet. Willst du ab jetzt Lektionen auf B1-Niveau machen?</p>'));
       var go = C.el('<button class="btn primary">Auf B1 wechseln</button>');
       go.onclick = function () {
-        if (confirm("Ab jetzt Lektionen auf B1-Niveau? (Du kannst später zurückwechseln.)")) {
+        if (confirm(C.tt("Ab jetzt Lektionen auf B1-Niveau? (Du kannst später zurückwechseln.)"))) {
           S.level = "B1"; S.learnIndex = 0; S.learnDays = 0; S.b1Offered = true;
           save(); render(root);
         }
@@ -792,8 +792,8 @@
     S.plan = {
       practice: true,
       segments: [
-        { type: "info", title: "🧩 " + m.title, html: C.mdInline(m.rule), note: "Gezieltes Üben", progressModuleId: m.id, progressLabel: m.title },
-        { type: "quiz", title: "🧩 " + m.title + " – üben", questions: pickGrammarQuestions(m, 8), grammarModuleId: m.id }
+        { type: "info", title: "🧩 " + C.gramTitle(m), html: C.mdInline(C.gramRule(m)), note: "Gezieltes Üben", progressModuleId: m.id, progressLabel: C.gramTitle(m) },
+        { type: "quiz", title: "🧩 " + C.gramTitle(m) + C.tt(" – üben"), questions: pickGrammarQuestions(m, 8), grammarModuleId: m.id }
       ]
     };
     S.seg = 0;
@@ -1363,7 +1363,7 @@
       var t = C.el('<span class="verb-inf">' + C.esc(v.inf) + "</span>");
       var sb = C.speakButton(v.inf); if (sb) t.appendChild(sb);
       top.appendChild(t);
-      top.appendChild(C.el('<span class="verb-de">' + C.esc(v.de) + "</span>"));
+      top.appendChild(C.el('<span class="verb-de">' + C.esc(C.knownVerb(v)) + "</span>"));
       card.appendChild(top);
       card.appendChild(C.el('<span class="verb-type verb-type-' + v.type + '">' +
         C.esc(VD.typeLabel[v.type] || "") + "</span>"));
@@ -1390,7 +1390,7 @@
       ' richtig · noch ' + verbQueue.length + ' offen</p>'));
     var card = C.el('<div class="card"></div>');
     card.appendChild(C.el('<p class="prompt-de"><b>' + C.esc(q.inf) + '</b> <span class="verb-de">(' +
-      C.esc(q.de) + ')</span></p>'));
+      C.esc(C.knownVerb({ id: q.verbId, de: q.de })) + ')</span></p>'));
     card.appendChild(C.el('<p class="hint">Konjugiere für <b class="conj-ask">' + C.esc(q.person) + "</b> (Präsens):</p>"));
     var ta = C.el('<textarea rows="1" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
     card.appendChild(ta);
