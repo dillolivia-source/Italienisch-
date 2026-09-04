@@ -138,6 +138,39 @@ html, body {
   font-weight: 600;
 }
 
+/* Grundsprache-Umschalter (Deutsch / Svenska) */
+.lang-switch {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 0 0 14px;
+}
+.lang-switch-lbl {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.lang-chips { display: flex; gap: 8px; }
+.lang-chip {
+  flex: 1 1 0;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink, #222);
+  padding: 9px 12px;
+  border-radius: 999px;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lang-chip.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+
 /* Cards */
 .card {
   background: var(--card);

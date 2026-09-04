@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v44"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v45"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -210,7 +210,7 @@
       p.appendChild(span);
     });
     container.appendChild(p);
-    container.appendChild($('<p class="tap-hint">👆 Wort antippen, das du nicht kennst</p>'));
+    container.appendChild($('<p class="tap-hint">' + esc(window.Core.tt("👆 Wort antippen, das du nicht kennst")) + '</p>'));
     container.appendChild(menu);
     return container;
   }
@@ -226,7 +226,7 @@
       menu.appendChild($('<p class="wm-word">„' + esc(word) + "“</p>"));
       if (v) {
         if (window.Lektion && window.Lektion.markUnknown) window.Lektion.markUnknown(v.id);
-        const res = $('<p class="wm-res"><b>' + esc(v.de) + "</b> = <b>" + esc(v.it) + "</b></p>");
+        const res = $('<p class="wm-res"><b>' + esc(window.Core.known(v)) + "</b> = <b>" + esc(v.it) + "</b></p>");
         const sb = speakButton(v.it); if (sb) res.appendChild(sb);
         menu.appendChild(res);
         menu.appendChild($('<p class="wm-note">✓ Kommt jetzt in deine Vokabeln und wird bald abgefragt.</p>'));
@@ -458,7 +458,16 @@
     goTab: function (view) {
       const tab = document.querySelector('.tab[data-view="' + view + '"]');
       if (tab) tab.click();
-    }
+    },
+    // Grundsprache (bekannte Seite): Deutsch / Svenska
+    baseLang: function () { return window.Lang ? window.Lang.get() : "de"; },
+    setBaseLang: function (l) { if (window.Lang) window.Lang.set(l); },
+    // UI-Text übersetzen (fällt auf Deutsch zurück)
+    tt: function (de) { return window.Lang ? window.Lang.t(de) : de; },
+    // bekannte Bedeutung einer Vokabel (Schwedisch, sonst Deutsch)
+    known: function (v) { return window.Lang ? window.Lang.vocab(v) : (v ? v.de : ""); },
+    // bekannte Satz-Vorgabe (Schwedisch, sonst Deutsch)
+    knownSentence: function (s) { return window.Lang ? window.Lang.sent(s) : (s ? s.de : ""); }
   };
 
   /* ============ VIEW: ÜBERSETZEN ============ */
@@ -543,8 +552,8 @@
     s.themes.forEach(t => meta.appendChild($(`<span class="badge">${esc(THEME_LABEL[t] || t)}</span>`)));
     card.appendChild(meta);
 
-    card.appendChild(tappablePrompt(s.de));
-    card.appendChild($('<p class="hint">Tippe die italienische Übersetzung:</p>'));
+    card.appendChild(tappablePrompt(window.Core.knownSentence(s)));
+    card.appendChild($('<p class="hint">' + esc(window.Core.tt("Tippe die italienische Übersetzung:")) + '</p>'));
 
     const ta = $('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="…"></textarea>');
     card.appendChild(ta);
@@ -553,14 +562,14 @@
     const fbSlot = $("<div></div>");
     card.appendChild(fbSlot);
 
-    const checkBtn = $('<button class="btn primary">Prüfen</button>');
-    const showBtn = $('<button class="btn ghost">Lösung zeigen</button>');
+    const checkBtn = $('<button class="btn primary">' + esc(window.Core.tt("Prüfen")) + '</button>');
+    const showBtn = $('<button class="btn ghost">' + esc(window.Core.tt("Lösung zeigen")) + '</button>');
     const row = $('<div class="btn-row"></div>');
     row.appendChild(showBtn); row.appendChild(checkBtn);
     card.appendChild(row);
 
     // „Sitzt schon – erstmal pausieren": Satz smart zurückstellen, kommt später wieder
-    const sitzt = $('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+    const sitzt = $('<button type="button" class="sitzt-btn">' + esc(window.Core.tt("😌 Sitzt schon – erstmal pausieren")) + '</button>');
     sitzt.onclick = () => {
       if (window.Lektion && window.Lektion.snoozeItem) window.Lektion.snoozeItem(s.id);
       nextTranslation(); renderUebersetzen();
@@ -574,7 +583,7 @@
       ta.setAttribute("readonly", "");
       let cls = result === "ok" ? "ok" : result === "near" ? "near" : "no";
       const fb = $(`<div class="feedback ${cls}"></div>`);
-      const lead = $(`<p class="lead ${cls}">${result === "ok" ? "✓ Richtig!" : result === "near" ? "≈ Fast! Nur die Akzente stimmen nicht" : "✗ Nicht ganz"}</p>`);
+      const lead = $(`<p class="lead ${cls}">${result === "ok" ? esc(window.Core.tt("✓ Richtig!")) : result === "near" ? esc(window.Core.tt("≈ Fast! Nur die Akzente stimmen nicht")) : esc(window.Core.tt("✗ Nicht ganz"))}</p>`);
       fb.appendChild(lead);
       const target = result === "ok" ? s.it[0] : pickClosest(ta.value, s.it);
       if (result === "ok") {
@@ -704,6 +713,23 @@
 
     viewEl.appendChild($('<h2 class="lesson-title" style="margin:2px 0 4px">📊 Deine Statistik</h2>'));
     viewEl.appendChild($('<p class="hint" style="margin:0 0 12px">Was du bisher geschafft hast – alles nur auf diesem Gerät gespeichert.</p>'));
+
+    // Grundsprache umschalten (bekannte Seite): Deutsch / Svenska
+    const langBox = $('<div class="lang-switch"></div>');
+    langBox.appendChild($('<p class="lang-switch-lbl">Sprache / Språk</p>'));
+    const langRow = $('<div class="lang-chips"></div>');
+    [["de", "🇩🇪 Deutsch"], ["sv", "🇸🇪 Svenska"]].forEach(([code, label]) => {
+      const active = window.Core.baseLang() === code;
+      const chip = $('<button type="button" class="lang-chip' + (active ? " active" : "") + '">' + esc(label) + '</button>');
+      chip.onclick = () => {
+        window.Core.setBaseLang(code);
+        _sentCache = null; // Satz-Pool ggf. neu, Anzeige neu aufbauen
+        render();
+      };
+      langRow.appendChild(chip);
+    });
+    langBox.appendChild(langRow);
+    viewEl.appendChild(langBox);
 
     const grid = $('<div class="stat-grid"></div>');
     grid.appendChild(statTile(st.lessonNo, "Lektionen", "ganz abgeschlossen"));
@@ -862,7 +888,18 @@
   function toggle(set, v) { set.has(v) ? set.delete(v) : set.add(v); }
 
   /* ---------- Router ---------- */
+  // Tab-Beschriftungen der aktuellen Grundsprache anpassen (Deutsch/Svenska)
+  const TAB_DE = { lektion: "Lektion", uebersetzen: "Übersetzen", vokabeln: "Vokabeln", verben: "Verben", fortschritt: "Statistik" };
+  function relabelTabs() {
+    document.querySelectorAll(".tab").forEach(tab => {
+      const de = TAB_DE[tab.dataset.view];
+      const lbl = tab.querySelector(".tab-lbl");
+      if (de && lbl) lbl.textContent = window.Core.tt(de);
+    });
+  }
+
   function render() {
+    relabelTabs();
     if (state.view === "lektion") {
       if (window.Lektion) window.Lektion.render(viewEl);
       else viewEl.innerHTML = '<p class="empty">Lektion wird geladen…</p>';

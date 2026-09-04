@@ -109,7 +109,18 @@
   function levelLE(a, b) { return LEVEL_ORDER.indexOf(a) <= LEVEL_ORDER.indexOf(b); }
 
   function vocabForLevel() {
-    return allVocab().filter(function (v) { return levelLE(v.cefr, S.level); });
+    // Schwedische Lernende: Baby-/Kleinkind-Thema raus; außerdem nur Vokabeln,
+    // für die es eine schwedische Bedeutung gibt (kein deutscher Durchschlag).
+    var sv = C.baseLang && C.baseLang() === "sv";
+    var svMap = (window.SV && window.SV.vocab) || {};
+    return allVocab().filter(function (v) {
+      if (!levelLE(v.cefr, S.level)) return false;
+      if (sv) {
+        if (v.theme === "baby") return false;
+        if (svMap[v.id] == null) return false;
+      }
+      return true;
+    });
   }
   function modulesForLevel() {
     // aktuelles Niveau UND darunter (A1-Themen werden bei A2 mitgeübt)
@@ -411,7 +422,7 @@
       kind: "type",
       id: v.id,
       vocabId: v.id,   // markiert: dies ist eine Vokabel → „Sitzt schon"-Knopf möglich
-      prompt: v.de,
+      prompt: C.known(v),
       accept: [v.it]
     };
   }
@@ -556,7 +567,7 @@
     var next = LEVEL_ORDER[LEVEL_ORDER.indexOf(S.level) + 1] || S.level;
     var CIRC = 515, off = Math.round(CIRC * (1 - pct / 100));
     var card = C.el('<div class="card focus-hero"></div>');
-    card.appendChild(C.el('<div class="level-pill">Niveau ' + S.level + '</div>'));
+    card.appendChild(C.el('<div class="level-pill">' + C.esc(C.tt("Niveau ")) + S.level + '</div>'));
     card.appendChild(C.el(
       '<div class="ringwrap"><svg class="ring" viewBox="0 0 200 200" role="img" aria-label="' +
       S.level + ' zu ' + next + ', ' + pct + ' Prozent">' +
@@ -581,7 +592,7 @@
     card.appendChild(chips);
 
     var btn = C.el('<button class="btn primary focus-cta">' +
-      (done ? 'Trotzdem üben →' : 'Lektion starten →') + '</button>');
+      (done ? C.esc(C.tt('Trotzdem üben →')) : C.esc(C.tt('Lektion starten →'))) + '</button>');
     btn.onclick = function () { buildPlan(); render(root); };
     card.appendChild(btn);
 
@@ -621,11 +632,11 @@
     if (next) {
       var np = grammarPct(next.moduleId);
       var mb = C.el('<div class="milestone"></div>');
-      mb.appendChild(C.el('<div class="ms-label">Als Nächstes dran</div>'));
+      mb.appendChild(C.el('<div class="ms-label">' + C.esc(C.tt('Als Nächstes dran')) + '</div>'));
       mb.appendChild(C.el('<div class="ms-topic">' + C.esc(next.topic) + '</div>'));
       mb.appendChild(bar(np));
       mb.appendChild(C.el('<div class="ms-sub">' + (np > 0 ? np + '% geübt – weiter so' : 'Noch nicht geübt') + '</div>'));
-      var goBtn = C.el('<button class="btn primary" style="width:100%;margin-top:10px">▶ Jetzt üben</button>');
+      var goBtn = C.el('<button class="btn primary" style="width:100%;margin-top:10px">' + C.esc(C.tt('▶ Jetzt üben')) + '</button>');
       goBtn.onclick = function () { startGrammarPractice(next.moduleId); };
       mb.appendChild(goBtn);
       card.appendChild(mb);
@@ -735,14 +746,14 @@
         var itLine = C.el('<span class="vocab-it">' + C.esc(v.it) + "</span>");
         var sbv = C.speakButton(v.it); if (sbv) itLine.appendChild(sbv);
         txt.appendChild(itLine);
-        txt.appendChild(C.el('<span class="vocab-de">' + C.esc(v.de) + "</span>"));
+        txt.appendChild(C.el('<span class="vocab-de">' + C.esc(C.known(v)) + "</span>"));
         row.appendChild(txt);
-        var known = C.el('<button class="vintro-known">kenne ich ✓</button>');
+        var known = C.el('<button class="vintro-known">' + C.esc(C.tt('kenne ich ✓')) + '</button>');
         known.onclick = function () { markVocabKnownInIntro(seg, v.id); };
         row.appendChild(known);
         c2.appendChild(row);
       });
-      var b2 = C.el('<button class="btn primary">Verstanden, abfragen →</button>');
+      var b2 = C.el('<button class="btn primary">' + C.esc(C.tt('Verstanden, abfragen →')) + '</button>');
       b2.onclick = nextSegment;
       c2.appendChild(b2);
       root.appendChild(c2);
@@ -888,18 +899,18 @@
     function renderType(q) {
       var card = C.el('<div class="card"></div>');
       card.appendChild(C.tappablePrompt(q.prompt));
-      card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
+      card.appendChild(C.el('<p class="hint">' + C.esc(C.tt('Tippe auf Italienisch:')) + '</p>'));
       var ta = C.el('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
       card.appendChild(ta);
       card.appendChild(C.accentBar(ta));
       var fbSlot = C.el("<div></div>");
       card.appendChild(fbSlot);
-      var btn = C.el('<button class="btn primary">Prüfen</button>');
+      var btn = C.el('<button class="btn primary">' + C.esc(C.tt('Prüfen')) + '</button>');
       card.appendChild(btn);
       // „Sitzt schon – erstmal pausieren"
       var gmid = q.moduleId || seg.grammarModuleId;
       if (q.vocabId) {
-        var sitzt = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+        var sitzt = C.el('<button type="button" class="sitzt-btn">' + C.esc(C.tt('😌 Sitzt schon – erstmal pausieren')) + '</button>');
         sitzt.onclick = function () {
           snoozeVocab(q.vocabId);
           for (var i = queue.length - 1; i >= 0; i--) { if (queue[i].id === q.id) { queue.splice(i, 1); break; } }
@@ -924,7 +935,7 @@
         card.appendChild(sitztG);
       } else if (seg.srs) {
         // Satz-Frage (Alltagssätze / Übersetzungen) – diesen Satz pausieren
-        var sitztS = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+        var sitztS = C.el('<button type="button" class="sitzt-btn">' + C.esc(C.tt('😌 Sitzt schon – erstmal pausieren')) + '</button>');
         sitztS.onclick = function () {
           snoozeVocab(q.id);
           for (var k = queue.length - 1; k >= 0; k--) { if (queue[k].id === q.id) { queue.splice(k, 1); break; } }
@@ -947,7 +958,7 @@
           var target = C.pickClosest(ta.value, q.accept);
           var fb = C.el('<div class="feedback ' + cls + '"></div>');
           var lead = C.el('<p class="lead ' + cls + '">' +
-            (res === "ok" ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>");
+            (res === "ok" ? C.tt("✓ Richtig!") : res === "near" ? C.tt("≈ Fast! Nur die Akzente") : C.tt("✗ Nicht ganz")) + "</p>");
           fb.appendChild(lead);
           if (res === "ok") {
             var sol = C.el('<p class="solution">' + C.esc(q.accept[0]) + "</p>");
@@ -1097,7 +1108,7 @@
     var card = C.el('<div class="card" style="text-align:center"></div>');
     var big = C.el('<p class="prompt-de" style="font-size:26px;color:var(--brand);margin:6px 0">' + C.esc(v.it) + "</p>");
     card.appendChild(big);
-    card.appendChild(C.el('<p class="vocab-de" style="text-align:center;margin:0 0 10px">' + C.esc(v.de) + "</p>"));
+    card.appendChild(C.el('<p class="vocab-de" style="text-align:center;margin:0 0 10px">' + C.esc(C.known(v)) + "</p>"));
     var hear = C.el('<button class="btn primary">🔊 Anhören</button>');
     hear.onclick = function () { C.speak(v.it); };
     card.appendChild(hear);
@@ -1154,16 +1165,16 @@
     root.appendChild(C.el('<p class="progress-line">' + solved + ' / ' + vocabUnit.length +
       ' richtig · noch ' + vocabQueue.length + ' offen</p>'));
     var card = C.el('<div class="card"></div>');
-    card.appendChild(C.el('<p class="prompt-de">' + C.esc(v.de) + '</p>'));
-    card.appendChild(C.el('<p class="hint">Tippe auf Italienisch:</p>'));
+    card.appendChild(C.el('<p class="prompt-de">' + C.esc(C.known(v)) + '</p>'));
+    card.appendChild(C.el('<p class="hint">' + C.esc(C.tt('Tippe auf Italienisch:')) + '</p>'));
     var ta = C.el('<textarea rows="2" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>');
     card.appendChild(ta);
     card.appendChild(C.accentBar(ta));
     var fb = C.el("<div></div>");
     card.appendChild(fb);
-    var btn = C.el('<button class="btn primary">Prüfen</button>');
+    var btn = C.el('<button class="btn primary">' + C.esc(C.tt('Prüfen')) + '</button>');
     card.appendChild(btn);
-    var sitzt = C.el('<button type="button" class="sitzt-btn">😌 Sitzt schon – erstmal pausieren</button>');
+    var sitzt = C.el('<button type="button" class="sitzt-btn">' + C.esc(C.tt('😌 Sitzt schon – erstmal pausieren')) + '</button>');
     sitzt.onclick = function () {
       snoozeVocab(v.id);
       for (var i = vocabQueue.length - 1; i >= 0; i--) { if (vocabQueue[i].id === v.id) { vocabQueue.splice(i, 1); break; } }
@@ -1183,7 +1194,7 @@
         var cls = ok ? "ok" : (res === "near" ? "near" : "no");
         var box = C.el('<div class="feedback ' + cls + '"></div>');
         var lead = C.el('<p class="lead ' + cls + '">' +
-          (ok ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>");
+          (ok ? C.tt("✓ Richtig!") : res === "near" ? C.tt("≈ Fast! Nur die Akzente") : C.tt("✗ Nicht ganz")) + "</p>");
         box.appendChild(lead);
         if (ok) {
           var sol = C.el('<p class="solution">' + C.esc(v.it) + "</p>");
@@ -1365,7 +1376,7 @@
       card.appendChild(tbl);
       root.appendChild(card);
     });
-    var go = C.el('<button class="btn primary">Verstanden, abfragen →</button>');
+    var go = C.el('<button class="btn primary">' + C.esc(C.tt('Verstanden, abfragen →')) + '</button>');
     go.onclick = function () { verbPhase = "quiz"; buildVerbQueue(); renderVerbs(root); };
     root.appendChild(go);
   }
@@ -1383,7 +1394,7 @@
     card.appendChild(C.accentBar(ta));
     var fb = C.el("<div></div>");
     card.appendChild(fb);
-    var btn = C.el('<button class="btn primary">Prüfen</button>');
+    var btn = C.el('<button class="btn primary">' + C.esc(C.tt('Prüfen')) + '</button>');
     card.appendChild(btn);
     var sitztV = C.el('<button type="button" class="sitzt-btn">😌 Verb sitzt – erstmal pausieren</button>');
     sitztV.onclick = function () {
@@ -1404,7 +1415,7 @@
         var cls = ok ? "ok" : (res === "near" ? "near" : "no");
         var box = C.el('<div class="feedback ' + cls + '"></div>');
         var lead = C.el('<p class="lead ' + cls + '">' +
-          (ok ? "✓ Richtig!" : res === "near" ? "≈ Fast! Nur die Akzente" : "✗ Nicht ganz") + "</p>");
+          (ok ? C.tt("✓ Richtig!") : res === "near" ? C.tt("≈ Fast! Nur die Akzente") : C.tt("✗ Nicht ganz")) + "</p>");
         box.appendChild(lead);
         if (ok) {
           var sol = C.el('<p class="solution">' + C.esc(q.person) + " " + C.esc(q.accept[0]) + "</p>");
