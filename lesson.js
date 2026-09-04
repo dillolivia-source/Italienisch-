@@ -19,8 +19,11 @@
   var MODULES = D.grammarModules;
   var CURRICULUM = D.curriculum;
 
+  // Fortschritt pro Grundsprache getrennt (Deutsch = Original, Schwedisch = "-sv").
+  var LANG_SUFFIX = (window.Lang && window.Lang.get() === "sv") ? "-sv" : "";
+
   // Eigene Vokabeln (von Olivia hinzugefügt) – lokal gespeichert
-  var USERVOCAB_KEY = "olivia-it-uservocab-v1";
+  var USERVOCAB_KEY = "olivia-it-uservocab-v1" + LANG_SUFFIX;
   function loadUserVocab() { try { return JSON.parse(localStorage.getItem(USERVOCAB_KEY)) || []; } catch (e) { return []; } }
   function saveUserVocab(a) { try { localStorage.setItem(USERVOCAB_KEY, JSON.stringify(a)); } catch (e) {} }
   function allVocab() { return D.vocab.concat(loadUserVocab()); }
@@ -42,7 +45,7 @@
   var MASTER_VOCAB_LEVEL = 4; // ab hier gilt eine Vokabel als "gelernt"
   var MASTER_GRAMMAR_HITS = 36; // so viele richtige Antworten → Modul "gelernt" (über mehrere Tage; bewusst streng)
 
-  var LS_KEY = "olivia-it-lesson-v2";
+  var LS_KEY = "olivia-it-lesson-v2" + LANG_SUFFIX;
 
   /* ---------------- Persistenter Zustand ---------------- */
   function freshState() {

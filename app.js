@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v45"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v46"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -29,7 +29,10 @@
   const STORAGE_OK = storageWorks();
 
   /* ---------- Fortschritt (localStorage) ---------- */
-  const STORE_KEY = "olivia-it-progress-v1";
+  // Fortschritt ist pro Grundsprache getrennt: Deutsch nutzt den Originalschlüssel,
+  // Schwedisch bekommt die Endung "-sv". So haben beide Lernende einen eigenen Stand.
+  const LANG_SUFFIX = (window.Lang && window.Lang.get() === "sv") ? "-sv" : "";
+  const STORE_KEY = "olivia-it-progress-v1" + LANG_SUFFIX;
   function loadProgress() {
     try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
     catch (e) { return {}; }
@@ -127,7 +130,7 @@
   }
 
   /* ---------- Merkliste: Wörter, die Olivia nicht kennt ---------- */
-  const WISH_KEY = "olivia-it-wishlist-v1";
+  const WISH_KEY = "olivia-it-wishlist-v1" + LANG_SUFFIX;
   function loadWish() { try { return JSON.parse(localStorage.getItem(WISH_KEY)) || []; } catch (e) { return []; } }
   function saveWish(w) { try { localStorage.setItem(WISH_KEY, JSON.stringify(w)); } catch (e) {} }
   function stripArticle(de) { return de.replace(/^\s*(der|die|das|l'|il|la|lo|i|le|gli)\s+/i, ""); }
@@ -392,7 +395,11 @@
   /* ---------- Sichern & Übertragen (versioniertes Format) ---------- */
   const BACKUP_KEYS = [
     "olivia-it-progress-v1", "olivia-it-lesson-v2",
-    "olivia-it-uservocab-v1", "olivia-it-wishlist-v1"
+    "olivia-it-uservocab-v1", "olivia-it-wishlist-v1",
+    // schwedisches Profil
+    "olivia-it-progress-v1-sv", "olivia-it-lesson-v2-sv",
+    "olivia-it-uservocab-v1-sv", "olivia-it-wishlist-v1-sv",
+    "olivia-baselang"
   ];
   function collectBackup() {
     const store = {};
@@ -722,9 +729,11 @@
       const active = window.Core.baseLang() === code;
       const chip = $('<button type="button" class="lang-chip' + (active ? " active" : "") + '">' + esc(label) + '</button>');
       chip.onclick = () => {
+        if (window.Core.baseLang() === code) return;
         window.Core.setBaseLang(code);
-        _sentCache = null; // Satz-Pool ggf. neu, Anzeige neu aufbauen
-        render();
+        // Fortschritt ist pro Sprache getrennt → neu laden, damit alle Module
+        // (Lektion, Statistik, Satz-Pool) den passenden Speicher lesen.
+        location.reload();
       };
       langRow.appendChild(chip);
     });
@@ -896,7 +905,75 @@
       const lbl = tab.querySelector(".tab-lbl");
       if (de && lbl) lbl.textContent = window.Core.tt(de);
     });
+    // Kopfzeile & Reset-Knopf ebenfalls (liegen außerhalb von #view)
+    const h1 = document.querySelector(".topbar h1");
+    if (h1) {
+      const flag = h1.querySelector(".flag");
+      h1.textContent = " " + window.Core.tt("Italienisch");
+      if (flag) h1.insertBefore(flag, h1.firstChild);
+    }
+    if (resetBtn) resetBtn.title = window.Core.tt("Fortschritt zurücksetzen");
   }
+
+  /* ---------- Auto-Lokalisierung (Schwedisch) ----------
+   * Statt jeden Text einzeln zu übersetzen, wird der gerenderte DOM-Baum
+   * gegen ein Wörterbuch (SV.ui + SV.rx + SV.attr) abgeglichen. So werden
+   * alle festen UI-Texte automatisch übersetzt – auch künftige. Inhalte
+   * (Vokabeln/Sätze/Grammatik) laufen über die Daten (known/knownSentence). */
+  const _svRx = (function () {
+    const out = [];
+    try {
+      const raw = (window.SV && window.SV.rx) || [];
+      raw.forEach(pair => out.push([new RegExp(pair[0]), pair[1]]));
+    } catch (e) {}
+    return out;
+  })();
+  function _svUi(s) { return (window.SV && window.SV.ui && window.SV.ui[s]) || null; }
+  function _svAttr(s) {
+    return (window.SV && ((window.SV.attr && window.SV.attr[s]) || (window.SV.ui && window.SV.ui[s]))) || null;
+  }
+  function _svText(raw) {
+    const t = raw.trim();
+    if (!t) return null;
+    const hit = _svUi(t);
+    if (hit != null) return raw.replace(t, hit);
+    for (let i = 0; i < _svRx.length; i++) {
+      if (_svRx[i][0].test(t)) return raw.replace(t, t.replace(_svRx[i][0], _svRx[i][1]));
+    }
+    return null;
+  }
+  const SKIP_TAGS = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, SELECT: 1 };
+  function localizeTextNode(node) {
+    const p = node.parentNode;
+    if (p && p.nodeName && SKIP_TAGS[p.nodeName]) return;
+    const rep = _svText(node.nodeValue);
+    if (rep != null && rep !== node.nodeValue) node.nodeValue = rep;
+  }
+  function localizeAttrs(el) {
+    ["placeholder", "title", "aria-label"].forEach(a => {
+      if (!el.hasAttribute || !el.hasAttribute(a)) return;
+      const v = el.getAttribute(a);
+      const hit = _svAttr(v.trim());
+      if (hit != null && hit !== v) el.setAttribute(a, hit);
+    });
+  }
+  function localizeEl(root) {
+    if (!window.Core.baseLang || window.Core.baseLang() !== "sv") return;
+    if (root.nodeType === 3) { localizeTextNode(root); return; }
+    if (root.nodeType !== 1) return;
+    if (root.hasAttribute) localizeAttrs(root);
+    // Options separat (liegen in SELECT, das wir sonst überspringen)
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let n; const nodes = [];
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(nd => {
+      const par = nd.parentNode;
+      if (par && par.nodeName === "OPTION") { const r = _svText(nd.nodeValue); if (r != null) nd.nodeValue = r; return; }
+      localizeTextNode(nd);
+    });
+    if (root.querySelectorAll) root.querySelectorAll("[placeholder],[title],[aria-label]").forEach(localizeAttrs);
+  }
+  window.Core.localize = localizeEl;
 
   function render() {
     relabelTabs();
@@ -914,8 +991,21 @@
     }
     else if (state.view === "uebersetzen") renderUebersetzen();
     else if (state.view === "fortschritt") renderFortschritt();
+    localizeEl(viewEl);
     viewEl.scrollTop = 0;
     window.scrollTo(0, 0);
+  }
+
+  // Dynamische Teil-Aktualisierungen (z. B. Auswertung nach dem Prüfen) laufen
+  // nicht über render() – ein Observer übersetzt neu eingefügte Knoten mit.
+  if (window.MutationObserver) {
+    const mo = new MutationObserver(muts => {
+      if (!window.Core.baseLang || window.Core.baseLang() !== "sv") return;
+      muts.forEach(m => m.addedNodes && m.addedNodes.forEach(n => {
+        if (n.nodeType === 1 || n.nodeType === 3) localizeEl(n);
+      }));
+    });
+    mo.observe(viewEl, { childList: true, subtree: true });
   }
 
   document.querySelectorAll(".tab").forEach(tab => {

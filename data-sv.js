@@ -5,9 +5,11 @@
  * Was hier fehlt, fällt automatisch auf Deutsch zurück (stufenweiser Ausbau).
  */
 window.SV = {
-  // Menü-, Knopf- und Feedback-Texte: Schlüssel = deutscher Originaltext
+  // UI-Texte: Schlüssel = deutscher Originaltext (exakt wie im gerenderten Text-Knoten).
+  // Der Localizer (app.js) ersetzt passende Textknoten & Attribute im Schwedisch-Modus.
   ui: {
-    // Tabs / Schnellzugriffe
+    // Kopf / Tabs / Schnellzugriffe
+    "Italienisch": "Italienska",
     "Lektion": "Lektion",
     "Übersetzen": "Översätt",
     "Vokabeln": "Glosor",
@@ -16,38 +18,196 @@ window.SV = {
     // Knöpfe
     "Prüfen": "Rätta",
     "Weiter →": "Nästa →",
+    "Weiter": "Nästa",
+    "Nächster Satz →": "Nästa mening →",
     "Lektion starten →": "Starta lektion →",
     "Trotzdem üben →": "Öva ändå →",
     "▶ Jetzt üben": "▶ Öva nu",
     "kenne ich ✓": "kan redan ✓",
+    "kenne ich schon": "kan redan",
     "Verstanden, abfragen →": "Klart, testa →",
     "war doch richtig ✓": "var ändå rätt ✓",
+    "War doch richtig": "Var ändå rätt",
     "😌 Sitzt schon – erstmal pausieren": "😌 Kan redan – pausa ett tag",
+    "😌 Thema sitzt – erstmal pausieren": "😌 Temat sitter – pausa ett tag",
+    "😌 Verb sitzt – erstmal pausieren": "😌 Verbet sitter – pausa ett tag",
+    "Zum Fortschritt": "Till statistiken",
+    "Gezieltes Üben": "Riktad övning",
+    "Alle": "Alla",
     // Aufforderungen / Hinweise
     "Tippe auf Italienisch:": "Skriv på italienska:",
     "Tippe die italienische Übersetzung:": "Skriv den italienska översättningen:",
     "👆 Wort antippen, das du nicht kennst": "👆 Tryck på ett ord du inte kan",
-    // Feedback
+    "💡 Enter = Prüfen · funktioniert offline": "💡 Enter = Rätta · fungerar offline",
+    "Konjugiere für": "Böj för",
+    "(Präsens):": "(presens):",
+    // Feedback / Auswertung
     "✓ Richtig!": "✓ Rätt!",
     "✗ Nicht ganz": "✗ Inte riktigt",
     "≈ Fast! Nur die Akzente": "≈ Nästan! Bara accenterna",
     "≈ Fast! Nur die Akzente stimmen nicht": "≈ Nästan! Bara accenterna stämmer inte",
+    "✗ Leider falsch — richtig:": "✗ Tyvärr fel — rätt:",
+    "✓ Als richtig gewertet": "✓ Räknas som rätt",
     "Lösung zeigen": "Visa svar",
     "deine Eingabe": "ditt svar",
     "richtig": "rätt",
-    // Start-/Fokus-Screen
+    "Aufgabe geschafft!": "Uppgift klar!",
+    "🔁 Wiederhole deine Fehler, bis sie sitzen": "🔁 Repetera dina fel tills de sitter",
+    // Start-/Fokus-Screen (Fragmente)
     "Niveau ": "Nivå ",
+    "Niveau:": "Nivå:",
     "Deine erste Lektion wartet": "Din första lektion väntar",
+    "Deine erste Lektion": "Din första lektion",
+    "wartet": "väntar",
     "Weiter mit deiner nächsten Lektion": "Fortsätt med nästa lektion",
+    "Weiter mit": "Fortsätt med",
+    "Heute geschafft!": "Klart för idag!",
+    "Morgen geht’s weiter.": "Imorgon fortsätter vi.",
     "Heute geschafft – morgen geht es weiter": "Klart för idag – imorgon fortsätter vi",
     "Sätze aus deinem Alltag": "Meningar från din vardag",
     "Als Nächstes dran": "På tur nu",
+    "Noch nicht geübt": "Inte övat än",
+    // Lernpfad / Grammatik-Übersicht
+    "Alle Grammatik-Themen": "Alla grammatikteman",
+    "Tippe ein Thema an, um es gezielt zu üben.": "Tryck på ett tema för att öva det riktat.",
+    "Grammatik folgt": "Grammatik kommer",
     // Vokabel-Einführung
     "Kennst du eins schon sicher? Tippe „kenne ich“ – dann kommt ein neues Wort nach.":
       "Kan du något redan säkert? Tryck ”kan redan” – då kommer ett nytt ord.",
+    "eingeführt": "introducerad",
+    // Lektions-Abschlüsse
+    "Grammatik geübt!": "Grammatik övad!",
+    "Gut gemacht – das Thema ist aufgefrischt.": "Bra jobbat – temat är uppfräschat.",
+    "Stark! Deine Fehler hast du bis zur richtigen Lösung wiederholt. Morgen geht es weiter.":
+      "Toppen! Dina fel repeterade du fram till rätt svar. Imorgon fortsätter vi.",
+    "Einheit geschafft!": "Enhet klar!",
+    // Vokabel-Tab (Karteikasten)
+    "📇 Vokabeln – Karteikasten": "📇 Glosor – kortlek",
+    "🎤 Aussprache": "🎤 Uttal",
+    "➕ Eigene Vokabel hinzufügen": "➕ Lägg till egen glosa",
+    "Noch keine Vokabeln auf deinem Niveau.": "Inga glosor på din nivå än.",
+    "Füge oben eigene hinzu! 🇮🇹": "Lägg till egna ovan! 🇮🇹",
+    "🎤 Hör zu und sprich laut nach": "🎤 Lyssna och säg efter högt",
+    "🔊 Anhören": "🔊 Lyssna",
+    "Neue Vokabel – nur Deutsch und Italienisch, keine Erklärung nötig.":
+      "Ny glosa – bara svenska och italienska, ingen förklaring behövs.",
+    "Bitte Deutsch UND Italienisch ausfüllen.": "Fyll i både svenska OCH italienska.",
+    // Verben-Tab
+    "🔤 Verben – Präsens üben": "🔤 Verb – öva presens",
+    "📝 Abfrage": "📝 Förhör",
+    "Keine Verben in dieser Auswahl.": "Inga verb i det här urvalet.",
+    "unregelmäßig": "oregelbunden",
+    "reflexiv": "reflexiv",
+    "reflexiv (-si)": "reflexiv (-si)",
+    // Übersetzen-Tab
+    "Keine Sätze für diese Auswahl.": "Inga meningar för det här urvalet.",
+    "Filter anpassen.": "Justera filtret.",
+    // Statistik
+    "📊 Deine Statistik": "📊 Din statistik",
+    "Was du bisher geschafft hast – alles nur auf diesem Gerät gespeichert.":
+      "Det du klarat hittills – allt sparas bara på den här enheten.",
+    "Lektionen": "Lektioner",
+    "ganz abgeschlossen": "helt avklarade",
+    "Vokabeln gelernt": "Glosor inlärda",
+    "schon mind. 1× geübt": "övat minst 1 gång",
+    "Vokabeln sicher": "Glosor säkra",
+    "sitzen fest": "sitter fast",
+    "Trefferquote": "Träffprocent",
+    "🗺️ Dein Weg durch die Niveaus": "🗺️ Din väg genom nivåerna",
+    "Prozent = Kernwortschatz + Grammatik zusammen. Er wächst mit jeder richtigen Antwort. Heller Balken = begonnen, kräftiger = schon sicher.":
+      "Procent = kärnordförråd + grammatik tillsammans. Det ökar med varje rätt svar. Ljus stapel = påbörjat, kraftigare = redan säkert.",
+    "begonnen": "påbörjat",
+    "sicher": "säkert",
+    "✓ geschafft": "✓ klart",
+    "du bist hier": "du är här",
+    "in Vorbereitung": "under förberedelse",
+    "Das fällt dir noch schwer": "Det här är fortfarande svårt",
+    "Diese kommen im Training häufiger dran, bis sie sitzen.":
+      "De här kommer oftare i träningen tills de sitter.",
+    "📝 Deine Merkliste": "📝 Din minneslista",
+    'Wörter, die du dir gemerkt hast. Eigene Vokabeln legst du im Tab „Vokabeln" an.':
+      "Ord du sparat. Egna glosor lägger du till under fliken ”Glosor”.",
+    "schon in der App": "redan i appen",
+    "noch ohne Übersetzung": "utan översättning än",
+    // Stimme
+    "🔊 Stimme zum Vorlesen": "🔊 Röst för uppläsning",
+    'Dein Gerät hat gerade keine italienische Stimme geladen. Tippe unten einmal auf „anhören" – manchmal erscheinen sie erst danach.':
+      "Din enhet har ingen italiensk röst laddad just nu. Tryck en gång på ”lyssna” nedan – ibland dyker de upp först då.",
+    "Automatisch (beste männliche Stimme)": "Automatiskt (bästa manliga rösten)",
+    "▶︎ Anhören": "▶︎ Lyssna",
+    "anhören": "lyssna",
+    "= männlich ·": "= manlig ·",
+    "= besonders klar.": "= särskilt tydlig.",
+    // Sichern & Übertragen
+    "💾 Sichern & Übertragen": "💾 Säkerhetskopiera & överför",
+    "Lade eine Sicherung herunter oder spiele sie auf einem anderen Gerät wieder ein.":
+      "Ladda ner en kopia eller läs in den på en annan enhet.",
+    "⬇︎ Sicherung laden": "⬇︎ Ladda ner kopia",
+    "⬆︎ Wiederherstellen": "⬆︎ Återställ",
+    "🔡 Per Code übertragen": "🔡 Överför via kod",
+    "Code anzeigen": "Visa kod",
+    "Code einspielen": "Läs in kod",
+    "🔄 App aktualisieren": "🔄 Uppdatera appen",
+    // Wort-Antippen-Menü
+    "🤔 Wort, das du nicht kennst?": "🤔 Ett ord du inte kan?",
+    "Dieses Wort kenne ich nicht": "Det här ordet kan jag inte",
+    "✓ Kommt jetzt in deine Vokabeln und wird bald abgefragt.":
+      "✓ Läggs nu till bland dina glosor och förhörs snart.",
+    "Das ist ein kleines Funktionswort (z. B. Artikel) – kein eigenes Lernwort.":
+      "Det är ett litet funktionsord (t.ex. artikel) – inget eget glosord.",
+    // Speicher-Warnung
+    "⚠️": "⚠️",
     // Sprachwahl (Statistik)
-    "Sprache / Språk": "Sprache / Språk"
+    "Sprache / Språk": "Sprache / Språk",
+    "🇩🇪 Deutsch": "🇩🇪 Deutsch",
+    "🇸🇪 Svenska": "🇸🇪 Svenska",
+    // Theme-Badges (aus THEME_LABEL)
+    "Reise": "Resa", "Familie": "Familj", "Kleinkind": "Småbarn", "Strand": "Strand",
+    "Restaurant": "Restaurang", "Essen": "Mat", "Alltag": "Vardag", "Telefon": "Telefon",
+    "Einkauf": "Inköp", "Zuhause": "Hemma", "Gefühle": "Känslor", "Wetter": "Väder",
+    "Zeit": "Tid", "Gesundheit": "Hälsa", "Kleidung": "Kläder", "Stadt": "Stad",
+    "Arbeit": "Arbete", "Grundlagen": "Grunder", "Soziales": "Socialt", "Körper": "Kropp",
+    "Natur": "Natur", "Tiere": "Djur", "Schule": "Skola", "Technik": "Teknik",
+    "Abstrakt": "Abstrakt", "Spiritualität": "Andlighet", "Material": "Material",
+    // Niveau-Namen
+    "Anfänger": "Nybörjare", "Mittelstufe": "Mellannivå", "Fortgeschritten": "Avancerad",
+    // Attribute
+    "Fortschritt zurücksetzen": "Nollställ framsteg"
   },
+
+  // Attribut-/Platzhalter-Übersetzungen (placeholder, title, aria-label)
+  attr: {
+    "deutsches Grundwort, z. B. packen": "grundord, t.ex. packa",
+    "Hier den Sicherungs-Code einfügen…": "Klistra in koden här…",
+    "Deutsch (z. B. der Schlüssel)": "Svenska (t.ex. nyckeln)",
+    "anhören": "lyssna",
+    "Fortschritt zurücksetzen": "Nollställ framsteg",
+    "entfernen": "ta bort"
+  },
+
+  // Interpolierte Texte (Zahlen/Level): [RegExp-Quelltext, Ersatz mit $1…]
+  rx: [
+    ["^(\\d+) / (\\d+) richtig · noch (\\d+) offen$", "$1 / $2 rätt · $3 kvar"],
+    ["^(\\d+) richtig · noch (\\d+) offen$", "$1 rätt · $2 kvar"],
+    ["^(\\d+) von (\\d+) richtig$", "$1 av $2 rätt"],
+    ["^Grammatik-Themen: (\\d+)/(\\d+) gemeistert$", "Grammatikteman: $1/$2 bemästrade"],
+    ["^Kernwortschatz (\\d+)/(\\d+) sicher · Grammatik (\\d+)/(\\d+) Themen$", "Kärnordförråd $1/$2 säkra · Grammatik $3/$4 teman"],
+    ["^Kernwortschatz (\\d+)/(\\d+) sicher · Grammatik folgt$", "Kärnordförråd $1/$2 säkra · Grammatik kommer"],
+    ["^Grammatik (\\d+)/(\\d+) Themen$", "Grammatik $1/$2 teman"],
+    ["^Wortschatz: (\\d+)/(\\d+) sitzt sicher$", "Ordförråd: $1/$2 sitter säkert"],
+    ["^(\\d+) Verben · (\\d+) geübt · (\\d+) sicher$", "$1 verb · $2 övade · $3 säkra"],
+    ["^(\\d+) Sätze in dieser Auswahl$", "$1 meningar i det här urvalet"],
+    ["^Lektion (\\d+) · Schritt (\\d+)/(\\d+)$", "Lektion $1 · Steg $2/$3"],
+    ["^(\\d+)% geschafft$", "$1% klart"],
+    ["^🗺️ Dein Lernpfad · Niveau (.+)$", "🗺️ Din lärväg · Nivå $1"],
+    ["^Schau dir die (\\d+) Verben an – dann fragen wir einzelne Formen ab\\.$", "Titta på de $1 verben – sedan förhör vi enskilda former."],
+    ["^Neue Einheit \\((\\d+)\\) →$", "Ny enhet ($1) →"],
+    ["^(\\d+) Vokabeln durch – Falsche hast du bis zur richtigen Lösung wiederholt\\.$", "$1 glosor klara – felen repeterade du fram till rätt svar."],
+    ["^Lektion (\\d+) geschafft!$", "Lektion $1 klar!"],
+    ["^regelmäßig · (.+)$", "regelbunden · $1"],
+    ["^🔁 (\\d+) Wörter/Sätze sind zur Wiederholung fällig – üben in Lektion, Vokabeln oder Übersetzen\\.$", "🔁 $1 ord/meningar ska repeteras – öva i Lektion, Glosor eller Översätt."],
+    ["^(.+) zu (.+), (\\d+) Prozent$", "$1 till $2, $3 procent"]
+  ],
 
   // Vokabel-Bedeutung auf Schwedisch (id → schwedisches Wort). Italienisch bleibt.
   vocab: {
