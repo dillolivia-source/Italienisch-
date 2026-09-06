@@ -782,6 +782,21 @@ window.LESSON_DATA = {
         { kind: "choice", prompt: "Un caffè ___ Marco.", options: ["da", "di", "a"], answer: "da", explain: "bei einer Person → **da**" },
         { kind: "choice", prompt: "Studio ___ te.", options: ["con", "per", "su"], answer: "con", explain: "mit → **con**" }
       ]
+    },
+    {
+      id: "a1_possessivi",
+      title: "Possessivbegleiter: mio, tuo, suo (mein, dein, sein)",
+      cefr: "A1",
+      rule: "Possessiv = **Artikel + mio/tuo/suo…** und passt sich an: **il mio** libro, **la mia** casa, **i miei** libri, **le mie** case.\nSo auch **tuo** (dein), **suo** (sein/ihr), **nostro** (unser), **vostro** (euer), **loro** (ihr).\n**Familie im Singular ohne Artikel**: *mia madre, mio padre, tuo fratello* – aber *i miei genitori* (Plural mit Artikel).",
+      exercises: [
+        { kind: "choice", prompt: "___ libro (mein, m Sg)", options: ["il mio", "la mia", "i miei"], answer: "il mio", explain: "m Sg → **il mio**" },
+        { kind: "choice", prompt: "___ casa (mein, f Sg)", options: ["la mia", "il mio", "le mie"], answer: "la mia", explain: "f Sg → **la mia**" },
+        { kind: "choice", prompt: "___ libri (mein, m Pl)", options: ["i miei", "le mie", "il mio"], answer: "i miei", explain: "m Pl → **i miei**" },
+        { kind: "choice", prompt: "___ amiche (mein, f Pl)", options: ["le mie", "i miei", "la mia"], answer: "le mie", explain: "f Pl → **le mie**" },
+        { kind: "choice", prompt: "___ madre (meine Mutter)", options: ["mia", "la mia", "le mie"], answer: "mia", explain: "Familie Singular → **ohne Artikel**: mia madre" },
+        { kind: "choice", prompt: "___ genitori (meine Eltern)", options: ["i miei", "miei", "mia"], answer: "i miei", explain: "Plural → mit Artikel: **i miei**" },
+        { kind: "choice", prompt: "___ macchina (deine, f Sg)", options: ["la tua", "il tuo", "le tue"], answer: "la tua", explain: "dein f Sg → **la tua**" }
+      ]
     }
   ],
 
@@ -804,6 +819,7 @@ window.LESSON_DATA = {
         { topic: "Präpositionen: a, in, di, da, con, su, per", moduleId: "a1_preposizioni", status: "ready" },
         { topic: "c'è / ci sono (es gibt)", moduleId: "a1_ci_sono", status: "ready" },
         { topic: "Gefallen: mi piace / mi piacciono", moduleId: "a1_piacere", status: "ready" },
+        { topic: "Possessivbegleiter: mio, tuo, suo", moduleId: "a1_possessivi", status: "ready" },
         { topic: "Fragen & Fragewörter", moduleId: "a1_fragen", status: "ready" },
         { topic: "Unregelmäßige Verben (fare/andare/stare/venire)", moduleId: "a1_verbi_irregolari", status: "ready" }
       ]

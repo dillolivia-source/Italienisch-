@@ -37,6 +37,10 @@
     a1_preposizioni: {
       title: "Prepositioner: a, in, di, da, con, su, per",
       rule: "**a** = i/till (stad): *a Roma, a casa*.\n**in** = i (land, slutet rum): *in Italia, in ufficio*.\n**di** = av/från (ursprung, ägande): *di Milano, il libro di Anna*.\n**da** = från/hos (person): *da Marco*.\n**con** = med · **su** = på · **per** = för."
+    },
+    a1_possessivi: {
+      title: "Possessiver: mio, tuo, suo (min, din, hans/hennes)",
+      rule: "Possessiv = **artikel + mio/tuo/suo…** och böjs: **il mio** libro, **la mia** casa, **i miei** libri, **le mie** case.\nLikadant **tuo** (din), **suo** (hans/hennes), **nostro** (vår), **vostro** (er), **loro** (deras).\n**Familj i singular utan artikel**: *mia madre, mio padre, tuo fratello* – men *i miei genitori* (plural med artikel)."
     }
   };
   Object.keys(grammar).forEach(function (k) { SV.grammar[k] = grammar[k]; });
@@ -48,7 +52,8 @@
     "c'è / ci sono (es gibt)": "c'è / ci sono (det finns)",
     "Gefallen: mi piace / mi piacciono": "Tycka om: mi piace / mi piacciono",
     "Artikel: bestimmt & unbestimmt (il/lo/la, un/uno/una)": "Artiklar: bestämd & obestämd (il/lo/la, un/uno/una)",
-    "Präpositionen: a, in, di, da, con, su, per": "Prepositioner: a, in, di, da, con, su, per"
+    "Präpositionen: a, in, di, da, con, su, per": "Prepositioner: a, in, di, da, con, su, per",
+    "Possessivbegleiter: mio, tuo, suo": "Possessiver: mio, tuo, suo"
   };
   Object.keys(topic).forEach(function (k) { SV.topic[k] = topic[k]; });
 
@@ -101,7 +106,23 @@
     "Besitz → **di**": "ägande → **di**",
     "Herkunft → **di**": "ursprung → **di**",
     "bei einer Person → **da**": "hos en person → **da**",
-    "mit → **con**": "med → **con**"
+    "mit → **con**": "med → **con**",
+    // Possessiv-Modul: Prompts mit deutschem Hinweis
+    "___ libro (mein, m Sg)": "___ libro (min, m sg)",
+    "___ casa (mein, f Sg)": "___ casa (min, f sg)",
+    "___ libri (mein, m Pl)": "___ libri (min, m pl)",
+    "___ amiche (mein, f Pl)": "___ amiche (min, f pl)",
+    "___ madre (meine Mutter)": "___ madre (min mamma)",
+    "___ genitori (meine Eltern)": "___ genitori (mina föräldrar)",
+    "___ macchina (deine, f Sg)": "___ macchina (din, f sg)",
+    // Possessiv-Modul: Erklärungen
+    "m Sg → **il mio**": "m sg → **il mio**",
+    "f Sg → **la mia**": "f sg → **la mia**",
+    "m Pl → **i miei**": "m pl → **i miei**",
+    "f Pl → **le mie**": "f pl → **le mie**",
+    "Familie Singular → **ohne Artikel**: mia madre": "Familj singular → **utan artikel**: mia madre",
+    "Plural → mit Artikel: **i miei**": "Plural → med artikel: **i miei**",
+    "dein f Sg → **la tua**": "din f sg → **la tua**"
   };
   Object.keys(gramEx).forEach(function (k) { SV.gramEx[k] = gramEx[k]; });
 })();
