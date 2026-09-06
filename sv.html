@@ -1,0 +1,52 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Italienska" />
+<link rel="manifest" href="manifest-sv.webmanifest" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="stylesheet" href="styles.css" />
+<title>Italienska – tränare</title>
+
+<!-- Reiner Schwedisch-Link: Sprache fest auf Schwedisch, kein Umschalter.
+     Verändert NICHT die geteilte Deutsch-Einstellung der Haupt-App. -->
+<script>window.SV_ONLY = true;</script>
+
+<div id="app">
+  <header class="topbar">
+    <h1><span class="flag" aria-hidden="true"></span> Italienska</h1>
+    <button id="reset-btn" class="icon-btn" title="Nollställ framsteg" hidden>↺</button>
+  </header>
+
+  <main id="view"><!-- Views werden hier gerendert --></main>
+
+  <nav class="tabbar" role="tablist">
+    <button class="tab" data-view="lektion" aria-selected="true">
+      <span class="tab-ico">📖</span><span class="tab-lbl">Lektion</span>
+    </button>
+    <button class="tab" data-view="uebersetzen" aria-selected="false">
+      <span class="tab-ico">✍️</span><span class="tab-lbl">Översätt</span>
+    </button>
+    <button class="tab" data-view="vokabeln" aria-selected="false">
+      <span class="tab-ico">📇</span><span class="tab-lbl">Glosor</span>
+    </button>
+    <button class="tab" data-view="verben" aria-selected="false">
+      <span class="tab-ico">🔤</span><span class="tab-lbl">Verb</span>
+    </button>
+    <button class="tab" data-view="fortschritt" aria-selected="false">
+      <span class="tab-ico">📊</span><span class="tab-lbl">Statistik</span>
+    </button>
+  </nav>
+</div>
+
+<script src="data.js"></script>
+<script src="data-lesson.js"></script>
+<script src="data-vocab-extra.js"></script>
+<script src="data-verbs.js"></script>
+<script src="data-sv.js"></script>
+<script src="data-sv-data.js"></script>
+<script src="lang.js"></script>
+<script src="app.js"></script>
+<script src="lesson.js"></script>

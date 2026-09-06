@@ -1,0 +1,20 @@
+{
+  "name": "Italienska-tränare",
+  "short_name": "Italienska",
+  "description": "Personlig italienska-tränare – offline.",
+  "start_url": "sv.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "sv",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

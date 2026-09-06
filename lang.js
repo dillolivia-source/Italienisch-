@@ -6,8 +6,12 @@
 window.Lang = (function () {
   "use strict";
   var KEY = "olivia-baselang";
+  // Reiner Schwedisch-Link (sv.html): Sprache fest auf Schwedisch, die geteilte
+  // Deutsch-Einstellung der Haupt-App wird NICHT verändert.
+  var FORCED = (window.SV_ONLY === true) ? "sv" : null;
   var cur = "de";
-  try { cur = localStorage.getItem(KEY) || "de"; } catch (e) {}
+  if (FORCED) { cur = FORCED; }
+  else { try { cur = localStorage.getItem(KEY) || "de"; } catch (e) {} }
   function t(de) {
     if (cur === "sv" && window.SV && window.SV.ui && window.SV.ui[de] != null) return window.SV.ui[de];
     return de;
@@ -15,7 +19,12 @@ window.Lang = (function () {
   return {
     get: function () { return cur; },
     is: function (l) { return cur === l; },
-    set: function (l) { cur = (l === "sv" ? "sv" : "de"); try { localStorage.setItem(KEY, cur); } catch (e) {} },
+    set: function (l) {
+      if (FORCED) return;           // im Schwedisch-Link nicht umschaltbar
+      cur = (l === "sv" ? "sv" : "de");
+      try { localStorage.setItem(KEY, cur); } catch (e) {}
+    },
+    forced: function () { return FORCED != null; },
     t: t,
     // bekannte Bedeutung einer Vokabel (Schwedisch, sonst Deutsch)
     vocab: function (v) {

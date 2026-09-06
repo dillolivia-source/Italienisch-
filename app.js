@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v47"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v48"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -729,6 +729,8 @@
     viewEl.appendChild($('<p class="hint" style="margin:0 0 12px">Was du bisher geschafft hast – alles nur auf diesem Gerät gespeichert.</p>'));
 
     // Grundsprache umschalten (bekannte Seite): Deutsch / Svenska
+    // Im reinen Schwedisch-Link (sv.html) gibt es keine Umschaltung.
+    const langForced = window.Lang && window.Lang.forced && window.Lang.forced();
     const langBox = $('<div class="lang-switch"></div>');
     langBox.appendChild($('<p class="lang-switch-lbl">Sprache / Språk</p>'));
     const langRow = $('<div class="lang-chips"></div>');
@@ -745,7 +747,7 @@
       langRow.appendChild(chip);
     });
     langBox.appendChild(langRow);
-    viewEl.appendChild(langBox);
+    if (!langForced) viewEl.appendChild(langBox);
 
     const grid = $('<div class="stat-grid"></div>');
     grid.appendChild(statTile(st.lessonNo, "Lektionen", "ganz abgeschlossen"));
