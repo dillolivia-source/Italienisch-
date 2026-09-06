@@ -192,6 +192,13 @@ window.SV = {
     "Das war keine gültige Sicherungsdatei.": "Det var ingen giltig säkerhetskopia.",
     "✓ Wiederhergestellt. Neu laden.": "✓ Återställt. Laddar om.",
     "Ungültiger Code.": "Ogiltig kod.",
+    // Niveau-Auswahl (Startscreen)
+    "🇮🇹 Wo möchtest du starten?": "🇮🇹 Var vill du börja?",
+    "Wähle dein Niveau – du kannst es später jederzeit ändern.":
+      "Välj din nivå – du kan ändra den när som helst senare.",
+    "Ganz neu? Hier fängst du bei null an.": "Helt ny? Här börjar du från noll.",
+    "Du kennst schon Basics (Präsens, Alltag).": "Du kan redan grunderna (presens, vardag).",
+    "Du kommst schon recht gut zurecht.": "Du klarar dig redan ganska bra.",
     // Speicher-Warnung
     "⚠️": "⚠️",
     // Sprachwahl (Statistik)

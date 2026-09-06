@@ -696,6 +696,92 @@ window.LESSON_DATA = {
         { kind: "fill", prompt: "___ (tu, dormire) bene!", accept: ["dormi"], explain: "-ire tu → **dormi!**" },
         { kind: "choice", prompt: "___ attenzione! (tu, fare)", options: ["Fa'", "Fai", "Fa"], answer: "Fa'", explain: "unregelmäßig tu: **fa'** (auch 'fai')." }
       ]
+    },
+    {
+      id: "a1_presente_regolare",
+      title: "Präsens: regelmäßige Verben (-are/-ere/-ire)",
+      cefr: "A1",
+      rule: "**-are** (parlare): parl**o**, parl**i**, parl**a**, parl**iamo**, parl**ate**, parl**ano**.\n**-ere** (prendere): prend**o**, prend**i**, prend**e**, prend**iamo**, prend**ete**, prend**ono**.\n**-ire** (dormire): dorm**o**, dorm**i**, dorm**e**, dorm**iamo**, dorm**ite**, dorm**ono**.",
+      exercises: [
+        { kind: "choice", prompt: "Io ___ italiano. (parlare)", options: ["parlo", "parli", "parla"], answer: "parlo", explain: "io → **-o**" },
+        { kind: "choice", prompt: "Tu ___ un caffè. (prendere)", options: ["prendi", "prendo", "prende"], answer: "prendi", explain: "tu → **-i**" },
+        { kind: "choice", prompt: "Lei ___ bene. (dormire)", options: ["dorme", "dormi", "dorma"], answer: "dorme", explain: "lui/lei -ire → **-e**" },
+        { kind: "fill", prompt: "Noi ___ una pizza. (mangiare)", accept: ["mangiamo"], explain: "noi → **-iamo**" },
+        { kind: "choice", prompt: "Voi ___ la porta. (aprire)", options: ["aprite", "aprete", "apriamo"], answer: "aprite", explain: "voi -ire → **-ite**" },
+        { kind: "choice", prompt: "Loro ___ in ufficio. (lavorare)", options: ["lavorano", "lavorono", "lavano"], answer: "lavorano", explain: "loro -are → **-ano**" }
+      ]
+    },
+    {
+      id: "a1_ci_sono",
+      title: "c'è / ci sono (es gibt)",
+      cefr: "A1",
+      rule: "**c'è** + Singular: *c'è un problema* = es gibt ein Problem.\n**ci sono** + Plural: *ci sono due libri* = es gibt zwei Bücher.\nFrage: *c'è …? / ci sono …?* – Verneinung: *non c'è / non ci sono*.",
+      exercises: [
+        { kind: "choice", prompt: "___ un gatto sul divano.", options: ["C'è", "Ci sono", "Ci ha"], answer: "C'è", explain: "Singular → **c'è**" },
+        { kind: "choice", prompt: "___ molti turisti.", options: ["Ci sono", "C'è", "Ci è"], answer: "Ci sono", explain: "Plural → **ci sono**" },
+        { kind: "choice", prompt: "Quante persone ___?", options: ["ci sono", "c'è", "ci è"], answer: "ci sono", explain: "Plural → **ci sono**" },
+        { kind: "fill", prompt: "In cucina ___ due sedie. (es gibt)", accept: ["ci sono"], explain: "Plural → **ci sono**" },
+        { kind: "choice", prompt: "Non ___ latte in frigo.", options: ["c'è", "ci sono", "è"], answer: "c'è", explain: "Singular (latte) → **c'è**" },
+        { kind: "fill", prompt: "___ un supermercato qui vicino? (es gibt …?)", accept: ["c'è", "C'è"], explain: "Singular → **c'è**" }
+      ]
+    },
+    {
+      id: "a1_aggettivi",
+      title: "Adjektive: Angleichung (Geschlecht & Zahl)",
+      cefr: "A1",
+      rule: "Adjektive passen sich an: **-o/-a/-i/-e**.\n*rosso*: il libro ross**o**, la casa ross**a**, i libri ross**i**, le case ross**e**.\nAdjektive auf **-e** (grande) sind für m/f gleich, Plural **-i** (grand**i**).\nMeist **nach** dem Nomen: *una macchina rossa*.",
+      exercises: [
+        { kind: "choice", prompt: "la casa ___ (rot, rosso)", options: ["rossa", "rosso", "rosse"], answer: "rossa", explain: "feminin Sg → **-a**" },
+        { kind: "choice", prompt: "i libri ___ (neu, nuovo)", options: ["nuovi", "nuove", "nuovo"], answer: "nuovi", explain: "maskulin Pl → **-i**" },
+        { kind: "choice", prompt: "le ragazze ___ (italienisch, italiano)", options: ["italiane", "italiani", "italiana"], answer: "italiane", explain: "feminin Pl → **-e**" },
+        { kind: "fill", prompt: "un cane ___ (klein, piccolo)", accept: ["piccolo"], explain: "maskulin Sg → **-o**" },
+        { kind: "choice", prompt: "una borsa ___ (groß, grande)", options: ["grande", "granda", "grandi"], answer: "grande", explain: "*grande* endet auf -e: für m/f gleich." },
+        { kind: "choice", prompt: "i film sono ___ (schön, bello)", options: ["belli", "belle", "bella"], answer: "belli", explain: "maskulin Pl → **-i**" }
+      ]
+    },
+    {
+      id: "a1_piacere",
+      title: "Gefallen: mi piace / mi piacciono",
+      cefr: "A1",
+      rule: "**mi piace** + Singular oder Infinitiv: *mi piace il caffè*, *mi piace viaggiare*.\n**mi piacciono** + Plural: *mi piacciono i gatti*.\nPersonen: **mi/ti/gli/le/ci/vi** piace. Verneinung: *non mi piace*.",
+      exercises: [
+        { kind: "choice", prompt: "Mi ___ la pizza.", options: ["piace", "piacciono", "piaci"], answer: "piace", explain: "Singular → **piace**" },
+        { kind: "choice", prompt: "Mi ___ i gatti.", options: ["piacciono", "piace", "piaci"], answer: "piacciono", explain: "Plural → **piacciono**" },
+        { kind: "choice", prompt: "Ti ___ viaggiare?", options: ["piace", "piacciono", "piaci"], answer: "piace", explain: "Infinitiv → **piace**" },
+        { kind: "fill", prompt: "Non mi ___ le verdure. (gefallen, Plural)", accept: ["piacciono"], explain: "Plural → **piacciono**" },
+        { kind: "choice", prompt: "A Luca ___ la musica.", options: ["piace", "piacciono", "piacere"], answer: "piace", explain: "Singular → **piace**" },
+        { kind: "fill", prompt: "Mi ___ questo film. (Singular)", accept: ["piace"], explain: "Singular → **piace**" }
+      ]
+    },
+    {
+      id: "a1_articoli",
+      title: "Artikel: bestimmt & unbestimmt (il/lo/la, un/uno/una)",
+      cefr: "A1",
+      rule: "**Bestimmt** (der/die/das): **il** (m: il libro), **lo** (m vor s+Konsonant, z, ps, gn: lo studente, lo zaino), **l'** (vor Vokal: l'amico), **la** (f: la casa).\nPlural: **i** (i libri), **gli** (m vor Vokal/s+Konsonant/z: gli amici), **le** (le case).\n**Unbestimmt** (ein): **un** (m: un libro, un amico), **uno** (m vor s+Konsonant, z, ps, gn: uno studente), **una** (f: una casa), **un'** (f vor Vokal: un'amica).",
+      exercises: [
+        { kind: "choice", prompt: "___ libro (bestimmt, m)", options: ["il", "lo", "l'"], answer: "il", explain: "m + Konsonant → **il**" },
+        { kind: "choice", prompt: "___ studente (bestimmt)", options: ["lo", "il", "l'"], answer: "lo", explain: "vor s+Konsonant → **lo**" },
+        { kind: "choice", prompt: "___ amico (bestimmt)", options: ["l'", "il", "lo"], answer: "l'", explain: "vor Vokal → **l'**" },
+        { kind: "choice", prompt: "___ amici (bestimmt, Plural)", options: ["gli", "i", "le"], answer: "gli", explain: "m Plural vor Vokal → **gli**" },
+        { kind: "choice", prompt: "___ zaino (unbestimmt)", options: ["uno", "un", "lo"], answer: "uno", explain: "vor z → **uno**" },
+        { kind: "choice", prompt: "___ amico (unbestimmt, m)", options: ["un", "uno", "un'"], answer: "un", explain: "m vor Vokal → **un** (ohne Apostroph)" },
+        { kind: "choice", prompt: "___ amica (unbestimmt, f)", options: ["un'", "una", "un"], answer: "un'", explain: "f vor Vokal → **un'**" },
+        { kind: "choice", prompt: "___ case (bestimmt, Plural)", options: ["le", "i", "gli"], answer: "le", explain: "f Plural → **le**" }
+      ]
+    },
+    {
+      id: "a1_preposizioni",
+      title: "Präpositionen: a, in, di, da, con, su, per",
+      cefr: "A1",
+      rule: "**a** = in/nach (Stadt), zu: *a Roma, a casa*.\n**in** = in (Land, geschlossener Raum): *in Italia, in ufficio*.\n**di** = von/aus (Herkunft, Besitz): *di Milano, il libro di Anna*.\n**da** = von/bei (Person): *da Marco*.\n**con** = mit · **su** = auf · **per** = für.",
+      exercises: [
+        { kind: "choice", prompt: "Vado ___ Roma.", options: ["a", "in", "di"], answer: "a", explain: "Stadt → **a**" },
+        { kind: "choice", prompt: "Abito ___ Italia.", options: ["in", "a", "da"], answer: "in", explain: "Land → **in**" },
+        { kind: "choice", prompt: "Il libro ___ Anna.", options: ["di", "da", "a"], answer: "di", explain: "Besitz → **di**" },
+        { kind: "choice", prompt: "Sono ___ Milano.", options: ["di", "a", "con"], answer: "di", explain: "Herkunft → **di**" },
+        { kind: "choice", prompt: "Un caffè ___ Marco.", options: ["da", "di", "a"], answer: "da", explain: "bei einer Person → **da**" },
+        { kind: "choice", prompt: "Studio ___ te.", options: ["con", "per", "su"], answer: "con", explain: "mit → **con**" }
+      ]
     }
   ],
 
@@ -712,6 +798,12 @@ window.LESSON_DATA = {
       grammar: [
         { topic: "essere & avere", moduleId: "a1_essere_avere", status: "ready" },
         { topic: "Substantive: Geschlecht, Plural & Artikel", moduleId: "a1_sostantivi", status: "ready" },
+        { topic: "Artikel: bestimmt & unbestimmt (il/lo/la, un/uno/una)", moduleId: "a1_articoli", status: "ready" },
+        { topic: "Präsens: regelmäßige Verben (-are/-ere/-ire)", moduleId: "a1_presente_regolare", status: "ready" },
+        { topic: "Adjektive: Angleichung (Geschlecht & Zahl)", moduleId: "a1_aggettivi", status: "ready" },
+        { topic: "Präpositionen: a, in, di, da, con, su, per", moduleId: "a1_preposizioni", status: "ready" },
+        { topic: "c'è / ci sono (es gibt)", moduleId: "a1_ci_sono", status: "ready" },
+        { topic: "Gefallen: mi piace / mi piacciono", moduleId: "a1_piacere", status: "ready" },
         { topic: "Fragen & Fragewörter", moduleId: "a1_fragen", status: "ready" },
         { topic: "Unregelmäßige Verben (fare/andare/stare/venire)", moduleId: "a1_verbi_irregolari", status: "ready" }
       ]

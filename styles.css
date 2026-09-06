@@ -171,6 +171,36 @@ html, body {
   font-weight: 600;
 }
 
+/* Niveau-Auswahl beim ersten Start */
+.level-choose { padding: 6px 0; }
+.lvl-choice {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 0 0 12px;
+  cursor: pointer;
+}
+.lvl-choice:active { transform: scale(0.99); }
+.lvl-choice-badge {
+  flex: 0 0 auto;
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 800;
+  font-size: 18px;
+}
+.lvl-choice-txt { display: flex; flex-direction: column; gap: 2px; }
+.lvl-choice-name { font-size: 16px; color: var(--ink, #222); }
+.lvl-choice-sub { font-size: 13px; color: var(--muted); }
+
 /* Cards */
 .card {
   background: var(--card);

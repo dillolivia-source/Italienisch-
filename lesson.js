@@ -52,6 +52,7 @@
     return {
       schemaVersion: 2,        // für spätere Migrationen
       level: "A2",
+      levelChosen: false,      // Startniveau (A1/A2/B1) schon gewählt?
       lessonNo: 0,
       lastDate: null,          // "YYYY-MM-DD" der letzten begonnenen Lektion
       completedDate: null,     // Datum der letzten ABGESCHLOSSENEN Lektion
@@ -88,6 +89,14 @@
   // Nachträgliche Anpassungen an einem gespeicherten Zustand (z. B. eine bereits
   // laufende Lektion an neue Regeln angleichen).
   function migrateState(st) {
+    // Bestehende Nutzer (mit Fortschritt) haben ihr Niveau implizit schon gewählt
+    // → kein Auswahl-Screen mehr; nur wirklich neue Nutzer ohne Fortschritt sehen ihn.
+    if (!st.levelChosen) {
+      var hasProgress = (st.lessonNo > 0) ||
+        (st.introduced && st.introduced.length > 0) ||
+        (st.grammarHits && Object.keys(st.grammarHits).length > 0);
+      if (hasProgress) st.levelChosen = true;
+    }
     if (st.plan && st.plan.segments) {
       st.plan.segments.forEach(function (seg) {
         // Alltagssätze: auf höchstens 5 kürzen (neue Regel)
@@ -542,10 +551,35 @@
     var doneToday = S.completedDate === todayKey();
 
     if (!hasActivePlan) {
+      if (!S.levelChosen) return renderLevelChoose();
       if (doneToday) return renderDoneToday();
       return renderStartScreen();
     }
     renderSegment();
+  }
+
+  // Erst-Auswahl: Mit welchem Niveau möchte die/der Lernende starten?
+  function renderLevelChoose() {
+    var wrap = C.el('<div class="level-choose"></div>');
+    wrap.appendChild(C.el('<h2 class="lesson-title" style="text-align:center;margin:10px 0 4px">🇮🇹 Wo möchtest du starten?</h2>'));
+    wrap.appendChild(C.el('<p class="hint" style="text-align:center;margin:0 0 16px">Wähle dein Niveau – du kannst es später jederzeit ändern.</p>'));
+    var opts = [
+      ["A1", "Anfänger", "Ganz neu? Hier fängst du bei null an."],
+      ["A2", "Grundlagen", "Du kennst schon Basics (Präsens, Alltag)."],
+      ["B1", "Mittelstufe", "Du kommst schon recht gut zurecht."]
+    ];
+    opts.forEach(function (o) {
+      var btn = C.el('<button type="button" class="lvl-choice"></button>');
+      btn.appendChild(C.el('<span class="lvl-choice-badge">' + o[0] + '</span>'));
+      btn.appendChild(C.el('<span class="lvl-choice-txt"><b class="lvl-choice-name">' + o[1] +
+        '</b><span class="lvl-choice-sub">' + o[2] + '</span></span>'));
+      btn.onclick = function () {
+        S.level = o[0]; S.learnIndex = 0; S.learnDays = 0; S.levelChosen = true; save();
+        render(root);
+      };
+      wrap.appendChild(btn);
+    });
+    root.appendChild(wrap);
   }
 
   function header(title, sub) {
