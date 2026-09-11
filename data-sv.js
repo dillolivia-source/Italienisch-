@@ -92,6 +92,11 @@ window.SV = {
     "Neue Vokabel – nur Deutsch und Italienisch, keine Erklärung nötig.":
       "Ny glosa – bara svenska och italienska, ingen förklaring behövs.",
     "Bitte Deutsch UND Italienisch ausfüllen.": "Fyll i både svenska OCH italienska.",
+    "Deine eigenen Vokabeln": "Dina egna glosor",
+    "Noch keine eigenen Vokabeln.": "Inga egna glosor än.",
+    "Speichern": "Spara",
+    "Abbrechen": "Avbryt",
+    "Diese Vokabel wirklich löschen?": "Vill du verkligen ta bort den här glosan?",
     // Verben-Tab
     "🔤 Verben – Präsens üben": "🔤 Verb – öva presens",
     "📝 Abfrage": "📝 Förhör",

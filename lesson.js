@@ -1088,6 +1088,7 @@
   var vocabQueue = null;   // noch nicht richtig beantwortete (Warteschlange)
   var vocabSolved = null;  // {id: true} – in dieser Einheit schon richtig
   var showAddVocab = false;
+  var editingVocabId = null; // welche eigene Vokabel wird gerade bearbeitet?
   var vocabMode = "quiz";  // "quiz" = Abfrage · "speak" = Aussprache üben
 
   function buildVocabUnit() {
@@ -1127,7 +1128,10 @@
     var addBtn = C.el('<button class="btn ghost" style="margin:0 0 10px">➕ Eigene Vokabel hinzufügen</button>');
     addBtn.onclick = function () { showAddVocab = !showAddVocab; renderVocab(root); };
     root.appendChild(addBtn);
-    if (showAddVocab) root.appendChild(vocabAddForm());
+    if (showAddVocab) {
+      root.appendChild(vocabAddForm());
+      root.appendChild(vocabManageList());
+    }
 
     if (!vocabUnit) buildVocabUnit();
     if (!vocabUnit.length) {
@@ -1187,14 +1191,80 @@
       while (arr.some(function (x) { return x.id === id; })) { id = base + (++n); }
       arr.push({ id: id, it: i, de: d, cefr: S.level, theme: "custom" });
       saveUserVocab(arr);
-      msg.style.color = "var(--green)"; msg.textContent = "✓ „" + d + "“ hinzugefügt – kommt in einer nächsten Einheit dran.";
-      de.value = ""; it.value = "";
-      setTimeout(function () { de.focus(); }, 20);
+      vocabUnit = null; vocabQueue = null; // neue Vokabel in die Einheit aufnehmen
+      // Ansicht neu zeichnen → neue Vokabel erscheint direkt in der Liste unten
+      renderVocab(root);
     }
     save2.onclick = doSave;
     it.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doSave(); } });
     card.appendChild(de); card.appendChild(it); card.appendChild(save2); card.appendChild(msg);
     return card;
+  }
+
+  function updateUserVocab(id, d, i) {
+    var arr = loadUserVocab();
+    for (var k = 0; k < arr.length; k++) {
+      if (arr[k].id === id) { arr[k].de = d; arr[k].it = i; break; }
+    }
+    saveUserVocab(arr);
+  }
+  function deleteUserVocab(id) {
+    saveUserVocab(loadUserVocab().filter(function (x) { return x.id !== id; }));
+    if (S.srs[id]) { delete S.srs[id]; }
+    var ix = S.introduced.indexOf(id);
+    if (ix !== -1) S.introduced.splice(ix, 1);
+    save();
+    vocabUnit = null; vocabQueue = null; // Einheit neu aufbauen (ohne die gelöschte)
+  }
+
+  // Liste der eigenen Vokabeln mit Bearbeiten/Löschen
+  function vocabManageList() {
+    var wrap = C.el('<div class="card"></div>');
+    wrap.appendChild(C.el('<p class="section-title" style="margin-top:0">Deine eigenen Vokabeln</p>'));
+    var mine = loadUserVocab();
+    if (!mine.length) {
+      wrap.appendChild(C.el('<p class="hint" style="margin:0">Noch keine eigenen Vokabeln.</p>'));
+      return wrap;
+    }
+    mine.slice().reverse().forEach(function (v) {
+      if (editingVocabId === v.id) {
+        var eRow = C.el('<div class="uv-edit"></div>');
+        var ed = C.el('<input type="text" class="note-input" autocapitalize="off" style="margin-bottom:6px">');
+        ed.value = v.de;
+        var ei = C.el('<input type="text" class="note-input" autocapitalize="off">');
+        ei.value = v.it;
+        var emsg = C.el('<p class="note-msg"></p>');
+        var brow = C.el('<div class="btn-row" style="margin-top:8px"></div>');
+        var savB = C.el('<button class="btn primary">Speichern</button>');
+        var canB = C.el('<button class="btn ghost">Abbrechen</button>');
+        function doUpd() {
+          var d = ed.value.trim(), i = ei.value.trim();
+          if (!d || !i) { emsg.style.color = "var(--red)"; emsg.textContent = "Bitte Deutsch UND Italienisch ausfüllen."; return; }
+          updateUserVocab(v.id, d, i);
+          editingVocabId = null; renderVocab(root);
+        }
+        savB.onclick = doUpd;
+        ei.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doUpd(); } });
+        canB.onclick = function () { editingVocabId = null; renderVocab(root); };
+        brow.appendChild(canB); brow.appendChild(savB);
+        eRow.appendChild(ed); eRow.appendChild(ei); eRow.appendChild(brow); eRow.appendChild(emsg);
+        wrap.appendChild(eRow);
+      } else {
+        var row = C.el('<div class="uv-row"></div>');
+        row.appendChild(C.el('<span class="uv-text"><b>' + C.esc(v.it) + '</b> — ' + C.esc(v.de) + '</span>'));
+        var acts = C.el('<span class="uv-acts"></span>');
+        var edB = C.el('<button type="button" class="uv-edit-btn" title="bearbeiten">✏️</button>');
+        edB.onclick = function () { editingVocabId = v.id; renderVocab(root); };
+        var delB = C.el('<button type="button" class="uv-del-btn" title="löschen">✕</button>');
+        delB.onclick = function () {
+          if (confirm(C.tt("Diese Vokabel wirklich löschen?"))) { deleteUserVocab(v.id); renderVocab(root); }
+        };
+        acts.appendChild(edB); acts.appendChild(delB);
+        row.appendChild(acts);
+        wrap.appendChild(row);
+      }
+    });
+    return wrap;
   }
 
   function vocabCard(v) {

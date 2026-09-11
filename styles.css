@@ -201,6 +201,20 @@ html, body {
 .lvl-choice-name { font-size: 16px; color: var(--ink, #222); }
 .lvl-choice-sub { font-size: 13px; color: var(--muted); }
 
+/* Eigene Vokabeln verwalten (Bearbeiten/Löschen) */
+.uv-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-top: 1px solid var(--line);
+}
+.uv-text { flex: 1 1 auto; font-size: 15px; color: var(--ink, #222); word-break: break-word; }
+.uv-acts { flex: 0 0 auto; display: flex; gap: 6px; }
+.uv-edit-btn, .uv-del-btn {
+  border: 1px solid var(--line); background: var(--card);
+  border-radius: 10px; padding: 6px 10px; cursor: pointer; font-size: 15px; line-height: 1;
+}
+.uv-del-btn { color: var(--red); }
+.uv-edit { padding: 10px 0; border-top: 1px solid var(--line); }
+
 /* Cards */
 .card {
   background: var(--card);
