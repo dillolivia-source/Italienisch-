@@ -86,6 +86,7 @@ html, body {
   background: linear-gradient(90deg, #008c45 0 33%, #fff 33% 66%, #cd212a 66% 100%);
   box-shadow: 0 0 0 1px var(--line);
 }
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn {
   border: 1px solid var(--line);
   background: var(--card);

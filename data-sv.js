@@ -221,7 +221,9 @@ window.SV = {
     // Niveau-Namen
     "Anfänger": "Nybörjare", "Mittelstufe": "Mellannivå", "Fortgeschritten": "Avancerad",
     // Attribute
-    "Fortschritt zurücksetzen": "Nollställ framsteg"
+    "Fortschritt zurücksetzen": "Nollställ framsteg",
+    "Ton in der App aus": "Ljud i appen av",
+    "Ton in der App an": "Ljud i appen på"
   },
 
   // Attribut-/Platzhalter-Übersetzungen (placeholder, title, aria-label)

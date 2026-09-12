@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v51"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v52"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -332,8 +332,26 @@
     loadVoices();
     try { window.speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {}
   }
+  // In-App-Ton (nur das Vorlesen) – unabhängig von der Handy-Lautstärke.
+  const MUTE_KEY = "olivia-it-muted-v1";
+  let _muted = (function () { try { return localStorage.getItem(MUTE_KEY) === "1"; } catch (e) { return false; } })();
+  function isMuted() { return _muted; }
+  function setMuted(m) {
+    _muted = !!m;
+    try { m ? localStorage.setItem(MUTE_KEY, "1") : localStorage.removeItem(MUTE_KEY); } catch (e) {}
+    if (m) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+    updateSoundBtn();
+  }
+  function updateSoundBtn() {
+    const b = document.getElementById("sound-btn");
+    if (!b) return;
+    b.textContent = _muted ? "🔇" : "🔊";
+    const t = _muted ? window.Core.tt("Ton in der App an") : window.Core.tt("Ton in der App aus");
+    b.title = t; b.setAttribute("aria-label", t);
+  }
+
   function speak(text) {
-    if (!TTS || !text) return;
+    if (!TTS || !text || _muted) return;
     try {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(String(text));
@@ -1054,9 +1072,17 @@
     ctas[ctas.length - 1].click();
   });
 
+  // Ton-Schalter (nur In-App-Vorlesen); nur zeigen, wenn das Gerät Sprache kann
+  const soundBtn = document.getElementById("sound-btn");
+  if (soundBtn && TTS) {
+    soundBtn.hidden = false;
+    soundBtn.addEventListener("click", () => setMuted(!_muted));
+    updateSoundBtn();
+  }
+
   resetBtn.hidden = Object.keys(progress).length === 0;
   resetBtn.addEventListener("click", () => {
-    if (confirm("Deinen ganzen Fortschritt wirklich löschen?")) {
+    if (confirm(window.Core.tt("Deinen ganzen Fortschritt wirklich löschen?"))) {
       progress = {};
       saveProgress(progress);
       if (window.Lektion && window.Lektion.reset) window.Lektion.reset();
