@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const APP_VERSION = "v52"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
+  const APP_VERSION = "v53"; // muss zur CACHE-Version in sw.js passen (Diagnose/Anzeige)
 
   const SENT = window.APP_DATA.sentences;
 
@@ -776,6 +776,19 @@
 
     if (st.dueToday) {
       viewEl.appendChild($(`<p class="hint" style="margin:2px 0 0">🔁 <b>${st.dueToday}</b> Wörter/Sätze sind zur Wiederholung fällig – üben in Lektion, Vokabeln oder Übersetzen.</p>`));
+    }
+
+    // A2-Abschlusstest – jederzeit startbar (prüft alle Bereiche nach Standard)
+    if (window.Exam) {
+      const examCard = $('<div class="card exam-launch" style="margin-top:14px"></div>');
+      examCard.appendChild($('<p class="section-title" style="margin-top:0">🎓 A2-Abschlusstest</p>'));
+      examCard.appendChild($('<p class="hint" style="margin:0 0 10px">Teste nach echtem A2-Standard: Wortschatz, Grammatik, Verben, Übersetzen, Lesen &amp; Hören. Jederzeit machbar.</p>'));
+      const examBtn = $('<button class="btn primary">🎓 A2-Test starten</button>');
+      examBtn.onclick = () => {
+        window.Exam.start(viewEl, { level: "A2", onExit: renderFortschritt });
+      };
+      examCard.appendChild(examBtn);
+      viewEl.appendChild(examCard);
     }
 
     // Dein Weg durch die Niveaus (A1 · A2 · B1 · B2)

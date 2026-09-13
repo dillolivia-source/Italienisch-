@@ -204,6 +204,32 @@ window.SV = {
     "Ganz neu? Hier fängst du bei null an.": "Helt ny? Här börjar du från noll.",
     "Du kennst schon Basics (Präsens, Alltag).": "Du kan redan grunderna (presens, vardag).",
     "Du kommst schon recht gut zurecht.": "Du klarar dig redan ganska bra.",
+    // A2-Abschlusstest
+    "🎓 A2-Abschlusstest": "🎓 A2-slutprov",
+    "Teste nach echtem A2-Standard: Wortschatz, Grammatik, Verben, Übersetzen, Lesen & Hören. Jederzeit machbar.":
+      "Testa efter riktig A2-standard: ordförråd, grammatik, verb, översättning, läs- & hörförståelse. När som helst.",
+    "🎓 A2-Test starten": "🎓 Starta A2-provet",
+    "✕ Abbrechen": "✕ Avbryt",
+    "✓ Genau!": "✓ Precis!",
+    "Bereich: Wortschatz": "Område: Ordförråd",
+    "Bereich: Grammatik": "Område: Grammatik",
+    "Bereich: Verben": "Område: Verb",
+    "Bereich: Übersetzung": "Område: Översättning",
+    "Bereich: Lesen": "Område: Läsförståelse",
+    "Bereich: Hören": "Område: Hörförståelse",
+    "Wortschatz": "Ordförråd",
+    "Übersetzung": "Översättning",
+    "Lesen": "Läsförståelse",
+    "Hören": "Hörförståelse",
+    "Ergebnis pro Bereich": "Resultat per område",
+    "Lies den Text und entscheide: richtig (Vero) oder falsch (Falso)?":
+      "Läs texten och avgör: rätt (Vero) eller fel (Falso)?",
+    "Auswerten →": "Rätta →",
+    "Bitte alle Aussagen beantworten.": "Besvara alla påståenden.",
+    "Hör zu und wähle die richtige Bedeutung.": "Lyssna och välj rätt betydelse.",
+    "🔊 Abspielen": "🔊 Spela upp",
+    "🔁 Test wiederholen": "🔁 Gör om provet",
+    "← Zurück": "← Tillbaka",
     // Speicher-Warnung
     "⚠️": "⚠️",
     // Sprachwahl (Statistik)
@@ -262,7 +288,13 @@ window.SV = {
     ["^🎉 Alle (.+)-Grammatikthemen gemeistert!$", "🎉 Alla $1-grammatikteman bemästrade!"],
     ["^Neu · Tag (\\d+) von (\\d+) – danach im Auffrischungs-Rhythmus\\.$", "Nytt · Dag $1 av $2 – därefter i repetitionsrytm."],
     ["^✓ „(.+)“ hinzugefügt – kommt in einer nächsten Einheit dran\\.$", "✓ „$1“ tillagd – kommer i en kommande enhet."],
-    ["^(\\d+)% geübt – weiter so$", "$1% övat – bra så"]
+    ["^(\\d+)% geübt – weiter so$", "$1% övat – bra så"],
+    ["^🎓 (A1|A2|B1|B2)-Abschlusstest · Teil (\\d+)/(\\d+)$", "🎓 $1-slutprov · Del $2/$3"],
+    ["^(\\d+) / (\\d+) richtig$", "$1 / $2 rätt"],
+    ["^(A1|A2|B1|B2) geschafft!$", "$1 klarat!"],
+    ["^Noch nicht ganz – (A1|A2|B1|B2)$", "Nästan – $1"],
+    ["^Super! Du erfüllst den (A1|A2|B1|B2)-Standard in allen Bereichen\\.$", "Toppen! Du uppfyller $1-standarden på alla områden."],
+    ["^Fast! Für (A1|A2|B1|B2) brauchst du überall mind\\. 60 % und insgesamt 75 %\\. Übe die schwächeren Bereiche und teste erneut\\.$", "Nästan! För $1 behöver du minst 60 % överallt och 75 % totalt. Öva de svagare områdena och testa igen."]
   ],
 
   // Vokabel-Bedeutung auf Schwedisch (id → schwedisches Wort). Italienisch bleibt.
